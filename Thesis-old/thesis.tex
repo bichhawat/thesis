@@ -1,0 +1,153 @@
+\documentclass[a4paper,10pt,twoside,openright]{book}
+
+% Title page and headers, general formatting and options
+\input{thesis-template}
+
+\usepackage{blindtext}
+%%% TO CHANGE THE FONT - CHANGE THIS PACKAGE
+\usepackage{tgpagella}
+\usepackage{emptypage}
+\usepackage{tikzscale}
+% \usepackage{filecontents}
+% \begin{filecontents}{lattice.tikz}
+% \begin{tikzpicture}
+% \node (H) at (0,3) {$H$};
+% \node (M1) at (-1,2) {$M_1$};
+% %\node (M1) at (0,2) {$M_1$};
+% \node (M2) at (1,2) {$M_2$};
+% \node (Lp) at (0,1) {$L'$};
+% \node (L1) at (-1,1) {$L_1$};
+% \node (L2) at (1,1) {$L_2$};
+% \node (L) at (0,0) {$L$};
+	
+% \tikzstyle{every path}=[black] 
+% \path		(H) edge (M1)
+% 			(H) edge (M2)
+% 			(M1) edge (L1)
+% 			(M1) edge (Lp)
+% 			(M2) edge (Lp)
+% 			(M2) edge (L2)
+% 			(L1) edge (L)
+% 			(Lp) edge (L)
+% 			(L2) edge (L);				
+% \end{tikzpicture}
+% \end{filecontents}
+
+\begin{document}
+
+\frontmatter
+
+\ThesisTitle
+    {Practical Dynamic Information Flow Control} % thesis title
+    {Abhishek Bichhawat}               % name of author
+    {some very lucky day in the future}                  % day of submission
+    {Dekan}									% name of dean
+    {first advisor}                % first reviewer
+    {second reviewer}            % second reviewer
+    {possibly another reviewer}						% third reviewer
+    {some very lucky day in the future}                  % date of oral exam / defense
+
+
+
+
+% Stuff required by Uni
+\pagestyle{empty}
+\input{chapters/preamble/abstract}
+\clearpage
+\input{chapters/preamble/short_summary_de}
+% \clearpage
+% \input{chapters/preamble/long_summary_de}
+\clearpage
+\input{chapters/preamble/acknowledgment}
+
+\clearpage
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\pagestyle{fancyplain} % fancy headers from here on
+\tableofcontents
+\markboth{Contents}{Contents}
+
+% % % % START OF THESIS TEXT % % % % %
+
+% start page numbering
+\mainmatter\setcounter{page}{1}
+
+\cleardoublepage
+\part{Introduction and Background}
+\cleardoublepage
+\input{chapters/intro/intro}
+\input{chapters/intro/background}
+% \input{chapters/intro/related}
+
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\cleardoublepage
+\part{Generalized Permissive-Upgrade Strategy}
+\cleardoublepage
+\input{chapters/gpu/ipu}
+\input{chapters/gpu/gpu}
+
+\cleardoublepage
+\part{Handling Unstructured Control Flow} 
+\cleardoublepage
+\input{chapters/ucf/exceptions}
+
+\cleardoublepage
+\part{Limited Information Release}
+\cleardoublepage
+\input{chapters/lir/lir}
+
+\cleardoublepage
+\part{Application to a Web Browser}
+\cleardoublepage
+% \input{chapters/browser/browser}
+\input{chapters/browser/policies}
+\input{chapters/browser/eval}
+\input{chapters/browser/related}
+
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\cleardoublepage
+\part{Conclusion and Outlook}
+\cleardoublepage
+\input{chapters/conclusion/conclusion}
+\input{chapters/conclusion/future}
+
+%% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+% % % Appendix % % %
+% The individual appendices should be sections!
+% sections will be numbered as A, B,... and subsections as A.1, A.2 etc.
+
+\cleardoublepage
+\appendix
+\part*{Appendix}
+% \addcontentsline{toc}{part}{Appendices}
+\renewcommand{\thesection}{\Alph{section}}
+\cleardoublepage
+\input{chapters/appendix/appendix1}
+\input{chapters/appendix/appendix2}
+\input{chapters/appendix/appendix3}
+
+\cleardoublepage
+\listoffigures
+\addcontentsline{toc}{part}{\listfigurename}
+\markboth{List of figures}{List of figures}
+ 
+\cleardoublepage
+\listoftables
+\addcontentsline{toc}{part}{\listtablename}
+\markboth{List of tables}{List of tables}
+
+
+\backmatter
+\cleardoublepage
+% \newpage
+\bibliographystyle{abbrvnat}
+\bibliography{bibliography}
+\addcontentsline{toc}{part}{Bibliography}
+\markboth{Bibliography}{Bibliography}
+
+
+\end{document}
+

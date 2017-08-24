@@ -1,0 +1,454 @@
+\section{Overview}
+This section presents a \emph{formal} description of the
+no-sensitive-upgrade check. The technical development in this thesis
+is mostly based on the simple imperative language shown in
+Figure~\ref{basic:syntax}. However, the key ideas are orthogonal to
+the choice of language and generalize to 
+other languages easily. The use of a simpler language is to simplify
+non-essential technical details. The parts in this thesis that require
+a more complex language define the additional features in place. 
+The language's expressions include constants or values (\TT{n}),
+variables ($\TT{x}$) and unspecified binary operators ($\odot$) to 
+combine them. The set of variables is fixed upfront. Labels ($\lab$)
+are drawn from a fixed security lattice. The lattice contains
+different labels $\{L, M, H, \ldots \}$ with a partial ordering
+between the elements. Join ($\sqcup$) and meet ($\sqcap$) operations
+are defined as usual on the lattice. The program counter label $\pc$
+is an element of the lattice.
+
+\subsection{Basic IFC Semantics}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\begin{align*}
+\expr	=~& \TT{n}~\arrowvert~\TT{x}~\arrowvert~\expr_1 \odot \expr_2 \\
+\comm	=~& \sk~\arrowvert~\TT{x} := \expr~\arrowvert 
+ ~\comm_1;\comm_2~\arrowvert~\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2~\arrowvert~\texttt{while}~\expr~\texttt{do}~\comm\\
+\lab          =~& L~\arrowvert~M~\arrowvert~H~\arrowvert~\ldots\\
+k,l,m, \pc =~& \lab
+\end{align*}
+\caption{Syntax of the Language}\label{basic:syntax}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\begin{framed}
+\begin{mathparpagebreakable}
+%\onecolumn
+%%%    
+\textsc{Expressions:}\\
+\inferrule*[left=\mbox{\labelthis{bs:exp:c}{const}}]
+{ }
+{\langle \sigma, \TT{n} \rangle \bsexp \TT{n}^{\perp}}
+\and
+\inferrule*[left=\mbox{\labelthis{bs:exp:v}{var}}]
+{\TT{n}^k := \sigma(\TT{x})}
+{\langle \sigma, \TT{x} \rangle \bsexp \TT{n}^k}
+\and
+\inferrule*[left=\mbox{\labelthis{bs:exp:o}{oper}}]
+{\langle \sigma, \expr' \rangle \bsexp
+  \TT{n}'^{k'} \\ \langle \sigma, \expr'' \rangle \bsexp
+  \TT{n}''^{k''} \\\\ \TT{n} := \TT{n}' \odot \TT{n}'' \\ 
+  k := k' \sqcup k''} 
+{\langle \sigma, \expr' \odot \expr'' \rangle \bsexp \TT{n}^k}
+%%%    
+\\\\
+\textsc{Statements:}\\
+\inferrule*[left=\mbox{\labelthis{bs:cmd:sk}{skip}}]
+{ }
+{\langle \sigma, \sk \rangle \bscmd \sigma}
+\and
+%%%
+\inferrule*[left=\mbox{\labelthis{bs:cmd:s}{seq}}]
+{\langle \sigma, \comm_1 \rangle \bscmd \sigma'' \\ \langle \sigma'', \comm_2 \rangle \bscmd \sigma' }
+{\langle \sigma, \comm_1;\comm_2 \rangle \bscmd \sigma'}
+\and
+%%%
+\inferrule*[left=\mbox{\labelthis{bs:cmd:wf}{while-f}}]
+{\langle \sigma, \expr \rangle \bsexp \texttt{false}^{\lab}}
+{\langle \sigma, \texttt{while}~\expr~\texttt{do}~\comm \rangle
+  \bscmd \sigma }
+\and
+%%%    
+\inferrule*[left=\mbox{\labelthis{bs:cmd:ie}{if-else}}]
+{\langle \sigma, \expr \rangle \bsexp \TT{b}^{\lab} \\ 
+  i = \left\{\begin{array}{ll}
+        1, & \textit{if }~  \TT{b} = \TT{true} \arcr
+        2, & \textit{otherwise } \arcr
+        \end{array}\right\} \\\\ \langle
+  \sigma, \comm_i \rangle \bscmdup \sigma'}
+{\langle \sigma, 
+  \texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2
+  \rangle \bscmd \sigma'}
+\and
+% \inferrule*[left=\mbox{\labelthis{bs:cmd:iet}{if-else-t}}]
+% {\langle \sigma, \expr \rangle \bsexp \texttt{true}^{\lab} \\ \langle
+%   \sigma, \comm_1 \rangle \bscmdup \sigma'}
+% {\langle \sigma, 
+%   \texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2
+%   \rangle \bscmd \sigma'}
+% \and
+% %%%    
+% \inferrule*[left=\mbox{\labelthis{bs:cmd:ief}{if-else-f}}]
+% {\langle \sigma, \expr \rangle \bsexp \texttt{false}^{\lab} \\ \langle
+%   \sigma, \comm_2 \rangle \bscmdup \sigma'}
+% {\langle \sigma, 
+%   \texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2
+%   \rangle \bscmd \sigma'}
+% \and
+%%%    
+\inferrule*[left=\mbox{\labelthis{bs:cmd:wt}{while-t}}]
+{\langle \sigma, \expr \rangle \bsexp \texttt{true}^{\lab} \\ \langle
+  \sigma, \comm \rangle \bscmdup \sigma'' \\\\ \langle
+  \sigma'', \texttt{while}~\expr~\texttt{do}~\comm \rangle
+  \bscmdup \sigma' }
+{\langle \sigma, \texttt{while}~\expr~\texttt{do}~\comm \rangle
+  \bscmd \sigma'}
+%%%    
+\end{mathparpagebreakable}
+\end{framed}
+\caption{Semantics}\label{fig:basic-semantics}
+\end{figure*}
+
+The rules in Figure~\ref{fig:basic-semantics} define the big-step
+semantics of the language, including standard taint propagation for
+IFC: the evaluation relation $\langle \sigma, \expr \rangle \bsexp
+\TT{n}^k$ for expressions, and the evaluation relation $\langle \sigma,
+\comm \rangle \bscmd \sigma'$ for commands. Here, $\sigma$ 
+denotes a store, a map from variables to labeled values of the form
+$\TT{n}^k$. \TT{b} represents a Boolean constant. For now, labels $k ::=
+\lab$; this is generalized later when the ``partially-leaked'' taints
+are introduced in Section~\ref{sec:existing}. 
+
+The evaluation relation for expressions evaluates an expression
+$\expr$ and returns its value $n$ and label $k$. The label $k$ is the
+join of labels of all variables occurring in $\expr$ (according to
+$\sigma$). The relation for commands executes a command $\comm$ in the
+context of a store $\sigma$, and the current program counter label
+$\pc$, and yields a new store $\sigma'$.  The function
+$\Gamma(\sigma(\TT{x}))$ returns the label associated with the value in \TT{x}
+in store $\sigma$: If $\sigma(\TT{x}) = \TT{n}^k$, then $\Gamma(\sigma(\TT{x})) =
+k$. $\bot$ denotes the least element of the lattice. % Here, $\bot = L$.
+
+% The rules for evaluating commands are explained below. 
+The rule for
+sequencing $\comm_1; \comm_2$ (\refrule{bs:cmd:s}) evaluates the
+command $c_1$ under store $\sigma$ and the current $\pc$ label; this
+yields a new store $\sigma''$. It then evaluates the command $c_2$
+under store $\sigma''$ and the same $\pc$ label, which yields the
+final store $\sigma'$. 
+%
+The rule for \texttt{if-else} (\refrule{bs:cmd:ie}) 
+% and \refrule{bs:cmd:ief}) 
+evaluates the branch condition $e$ to a Boolean value \TT{b} with
+label $\lab$. Based on the value of \TT{b}, one of the branches
+$\comm_1$ and $\comm_2$ is executed under a $\pc$ obtained by 
+joining the current $\pc$ and the label $\lab$ of \TT{b}. Similarly, the
+rules for \texttt{while} (\refrule{bs:cmd:wt} and \refrule{bs:cmd:wf})
+evaluate the loop condition $e$ and execute the loop command $c_1$
+while $e$ evaluates to \texttt{true}. The $\pc$ for the loop is
+obtained by joining the current $\pc$ and the label 
+$\lab$ of the result of evaluating $e$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\begin{mathparpagebreakable}
+\inferrule*[left=\mbox{\labelthis{bs:cmd:an}{assn-nsu}}]
+ {l = \Gamma(\sigma(\TT{x})) \\ \pc
+    \sqsubseteq l \\ \langle \sigma, \expr \rangle \bsexp \TT{n}^m
+    } {\langle \sigma, \TT{x} := \expr \rangle
+    \bscmd \sigma[\TT{x} \mapsto \TT{n}^{(\pc \sqcup m)}]}
+\end{mathparpagebreakable}
+\caption{Assignment rule for NSU}
+\label{fig:assn-nsu}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The rule for assignment statements are conspicuously missing from
+Figure~\ref{fig:basic-semantics} because they depend on the strategy
+used to control implicit flows. 
+% In the remainder of this chapter, a number of such rules are
+% considered. To start, t
+The rule for assignment (\refrule{bs:cmd:an}) corresponding to the NSU
+check is shown in Figure~\ref{fig:assn-nsu}. The rule checks that the
+label $l$ of the assigned variable \TT{x} in the initial store $\sigma$
+is at least as high as $\pc$ (premise $\pc \sqsubseteq l$). If this
+condition is not true, the program gets stuck. This is exactly the NSU
+check described in Section~\ref{sec:bg-nsu}.
+
+\subsection{Formalization of the No-sensitive-upgrade Check}
+
+% Figure~\ref{fig:basic-syntax} and \ref{fig:basic-semantics}
+% describes the syntax and semantics  of a standard while language
+% with information flow  control. Notice the assignment rule often
+% imposes some condition  on the $pc$ to prohibit low assignments
+% under high context. For  instance, for the no-sensitive upgrade
+% check as described earlier  the assignment rule.
+
+% \subsection{Termination-Insensitive Non-interference}
+
+For establishing and proving the security
+property of termination-insensitive non-interference (TINI), the
+observational power of the adversary needs to be defined. 
+An adversary at level $\attacker$ in the lattice is allowed to view
+all values that have a label less than or equal to $\attacker$. To prove
+the security property of non-interference, it is enough to show that
+when executing a program beginning with two different memory stores
+that are \emph{observationally equivalent} to an adversary, the final
+memory stores are also \emph{observationally equivalent} to the
+adversary. For this, the observational equivalence of two memory
+stores with respect to an adversary needs to be defined. 
+Store equivalence is formalized as a relation $\eq$,
+indexed by lattice elements $\attacker$, representing the adversary.
+
+\begin{mydef}[Value equivalence]
+  Two labeled values $\emph{\TT{n}}_1^k$ and $\emph{\TT{n}}_2^m$ are $\lab$-equivalent,
+  written $\emph{\TT{n}}_1^k \sim_\lab \emph{\TT{n}}_2^m$, iff either:
+  \begin{enumerate}
+  \item $(k = m) \sqsubseteq \lab$ and $\emph{\TT{n}}_1 = \emph{\TT{n}}_2$ or
+  \item $k \not\sqsubseteq \lab$ and $m \not\sqsubseteq \lab$
+  \end{enumerate}
+\end{mydef}
+
+This definition states that for an adversary at security level $\lab$,
+two labeled values $\TT{n}_1^k$ and $\TT{n}_2^m$ are equivalent iff either
+$\lab$ can access both values and $\TT{n}_1$ and $\TT{n}_2$ are equal, or it
+cannot access either value ($k \not\sqsubseteq \lab$ and $m
+\not\sqsubseteq \lab$). The additional constraint $k = m$ in clause
+(1) is needed to prove non-interference by induction. In the lattice
+$L \sqsubset H$, two values labeled $L$ and $H$ are distinguishable
+for the $L$-adversary. 
+
+\begin{mydef}[Store equivalence]
+  Two stores $\sigma_1$ and $\sigma_2$ are $\lab$-equivalent,
+  written $\sigma_1 \sim_\lab \sigma_2$, iff for every variable \emph{\TT{x}},
+  $\sigma_1(\emph{\TT{x}}) \sim_\lab \sigma_2(\emph{\TT{x}})$.
+\end{mydef}
+
+The following theorem states TINI for the NSU check. The theorem has
+been proved for various languages in the past.
+
+\begin{myThm}[TINI for NSU]
+  With the assignment rule \refrule{bs:cmd:an} from
+  Figure~\ref{fig:assn-nsu}, if 
+  $~\sigma_1 \sim_\lab \sigma_2$ and $\langle \sigma_1, c \rangle
+  \bscmd \sigma_1' $ and $\langle \sigma_2, c
+  \rangle \bscmd \sigma_2' $, then $\sigma_1' \sim_\lab
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} Standard, see e.g.,~\cite{plas09}
+\end{proof}
+
+% Although the security lattice here is restricted to two elements $L$
+% and $H$, the rules of Figures~\ref{fig:basic-semantics}
+% and~\ref{fig:assn-nsu}, the definition of equivalence above and the
+% theorem above (for NSU) are all general and work for arbitrary
+% lattices.
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Austin and Flanagan's Permissive-Upgrade Strategy}
+\label{sec:existing}
+
+To allow a dynamic IFC analysis to accept safe executions of programs
+with variable upgrades due to high $\pc$, Austin and Flanagan proposed
+a less restrictive strategy called the \emph{permissive-upgrade
+  strategy}~\cite{plas10}. They study this strategy for a two-point
+lattice $L \sqsubset H$ and their strategy does not immediately
+generalize to arbitrary security lattices. Whereas NSU stops a program  
+when a variable's label is upgraded due to assignment in a high $pc$,
+permissive-upgrade allows the assignment, but labels the variable as 
+\emph{partially-leaked} or $P$. The exact intuition behind the
+partially-leaked label $P$ is the following: 
+
+\begin{framed}
+\noindent
+  A variable with a value labeled $P$ may have been implicitly
+  influenced by $H$-labeled values in this execution, but in other
+  executions (obtainable by changing $H$-labeled values in the
+  initial store), this implicit influence may not exist and, hence,
+  the variable may be labeled $L$.
+\end{framed}
+
+%  The taint $P$ roughly means that the
+% variable's content in this execution is $H$, but it may be $L$ in
+% other executions.
+The program must be stopped later if it tries to use
+or case-analyze the variable (in particular, branching on a
+partially-leaked Boolean variable is stopped). Permissive-upgrade also
+ensures termination-insensitive non-interference, but is strictly more
+permissive than NSU. For example, permissive-upgrade stops the leaky
+program of Listing~\ref{lst1} at line~\ref{linerefcond} when \TT{z}
+contains $\texttt{false}^H$, but it allows the program of
+Listing~\ref{lst1.1} to execute to completion when \TT{y} contains
+$\texttt{true}^L$. 
+% Note that in this section, the lattice has
+% only two levels: $L$ (public) and $H$ (confidential). 
+
+In the revised syntax of labels, summarized in
+Figure~\ref{pus:syntax}, the labels $k,l,m$ on values can be either
+elements of the lattice  ($L, H$) or $P$. The $\pc$ can only be one of
+$L, H$ because branching on partially-leaked values is
+prohibited. The join operation $\sqcup$ is lifted to labels including
+$P$. Joining any label with $P$ results in $P$. For brevity in
+definitions, they extend the order $\sqsubset$ to $L \sqsubset H
+\sqsubset P$. However, $P$ is not a new ``top'' member of the lattice
+because it receives special treatment in the semantic rules. 
+
+\begin{figure}
+\begin{equation*}
+\begin{aligned}[c]
+\lab          =~& L~\arrowvert~H\\
+\pc          =~& \lab\\
+k,l,m =~& \lab~\arrowvert~P
+\end{aligned}
+\qquad \qquad \qquad
+\begin{aligned}[c] 
+k \sqcup k ~= ~& k\\
+L \sqcup H ~=~ &H\\
+L \sqcup P  ~=~&P \\
+H\sqcup P  ~=~&P
+\end{aligned}
+% \end{align*}
+\end{equation*}
+\caption{Syntax of labels including the partially-leaked label
+  $P$}\label{pus:syntax}
+\end{figure}
+
+
+The rule for assignment with permissive-upgrade is
+\begin{mathpar}
+\inferrule*[left=\mbox{\labelthis{bs:cmd:ap}{assn-pus}}]
+{l := \Gamma(\sigma(\TT{x})) \qquad \langle
+ \sigma, \expr \rangle \bsexp \TT{n}^m} {\langle \sigma, \TT{x} := \expr
+    \rangle \bscmd \sigma[\TT{x} \mapsto \TT{n}^{k}]}
+\end{mathpar}
+where $k$ is defined as follows:
+$$ k = % \left\lbrace
+\begin{cases}
+m & \mbox{ if } \pc = L \\
+m \sqcup H  & \mbox{ if } \pc = H \mbox{ and } l = H\\
+P  & \mbox{ otherwise}
+\end{cases} % \right.
+$$
+
+
+% The rule for assignment with permissive-upgrade is
+% \begin{align*}
+%   \inference[assn-PUS: ] {l := \Gamma(\sigma(x)) \qquad \langle
+%     \expr, \sigma \rangle \Downarrow n^m} {\langle x := \expr, \sigma
+%     \rangle \Downarrow_\pc \sigma[x \mapsto n^{k}]}
+% \end{align*}
+% where $k$ is defined as follows:
+% \[ k = \left\lbrace
+% \begin{array}{l}
+% m \mbox{ if } \pc = L \\
+% m \sqcup H  \mbox{ if } \pc = H \mbox{ and } l = H\\
+% P \mbox{ otherwise}
+% \end{array} \right.
+% \]
+The first two conditions in the definition of $k$ correspond to the
+NSU rule (Figure~\ref{fig:assn-nsu}). The third condition applies, in
+particular, when a variable whose initial label is $L$ is assigned 
+with $\pc = H$. The NSU check would stop this assignment. With
+permissive-upgrade, however, the updated variable is labeled $P$,
+consistent with the intuitive meaning of $P$. This allows 
+more permissiveness by allowing the assignment to proceed in all
+cases. To compensate, any program (in particular, an adversarial
+program) is disallowed from case analyzing any value labeled 
+$P$. Consequently, in the rules for \texttt{if-then} and
+\texttt{while} (Figure~\ref{fig:basic-semantics}), the label of the
+branch condition is of the form $\lab$, which does not include $P$. 
+Thus, assignments under high $\pc$ succeed under the
+permissive-upgrade check but branching or case-analyzing a
+partially-leaked value is not permitted as that can also leak
+information. 
+% To illustrate the permissivness of the permissive-upgrade
+% check, consider the different executions of example in
+% Listing~\ref{lst1} taken from~\cite{plas10} as shown in
+% Table~\ref{tbl:nsu}. The assignment  on line~\ref{lineref} is not
+% permitted by the NSU check. However, the permissive-upgrade check
+% updates \TT{y} to \texttt{false} with a partially-leaked
+% label. Further case analysis on \TT{y} is prohibited (if 
+% not, the branch on line~\ref{linerefcond} would not be taken as \TT{y} is
+% \texttt{false} and \TT{z} would return $\texttt{true}^{L}$, thus leaking
+% the value of \TT{x}).
+
+% \begin{table*}
+% \centering
+% \begin{tabular} {|l||@{\,}c@{\,}||@{\,}c@{\,}|@{\,}c@{\,}|}
+% \hline
+% &
+% $\TT{x} = \texttt{false}^{H}$
+% &
+% \multicolumn{2}{c|}{$\TT{x} = \texttt{true}^{H}$}
+% \\
+% \cline{2-4}
+% &
+% \textit{All strategies}
+% &
+% \textit{NSU}
+% &
+% \textit{Permissive-upgrade}
+% \\
+% \hline
+% \TT{y} = \texttt{true} &$\TT{y} = \texttt{true}^{L}$&$\TT{y} =
+%                                               \texttt{true}^{L}$&$\TT{y} =
+%                                                                   \texttt{true}^{L}$\\
+% \TT{z} = \texttt{true} &$\TT{z} = \texttt{true}^{L}$&$\TT{z} =
+%                                               \texttt{true}^{L}$&$\TT{z} =
+%                                                                   \texttt{true}^{L}$\\
+% \texttt{if} (\TT{x})&branch not taken&$\pc = H$&$\pc = H$\\
+% \quad\TT{y} = \texttt{false}&$\TT{y} = \texttt{true}^{L}$&execution halted&$\TT{y} = \texttt{false}^{P}$\\
+% \texttt{if} (\TT{y})&$\pc = L$&&execution halted\\
+% \quad$\TT{z} = \texttt{false}$&$\TT{z} = \texttt{false}^{L}$&&\\
+% \texttt{return} \TT{z}&$\texttt{false}^{L}$&&\\
+% \hline
+% Result & $\TT{z} = \texttt{false}^{L}$ & no leak & no leak\\
+% \hline
+% \end{tabular}
+% \caption{Execution steps in two runs of the program from
+%   Listing~\ref{lst1}, with NSU and the permissive-upgrade check}
+% \label{tbl:nsu}
+% \end{table*}
+
+
+The noninterference result obtained for NSU earlier can be extended to
+permissive-upgrade by changing the definition of store 
+equivalence. Because no program can case-analyze a $P$-labeled value,
+such a value is equivalent to any other labeled value.
+
+\begin{mydef}
+\label{def:pus}
+  Two labeled values $\emph{\TT{n}}_1^k$ and $\emph{\TT{n}}_2^m$ are
+  equivalent to an adversary at level $L$,
+  written $\emph{\TT{n}}_1^k \sim_L \emph{\TT{n}}_2^m$, iff either:
+  \begin{enumerate}
+  \item $(k = m) = L$ and $\emph{\TT{n}}_1 = \emph{\TT{n}}_2$ or
+  \item $k = H$ and $m = H$ or
+  \item $k = P$ or $m = P$
+  \end{enumerate}
+\end{mydef}
+
+\begin{mydef}
+  Two stores $\sigma_1$ and $\sigma_2$ are $L$-equivalent,
+  written $\sigma_1 \sim_L \sigma_2$, iff 
+  $\forall \emph{\TT{x}}. \sigma_1(\emph{\TT{x}}) \sim_L \sigma_2(\emph{\TT{x}})$.
+\end{mydef}
+
+\begin{myThm}[TINI for permissive-upgrade with a two-point lattice]
+  With the assignment rule \emph{assn-PUS}, if
+  $~\sigma_1 \sim_L \sigma_2$ and $\langle c, \sigma_1 \rangle
+  \Downarrow_\pc \sigma_1' $ and $\langle c, \sigma_2
+  \rangle\Downarrow_\pc \sigma_2' $, then $\sigma_1' \sim_L
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} See~\cite{plas10}.
+\end{proof}
+
+% Note that the above definition and proof are specific to the two-point
+% lattice.
+

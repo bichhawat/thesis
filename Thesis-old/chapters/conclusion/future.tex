@@ -1,0 +1,60 @@
+\chapter{Future Directions}
+\label{ch:future}
+
+\section{Evaluating Information Flow Policies on Real-World
+  Websites}
+The dissertation focused on bridging the gap between the theory
+of dynamic information flow control and its practicality in the
+real-world. As part of understanding the practicality of such
+approaches in real-world websites, it would be interesting to
+investigate the types of security policies developers would be
+interested in. The idea would be to come up with a set of generic
+policies that could help evaluate different real-world websites for
+privacy and confidentiality violations. Another interesting direction
+for evaluation of information flow policies on real-world websites is
+to explore integrity violations by third-party scripts. Broadly, these
+policies could be related to cookies, web  storage, and other
+user-data used by different websites. For example, a policy related to
+cookies could be that third-party scripts should not be able to
+extract information from first-party cookies, which is currently
+allowed if the cookie is not marked \emph{HttpOnly}. Similarly, a
+third-party script (loaded from the same domain) can modify the
+\texttt{localStorage} object of the host without any restrictions,
+which can be restricted or prevented by ensuring that such information
+does not leak via the  third-party script. 
+
+\section{Exploring Alternative Granularities for Enforcing
+  Information Flow Control}
+The current enforcement of dynamic information flow control tracks the
+flow of information between all data structures in the system at a
+fine-granularity. Although this increases the precision of the
+analysis significantly, it affects the performance
+adversely. Alternatively, one could explore approaches that are a 
+little coarser than the current approach without giving up much on the 
+precision. One such approach would be to only track information flow
+globally and at the level of a function-call, rather than tracking it
+through all local data-structures. The challenge here would be to
+retain the precision of fine-grained techniques, which can probably be  
+achieved by code-rewriting. The high-level idea would be to execute
+the part of the code not dependent on sensitive data before executing
+that part of the code that operates on sensitive data. 
+
+\section{Handling Timing Leaks on the Web}
+Primaryly, the work done in the area of dynamic information flow
+control has focussed on handling two types of leaks ---
+leaks due to explicit and implicit flows. However, there are various 
+other covert channels like timing, resource-usage etc. that can leak
+sensitive information. Among these, web-based timing attacks have been  
+known to be a non-trivial source of information leaks with no feasible
+client-side solutions till date~\cite{timing}. For instance, the time 
+taken for performing sensitive computation can be measured by sending
+out public requests before and after the computation. Although the two
+requests do not carry any sensitive information, the time between the
+two requests can leak information about the data on which the
+computation was performed~\cite{timing}. As part of future work, it
+would be interesting to explore a language-based solution to handling
+timing leaks, which would mostly be based on balancing the time taken
+for performing sensitive operations. The challenging part would be to 
+handle loops and the different browser features that result in such
+leaks. 
+

@@ -1,0 +1,49 @@
+\section*{Abstract}
+
+% \todo[inline]
+{
+Over the years, computer systems and applications have grown
+significantly complex while handling a plethora of private and
+sensitive user information. The complexity of these applications is
+often assisted by a set of (un)intentional bugs with both malicious
+and non-malicious intent leading to information leaks. Information
+flow control has been studied extensively as an approach to mitigate
+such information leaks. The technique works by enforcing the security
+property of non-interference using a specified set of security
+policies. A vast majority of existing work in this area
+is based on static analyses. However, some of these applications,
+especially on the Web, are developed using dynamic languages like
+JavaScript that makes the static analyses techniques stale and
+ineffective. As a result, there has been a growing interest in recent
+years to develop dynamic information flow analysis techniques. In
+spite of that, dynamic information flow analysis has not been at the
+helm of information flow security in settings like the Web; the prime
+reason being that the analysis techniques and the security property
+related to them (non-interference) either over-approximate or are too
+restrictive in most cases. Concretely, the analysis techniques
+generate a lot of false positives, do not allow legitimate release of
+sensitive information, support only static and rigid security
+policies or are not general enough to be applied to real-world
+applications. 
+
+This thesis focuses on improving the usability of dynamic information
+flow techniques by presenting mechanisms that can enhance the
+precision and permissiveness of the analyses. It begins by presenting
+a sound improvement and enhancement of the permissive-upgrade
+strategy (a strategy widely used to enforce dynamic information flow
+control), which improves the strategy's permissiveness and makes it
+generic in applicability. The thesis, then, presents a sound and
+precise dynamic information flow analysis for handling complex
+features like unstructured control flow and exceptions in higher-order 
+languages. Although non-interference is a desired property for
+enforcing information flow control, there are program instances that
+require legitimate release of some parts of the secret data to provide
+the required functionality. Towards this end, this thesis develops a sound 
+approach to quantify information leaks dynamically while allowing 
+information release in accordance to a pre-specified budget. The thesis
+concludes by applying these techniques to an information flow
+control-enabled Web browser and explores a policy specification 
+mechanism that allows flexible and useful information flow policies to 
+be specified for Web applications. 
+
+}

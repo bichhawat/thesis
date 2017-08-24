@@ -1,0 +1,333 @@
+\chapter{Background and Overview}
+\label{ch:background}
+
+\section{Information Flow Control}
+Information flow control (IFC) refers to controlling the flow of
+(confidential) information through a program based on a given security
+policy. Typically, pieces of information are classified into security
+\emph{labels} and the policy is a lattice over labels. Information is only
+allowed to flow up the lattice. For illustration purposes often the
+smallest non-trivial lattice $L \sqsubset H$ is used, which specifies that
+public (low, $L$) data must not be influenced by confidential (high,
+$H$) data. Information flow control can be used to provide
+confidentiality (or integrity) of secret (trusted) information; the
+work in this thesis is, however, limited to confidentiality guarantees. 
+Roughly the idea behind information flow control is that an adversary
+can view all the public outputs of a program. By preventing private or
+sensitive data to flow to public outputs, the adversary does not get
+any information about the private or sensitive data.
+
+The seminal work by Denning~\cite{denning76,denning77,denning82}
+defined most of the theoretical ideas pertaining to information flow
+control. In general, information can flow along many
+channels. However, this thesis considers two of the most important
+flows --- \textit{explicit} and \textit{implicit} --- in deterministic
+programs. Covert channels like timing or resource usage are beyond the
+scope of this thesis.  
+
+An \emph{explicit flow} occurs as a result of direct assignment, e.g.,
+the statement \TT{public = secret + 1} causes an explicit flow from
+\TT{secret} to \TT{public}. An \emph{implicit flow} occurs due to the
+control structure of the program. For instance, consider the program
+in Listing~\ref{lst1}.  
+% \texttt{public = false; if (secret) public =  true},
+ The final value of \TT{y} is equal to the value of
+\TT{z} even though there is no direct assignment from \TT{z}
+to \TT{y}. Leaking a bit like this can be magnified into leaking
+a bigger secret bit-by-bit~\cite{askarov}.
+
+\begin{lstlisting}[float,caption=Implicit flow from \TT{z} to
+  \TT{y},label=lst1][escapechar=@]
+x = false, y = false
+if (not(z))@\label{linerefcond1}@
+  x = true@\label{lineref}@
+if (not(x))@\label{linerefcond}@
+  y = true@\label{lineref5}@
+\end{lstlisting}
+
+The correctness of the approaches enforcing information flow control
+is often stated in terms of a well-defined property known 
+as \emph{non-interference}~\cite{goguen}, which basically stipulates
+that high input of a program must not influence its low output. While
+non-interference is too strong a property in practice, different
+variants of the definition are proven. One such variant of
+non-interference usually established for information flow control
+techniques is \emph{termination-insensitive
+  non-interference}~\cite{volpano}. Roughly, a program is
+termination-insensitive non-interferent if any two terminating runs 
+of the program starting from low-equivalent heaps (i.e., heaps that
+look equivalent to the adversary assuming that an adversary can
+observe some part of the heap) end in low-equivalent
+heaps. Termination-insensitive means that one-bit of leak is tolerable
+when an adversary checks whether or not the program terminated. In
+particular, this discounted one-bit leak accounts for termination due
+to the failure of a runtime security  check. Askarov \emph{et
+al.}~\cite{askarov} show that for programs with intermediate observable
+outputs, termination-insensitivity may leak more than one bit but also
+show that this attack is limited to a brute-force attack. 
+
+Information flow control approaches either statically analyze the
+program at compile-time and reject or accept a program based on the
+security policy, or dynamically analyze the flow of data in a program
+by either using a modified runtime or with the help of a reference
+monitor, or employ a combination of both the approaches to shrug off 
+some of the individual limitations of the two approaches. Static approaches
+normally support restricted policies, and are less permissive in
+nature. Besides, it becomes extremely complicated to use such methods
+with dynamically-typed languages and languages that are loaded with
+dynamic features. Dynamic approaches, on the other hand, add runtime
+overheads and are less precise as compared to the static
+approaches. Dynamic information flow control, which is the central
+theme of this thesis, is described in detail later in the
+chapter. 
+
+\subsection{Flow-sensitivity}
+Static analysis techniques are usually flow-insensitive in
+nature, i.e., they do not account for the ordering of the instructions
+in the program or the general flow of execution of the program. In
+other words, all operations should be individually secure to secure
+the program as a whole. 
+For instance, consider the program snippet:
+$$\TT{l} = \TT{h} $$
+Assume that \TT{h} is a secret variable labeled $H$
+and \TT{l} is a public variable labeled $L$. This program gets
+rejected by a flow-insensitive analysis as the assignment of a secret
+value to a public variable is considered insecure.  
+
+Flow-sensitive analysis improves the permissiveness of static analysis
+techniques and is mostly used in dynamic analyses. Under a
+flow-sensitive static analysis, the above program 
+upgrades the labels of \TT{l} to $H$ indicating the
+influence of $H$-labeled \TT{h} on \TT{l}. If the program was to
+output the value of \TT{l} on a $L$-observable channel later, the
+program gets rejected by the analysis. Flow-sensitive analysis also
+accepts programs with dead-code like the one shown in
+Listing~\ref{lst1.1.1}, 
+thus improving the permissiveness of the analysis. Some 
+flow-sensitive static analyses have been proposed to enforce
+information flow control~\cite{hunt2006:types,hammer09ijis} while
+almost all dynamic approaches are flow-sensitive in nature. 
+
+\begin{lstlisting}[float,caption=Permissiveness of flow-sensitive
+  analysis,label=lst1.1.1][escapechar=@] 
+var x
+if (not(z))
+  x = true
+x = false
+\end{lstlisting}
+
+\section{Information Release}
+Non-interference prevents all unauthorized flows without
+regarding the severity of the leaks. However, many practical
+applications require some fragment of the sensitive data to be
+released to programs for providing proper functionality or to improve
+the user-experience. For instance, according to non-interference even
+a standard log-in application would be considered insecure because it
+leaks information about the user’s password, which is considered 
+confidential, by either allowing or denying access. 
+As a remedy, researchers have proposed various ways to intentionally
+release or \emph{declassify} sensitive data through relaxations of
+non-interference~\cite{dimDecl}, which is generally enforced using
+annotations like \texttt{declassify} in the program. For instance,
+\texttt{declassify(pwd == input)} would treat the result 
+of the password check as public, thus allowing access-information to
+be released to the user. Most of these approaches require policy
+specifications by the developer that define what information can be
+released by the program as in many settings it is difficult to trust 
+third-parties to include correct and appropriate (declassify)
+annotations for information release in the code. Declassification
+approaches generally ensure that the adversary is unable to declassify
+or force declassification of sensitive information as per his/her
+needs. Sabelfeld and Sands~\cite{dimDecl} present a survey
+of many such techniques that allow release of information in a secure
+manner. 
+
+Some of these declassification techniques are described below.
+Cohen~\cite{cohen77,cohen78} in his work on selective
+dependency used assertions to eliminate certain information paths
+thereby allowing programs that satisfy the constraint to be
+accepted. The idea was that information flows to the adversary should
+not allow her to deduce more information about secrets than is allowed
+by the assertions. Volpano and Smith~\cite{relSec} present relative
+secrecy, a property that instead of providing absolute
+secrecy allows information to be released through specific
+\emph{match} queries relative to the size of the secret, i.e., if the
+adversary cannot guess the secret in polynomial time. Giacobazzi and
+Mastroeni~\cite{ani} generalize non-interference by modelling what 
+property the adversary can observe about the secrets. Li and
+Zdancewic's relaxed non-interference characterizes the information
+released through downgrading policies~\cite{rel-ni}. Sabelfeld and
+Sands~\cite{permodel} proposed the PER model using partial equivalence
+relations for specifying information flow policies.
+Sabelfeld and Myers~\cite{delRelease} introduced the notion of
+delimited release, which enables the specification of declassification
+policy using \emph{escape hatches}. The policy specifies upfront what
+information can be released through these escape hatches. Localized
+delimited release~\cite{ldr} requires that an expression is only released 
+after a declassification operation for this expression has appeared
+in the code. Lux and Mantel~\cite{Lux} propose explicit reference
+points to allow flexible specification of what secrets may be
+declassified at the specific reference points. Robust
+declassification~\cite{robust} ensures that only trusted code is
+allowed to declassify information. Chong and Myers~\cite{chong2004}
+propose a framework for specifying application-specific information
+release policies. Chong~\cite{rir} further proposes the concept of
+required information release, which considers applications that are
+obligated to release information under certain conditions. Askarov and 
+Sabelfeld introduce the concept of gradual release~\cite{gradRelease}
+for allowing release of information at certain release or declassification
+points. The policy does not allow the adversary knowledge to refine
+its knowledge of secrets at
+points other than the release points. Banerjee \emph{et al.}~\cite{cgrSP}
+present a way to specify declassification policies 
+that satisfy conditioned gradual release, which is an extension of the
+gradual release property. Similarly, another security property,
+\emph{policy controlled release}, that extends gradual release was
+presented by Rocha \emph{et al.}~\cite{rochaSP} for declassification in
+untrusted and legacy programs.
+
+\section{Dynamic Information Flow Control}
+\label{ch:bg-difc}
+Dynamic IFC usually works by tracking taints or labels on individual
+program values in the language runtime. A label represents a mandatory
+access policy on the value. 
+A value $v$ labeled $\lab$ is written $v^\lab$. 
+
+Flow-sensitive dynamic IFC analysis \emph{propagates} labels as data
+flows during program execution. \emph{Explicit} flows are generally
+handled by carrying over the label of the computed value to the
+variable being assigned. For example, in the statement \TT{x = y + z},
+the result of computing \TT{y + z} will have the label that is a join of
+the individual labels on \TT{y} and \TT{z}, which is the final label
+of \TT{x}, i.e., if either of \TT{y} or \TT{z} is labeled confidential
+or $H$, then the final label of \TT{x} is also labeled
+$H$\footnote{``\TT{z} is labeled $H$'' actually means ``the 
+  value in \TT{z} is labeled $H$''. This convention is used
+  consistently.}. 
+
+\emph{Implicit} flows in a flow-sensitive IFC analysis are tracked by
+maintaining an additional taint, usually called the program counter
+taint or program context taint or $\pc$, which is an upper bound on
+the label of all the control dependencies that lead to the current
+instruction being executed. For example, in the program of
+Listing~\ref{lst1}, the value in variable \TT{x} at the end of
+line~\ref{lineref} depends on the value in \TT{z}. If \TT{z} is labeled $H$,
+then at line~\ref{lineref}, $\pc = H$ because of the branch in 
+line~\ref{linerefcond1} that depends on \TT{z}. Thus, by tracking $\pc$,
+dynamic IFC can enforce that \TT{x} has label $H$ at the end of
+line~\ref{lineref}, thus taking into account the control dependency.
+
+However, simply tracking control flow dependencies via $\pc$ is not
+enough to guarantee absence of information flows when labels are
+flow-sensitive, i.e., when the same variable may hold values with
+different labels depending on what program paths are executed. The
+program in Listing~\ref{lst1} is a classic counterexample, taken
+from~\cite{plas09}. Assume that \TT{z} is labeled $H$ and \TT{x} and \TT{y} are
+labeled $L$ initially. The final value in \TT{y} is computed as a function
+of the value in \TT{z}. If \TT{z} contains $\texttt{true}^H$, then \TT{y} ends
+with $\texttt{true}^L$: The branch on line~\ref{linerefcond1} is not
+taken, so \TT{x} remains $\texttt{false}^L$ at
+line~\ref{linerefcond}. Hence, the branch on line~\ref{linerefcond} is
+taken, but $pc = L$ at line~\ref{lineref5} and \TT{y} ends with
+$\texttt{true}^L$. If \TT{z} contains $\texttt{false}^H$, then similar
+reasoning shows that \TT{y} ends with $\texttt{false}^L$. Consequently,
+in both cases \TT{y} ends with label $L$ and its value is exactly equal
+to the value in \TT{z}. Hence, an adversary can deduce the value of \TT{z}
+by observing \TT{y} at the end (which is allowed because \TT{y} ends with
+label $L$). So, this program leaks information about \TT{z} despite
+correct use of $pc$.
+
+\subsection{No-sensitive-upgrade Check}
+\label{sec:bg-nsu}
+Preventing leaks due to implicit flow in dynamic IFC requires coarse
+approximation because a dynamic monitor only sees program branches
+that are executed and does not know what assignments may happen in
+alternate branches in other executions. One such coarse approximation
+is the \emph{no-sensitive-upgrade} (NSU) check proposed by
+Zdancewic~\cite{zdancewic02PhD}. In the program in Listing~\ref{lst1},
+\TT{x}'s label is upgraded from $L$ to $H$ at line~\ref{lineref} in one of
+the two executions above, but not the other. Subsequently, information
+leaks in the other execution (where \TT{x}'s label remains $L$) via the
+branch on line~\ref{linerefcond}. The NSU check stops the leak by
+preventing the assignment on line~\ref{lineref}. More generally, it
+stops a program whenever a public variable's label is upgraded due to
+a high $\pc$. This check suffices to provide termination-insensitive
+non-interference as shown by Austin and Flanagan~\cite{plas09}. 
+
+\subsection{Permissive-upgrade and Faceted Execution}
+To tackle the issue of permissiveness with the no-sensitive-upgrade
+strategy, Austin and Flanagan proposed 
+the permissive-upgrade strategy~\cite{plas10} and faceted
+execution~\cite{austin12POPL}; faceted execution being the most
+permissive of the three. Faceted execution simulates multiple executions
+simultaneously within a single runtime. They introduce the concept of
+faceted values that are pairs of values for both low and high
+observers. With multiple levels, each value in the pair is represented
+as a pair. When branching on a faceted value, multiple executions are
+simulated for the different values in the facet. However, the runtime 
+overheads of faceted execution are quite prohibitive for multiple security 
+levels. This thesis, thus, considers only the permissive-upgrade
+strategy, which is more permissive than the no-sensitive-upgrade
+strategy and much less performance-intensive compared to faceted
+execution. Permissive-upgrade is described in detail in
+Section~\ref{sec:existing}. 
+
+\subsection{Other Approaches for Permissiveness}
+% \paragraph{Secure Multi-Execution}
+Secure multi-execution~\cite{SME} is another approach for enforcing
+non-interference at runtime. Instead of tracking information flow
+through the program, the approach executes multiple copies of the
+program with different values of sensitive data. Conceptually, one
+executes the same code once for each security level (like low and
+high) with a few constraints. The private data in the low execution
+are replaced by default values, i.e., the public copy of the
+program does not see the actual value of the private data but a
+pre-determined default value, and outputs on an $\ell$-labeled channel 
+are permitted only in the $\ell$-level execution of the program, i.e.,
+the high execution of the program outputs on the high channel, if any,
+and the low execution of the program outputs on the low channel,
+typically the network. 
+%
+The modification of the semantics forces that private data and the
+outputs resulting from it are visible to only high-level
+observers. The public-level observers or the adversary observe
+inaccurate results for the outputs that depend on the private value as
+the value is replaced by the default value in that execution. 
+This modification forces even unsafe programs to
+adhere to non-interference. Additionally, secure multi-execution
+guarantees precision, i.e., the semantics of a secure program is
+not altered. Thus, for a secure program the outputs are all
+accurate. Secure multi-execution normally guarantees
+termination-insensitive non-interference as the high execution may not
+terminate in some cases. Flowfox~\cite{flowfox} demonstrates secure 
+multi-execution in the context of web browsers.
+%
+However, executing a program multiple times can be prohibitive for a
+security lattice with multiple levels~\cite{austin12POPL}. The runtime
+overhead incurred can be reduced if the executions are run in parallel
+(which requires more hardware resources), though the program has 
+to be run for all levels irrespective of whether it uses private data
+or not. In addition to this, secure multi-execution makes
+declassification complicated as it requires synchronization between
+different executions~\cite{fineSME}. 
+
+Birgisson \emph{et al.}~\cite{esorics12} describe a testing-based
+approach that adds variable upgrade annotations to avoid halting on
+the NSU check in an implementation of dynamic IFC for
+JavaScript~\cite{csf12}. Hritcu \emph{et al.}  improve permissiveness
+by making IFC errors recoverable in the language
+Breeze~\cite{Hritcu:ifc}. This is accomplished by a combination of two
+methods: making all labels public (by upgrading them when necessary in
+a public $\pc$) and by delaying exceptions. A different way of handling the 
+problem of implicit flows through flow-sensitive labels is to assign a
+(fixed) label to each label; this approach has been examined in recent
+work by Buiras \emph{et al.}\ in the context of a language with a
+dedicated monad for tracking information flows~\cite{buiras14CSF}. The
+precise connection between that approach and permissive-upgrade
+remains unclear, although Buiras \emph{et al.}\ sketch a technique
+related to permissive-upgrade in their system, while also noting that
+generalizing permissive-upgrade to arbitrary lattices is
+non-obvious. This thesis confirms the latter and shows how it can be
+done.
+
+% \Blindtext

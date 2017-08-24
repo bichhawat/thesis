@@ -1,0 +1,264 @@
+\chapter{Dynamic IFC with Unstructured Control Flow and Exceptions}
+\label{ch:ucfe}
+\blfootnote{The content of this
+  chapter is based partly on the work published as part of the paper,
+  ``Information Flow Control in WebKit's JavaScript
+  Bytecode''~\cite{post14}} 
+This chapter presents a mechanism to prevent leaks due to implicit
+flows in the presence of unstructured control constructs like break,
+return-in-the-middle and exceptions.  
+
+Implicit flow corresponds to \emph{control dependence} in program
+analysis, where a predicate governs which program path is executed and
+leaks information through the control flow of the program. To avoid
+overtainting $\pc$ labels, an important goal in implicit flow 
+tracking is to determine when the influence of a control construct has
+ended. For block-structured control flow limited to \texttt{if} and
+\texttt{while} commands, this is straightforward: The effect of a
+control construct ends with its lexical scope, e.g., in 
+$$\texttt{if (h) \{l = 1;\} l = 2}$$
+\texttt{h} influences the control flow at
+\texttt{l = 1} but not at \texttt{l = 2}. This leads to a
+straightforward implementation of a $\pc$ upgrading and downgrading
+strategy: One maintains a \emph{stack} of $\pc$
+labels~\cite{zdancewic02PhD}; the effective $\pc$ is the top one. When
+entering a control flow construct like \texttt{if} or \texttt{while},
+a new $\pc$ label, equal to the join of labels of all values on which
+the construct's guard depends with the previous effective $\pc$, is
+pushed. When exiting the construct, the label is popped.
+
+Unfortunately, it is unclear how to extend this simple strategy to
+non-block-struct\-ured control flow constructs such as 
+\texttt{break}, \texttt{continue} and \texttt{return}-in-the-middle
+for functions, all of which occur in high-level languages. For
+example, consider the program 
+$$\texttt{l = 1; while(1) \{... if(h) \{break;\}; l = 0; break;\}}$$ 
+with \texttt{h} labeled $H$. This program leaks the
+value of \texttt{h} into \texttt{l}, but no assignment to \texttt{l}
+appears in a block-scope guarded by \texttt{h}. Indeed, the $\pc$
+upgrading and downgrading strategy just described is ineffective for
+this program. 
+
+Implicit flow in the form of error handling is also a  
+source of information leak as it helps the adversary to learn about
+the system~\cite{leak}. For instance, an exception handler might print 
+the stack trace of the error, from which an attacker can determine what
+sort of attacks the system is vulnerable to. 
+
+Tracking information flow in the presence of unstructured control
+flows is non-trivial as the control breaks out of block
+structures. Exceptions are much more difficult to handle as they 
+allow for non-local control transfer. Much work on error handling has
+focussed in the context of static analysis~\cite{myersJFlow,aslan_plas09}
+and the work on IFC for dynamic languages has mostly ignored
+exceptions and other unstructured control flow 
+constructs~\cite{plas09,plas10,stagedIFC,guarnieri11ISSTA,acsac09}.
+Just et al.~\cite{just11PLASTIC} present dynamic IFC for JavaScript
+bytecode with static analysis to determine implicit flows precisely
+but ignore implicit flows due to exceptions. Hedin and Sabelfeld
+propose a dynamic IFC approach for a language 
+modeling the core features of JavaScript~\cite{csf12} but ignore
+unstructured control flow constructs like \emph{break},
+\emph{continue} and \emph{return}-in-the-middle for functions. For
+handling exceptions, they introduce annotations and an additional
+class of labels. An extension introduces similar annotations to deal
+with unstructured control flows~\cite{sac14}. These labels are more
+restrictive than needed, e.g., the code indicated by dots in the
+example above is executed irrespective of the condition \texttt{h} in
+the first iteration, and thus there is no need to raise the $\pc$
+before checking that condition. 
+
+To solve this issue, this chapter presents a precise dynamic
+analysis approach using \emph{post-dominator}
+analysis~\cite{denning82,just11PLASTIC}.  
+
+\section{Control Flow Graphs and Post-dominator Analysis}
+The approach presented in this chapter performs on-the-fly
+post-dominator analysis at runtime to handle implicit
+flows. A control flow graph (CFG), which is a directed graph, is
+constructed for every new function before it is executed with every
+instruction being represented as a node and whose edges represent the
+possible control fows. For every branch node, its immediate
+post-dominator (IPD) is
+computed~\cite{denning82,just11PLASTIC,post14}. A stack of $\pc$  
+labels is maintained. When executing a branch node, a new $pc$ label
+is pushed on the stack \emph{along with} the node's IPD. When the IPD
+is actually reached, the $pc$ label along with the IPD is popped from
+the stack. In~\cite{Xin,Masri}, the authors prove that the IPD marks the
+end of the scope of an operation and hence the security context of the
+operation, so our strategy is sound. The IPD-based solution works for all
+forms of unstructured control flow like \emph{break}, \emph{continue},
+\emph{return}-in-the-middle, and exceptions. Multiple \emph{return}
+statements in a function are represented by a single \emph{return} 
+node. Theorem~\ref{thm1:exc} shows that the IPD of a node is the most
+precise node where the context of an operation can be removed. For
+proving Theorem~\ref{thm1:exc}, a few definitions are defined below.
+
+\begin{mydef}\label{defcfg}
+\emph{(Control flow graph)}\\
+A \emph{control flow graph} is a directed graph $\cfg =
+(\mathcal{N}, \mathcal{E}, n_s, n_e, \mathcal{L})$. $\mathcal{N}$ is the set of
+nodes. $\mathcal{E}$ is the set of control flow edges $(n_1, n_2)
+\in \mathcal{E}$, where $n_i \in \mathcal{N}$. $(n_1, n_2)$ represents $n_2$ may
+immediately execute after $n_1$. The nodes $n_s, n_e \in \mathcal{N}$
+are special nodes representing the start and end point of $\cfg$.  The
+function $\mathcal{L}$ maps the edges in $\mathcal{E}$ to labels.
+\end{mydef}
+
+\begin{mydef}\label{defpath}
+\emph{(Path)}\\
+A \emph{path} in a CFG $\cfg$ is a sequence of nodes $(n_1, n_2, ...,
+n_m)$ such that $(n_i, n_{i+1}) \in \mathcal{E}$, written as
+$\pathG{n_1}{n_m}$. 
+A node $n$ that lies on the path $\pathG{n_1}{n_m}$ is written as
+$n \in \pathG{n_1}{n_m}$.
+The notation $n_1 < n_2$ with respect to two nodes $n_1$ and $n_2$ in
+a CFG $\cfg$ indicates that $n_2$ lies on a path $\pathG{n_1}{n_e}$ . 
+\end{mydef}
+
+\begin{mydef}\label{defbp}
+\emph{(Branch-point)}\\
+A \emph{branch-point} $b$ is a node in a CFG $\cfg$ that has more than
+one successor, i.e., \\ outdegree$(b) > 1$.
+\end{mydef}
+
+\begin{mydef}\label{defpd}
+\emph{(Post-dominator)}\\
+In a CFG $\cfg$, a node $n_d$ is said to be the \emph{post-dominator} of a node
+$n$ if all paths from $n$ to the end-node pass through $n_d$, i.e.,
+$\forall p. \pathG{n}{n_e} \implies n_d \in p$. The notation
+\emph{$\dom{n_d}{n}$} indicates that $n_d$ is a post-dominator of $n$.
+\end{mydef}
+
+\begin{mydef}\label{defipd}
+\emph{(Immediate post-dominator)}\\
+A node $i$ is the immediate post-dominator of the node $n$, denoted as
+$\IPD{n}$, if{f}:
+\begin{enumerate}
+\item \emph{$\dom{i}{n}$} and
+\item \emph{$\not\exists n_o \in \mathcal{N}.((\dom{n_o}{n}) \wedge (n_o <
+  i))$} or \\
+  \emph{$\forall n_o \in \mathcal{N}.((n_o \neq n) \implies (\dom{n_o}{n}
+  \implies \dom{n_o}{i}))$}.
+\end{enumerate}
+\end{mydef}
+
+\begin{myThm}[Precision]\label{thm1:exc}
+Choosing any node other than the IPD to lower the pc-label will either
+give unsound results or be less precise.
+\end{myThm}
+\begin{proof}
+The proof of the theorem is described in Appendix~\ref{app:exc-pre}.
+\end{proof}
+
+\section{Exceptions and Synthetic Exit Nodes}
+\label{sec:excsen}
+Maintaining a precise CFG for dynamic analysis in the presence of
+exceptions is expensive. The CFG of a function is constructed
+statically on-the-fly at runtime and an  exception-throwing node in a
+function that does not catch that exception should have an outgoing
+control flow edge to the next related exception handler in the runtime
+call-stack. This means that the CFG is, in general, inter-procedural,
+and edges going out of a function depend on its calling context, so
+IPDs of nodes in the function must be computed \emph{every time the
+  function is called} (the IPDs change based on the earlier functions
+in the call-stack that called the particular function where the
+exception occurs). Moreover, in the case of recursive functions, the
+nodes must be replicated for every call. This is rather
+expensive. Ideally, the function's CFG should be built only once when
+\emph{the function is compiled} and work intra-procedurally. 
+
+In the design presented in this chapter, every function that may throw
+an unhandled exception and has an exception handler present earlier in
+the call-stack (which is known at runtime) has a special
+\emph{synthetic exit node} ($\SEN$), which is placed after the regular
+return node of the function in the CFG. 
+Every exception-throwing node, whose exception will not be caught
+within the function, has an outgoing edge to the $\SEN$. In essence, the
+$\SEN$ is treated as the IPD for nodes whose actual IPDs lie outside of
+the function. By doing this, all cross-function edges are eliminated
+and the CFGs become intra-procedural. This allows the computation of
+the CFGs just once as compared to the inter-procedural case. 
+% As there are instructions other than \emph{throw} can also throw exceptions, we
+% treat them as exception-throwing instructions and calculate the IPDs
+% accordingly, i.e., 
+For every exc\-ep\-tion-throw\-ing instruction that has an associated
+handler, its context is maintained during dynamic information flow
+analysis until the handler is reached. 
+% This is a bit restrictive; hence, this option can be turned
+% off in the instrumented interpreter, if required. 
+Thus, function calls and all potential exception-throwing
+instructions are represented as nodes with multiple edges (bra\-nches) 
+and push a node on the $\pc$-stack. However, a new node is \emph{not} 
+pushed on the $\pc$-stack if the IPD of the current node is the same
+as the IPD on the top of the $\pc$-stack or if the IPD of the current
+node is the $\SEN$, as in this case the \emph{real} IPD, which is outside
+of this method, is already on top of the $\pc$-stack. In fact, the
+actual IPD of a node having $\SEN$ as its IPD is the node that is
+currently on the top of the stack. This result is shown in
+Theorem~\ref{thm2:exc}. The proof is shown in Appendix~\ref{app:exc-pre}.
+
+\begin{myThm}\label{thm2:exc}
+The actual IPD of a node having $\SEN$ as its IPD is the node on
+the top of the pc-stack, which lies in a previously called function.
+\end{myThm}
+
+In summary, these semantics emulate the effect of having cross-function edges. 
+For illustration, consider the following two functions \texttt{f} and
+\texttt{g}. The $\diamond$ at the end of \texttt{g} denotes its
+$\SEN$. Note that there is an edge from \texttt{throw 9} to $\diamond$
+because \texttt{throw 9} is not handled within~\texttt{g}. $\Box$
+denotes the IPD of the function call~\texttt{g()} and handler~\texttt{catch(e)}.
+
+%\noindent 
+%\begin{tabular}{@{}p{0.5\textwidth}p{0.4\textwidth}@{}}
+%\begin{lstlisting}[mathescape=true]
+%function f() = {
+%  l = 0;
+%  try { g(); } catch(e) { l = 1; }
+%  $\Box$ return l;
+%}
+%\end{lstlisting} & 
+%\begin{lstlisting}[mathescape=true]
+%function g() = {
+%  if (h) {throw 9;}
+%  return 7;
+%} $\diamond$
+%\end{lstlisting}
+%\end{tabular}
+
+\noindent 
+\begin{tabular}{@{}p{0.55\textwidth}p{0.35\textwidth}@{}}
+\begin{tabular}[t]{@{}l@{}}
+\texttt{function f() = \{} \\
+~~\texttt{l = 0;} \\
+~~\texttt{try \{ g(); \} catch(e) \{ l = 1; \}} \\
+~~$\Box$ \texttt{return l;}\\
+\texttt{\}}
+\end{tabular} & 
+\begin{tabular}[t]{@{}l@{}}
+\texttt{function g() = \{}\\
+~~\texttt{if (h) \{throw 9;\}}\\
+~~\texttt{return 7;}\\
+\texttt{\}} $\diamond$
+\end{tabular}
+\end{tabular} 
+
+It should be clear that in the absence of instrumentation, when
+\texttt{f} is invoked with $pc = L$, the two functions together leak
+the value of \texttt{h}, which is assumed to have a label $H$, into the
+return value of \texttt{f}. When calling \texttt{g}, the current $\pc$
+and IPD $(L, \Box)$ are pushed on the $\pc$-stack.  When executing the
+condition \texttt{if (h)} a new node is not pushed again, but the top
+element is merely updated to $(H, \Box)$ as its IPD is the $\SEN$
+$\diamond$. If \texttt{h} is \texttt{false}, control reaches the
+\texttt{return} statement but with $pc = H$.
+% because the IPD of \texttt{if (h)} is $\diamond$ and the real IPD is $\Box$. 
+At $\Box$, $\pc$ is lowered to $L$, so
+\texttt{f} ends with the return value \texttt{0} and public label
+$L$. If \texttt{h} is \texttt{true}, control reaches the handler, which
+is in \texttt{f} and invokes it with the same $\pc$ as the point of
+exception, i.e., $H$. Consequently, permissive-upgrade prevents the
+implicit information leak in this case. 
+
+\input{chapters/ucf/formal}

@@ -1,0 +1,142 @@
+\chapter{Existing Fine-grained IFC-enabled Web Browser}
+\label{ch:impl}
+
+Previous work by Just \emph{et al.}~\cite{just11PLASTIC}, Bichhawat 
+\emph{et al.}~\cite{post14}, and Rajani \emph{et al.}~\cite{csf15} 
+instrumented WebKit, the browser engine used in Safari, for enforcing 
+dynamic IFC in the three main components of the engine --- JavaScript 
+bytecode interpreter, the document object model (DOM) engine, and the
+event handling mechanism. 
+
+Labels in their instrumentation are word size bit-sets (currently 64 
+bits); each bit in the bit-set represents label from a distinct domain
+(like google.com). Join on labels is simply bitwise or. Their
+instrumentation added labels to all data structures, including
+registers, objects, object properties and scope chain pointers. They 
+attach security labels to every node in the DOM graph and all its 
+properties, including pointer to other nodes. 
+They instrument the code to propagate explicit and implicit labels 
+and implement the permissive-upgrade check. 
+
+They instrumented WebKit’s JavaScript bytecode interpreter 
+(JavaScriptCore) for enforcing dynamic IFC for JavaScript. 
+In WebKit, bytecode is generated
+by a source-code compiler and organized into code blocks. Each code
+block is a sequence of bytecodes with line numbers and corresponds to
+the instructions for a function or an \texttt{eval} statement. A code
+block is generated when a function is created or an \texttt{eval} is
+executed. Their instrumentation performs control flow analysis on a
+code block when it is created and generates a CFG for it before it
+starts executing. The IPDs of its nodes are calculated by static
+analysis of its bytecode; they are computed using an algorithm by
+Lengauer and Tarjan with CFG as an input to the
+algorithm~\cite{Lengauer}. The formalization of the bytecodes, the
+semantics of its bytecode interpreter with the instrumentation of
+dynamic IFC, and the proof of correctness of instrumentation of the
+bytecodes with the IFC semantics is shown in~\cite{post14Extended}.
+Additionally, all native JavaScript methods in the Array, RegExp, 
+and String objects are instrumented and appropriate  
+IFC checks in the native C code implementing all DOM APIs up
+to Level 3 are added~\cite{csf15}. 
+They also modify the event handling loop, labeling every event and
+event handler based on their formalization of the event handling loop
+with the IFC checks~\cite{csf15}.  
+
+Their work enforces IFC soundly in all the major components of 
+a web browser while tracking labels at a fine-granularity. This thesis 
+builds on top of their instrumentation for enforcing the ideas presented 
+earlier. For exceptions, a synthetic exit node is added to the CFG
+along with the edges as described earlier in
+Section~\ref{sec:excsen}. Additional changes are requried to the
+compiler to make it compliant with the instrumentation. The
+modification is to emit a slightly different, but functionally
+equivalent bytecode sequence for \texttt{finally} blocks; 
+this is needed for accurate computation of IPDs. 
+
+
+
+% The ideas presented in the earlier chapters are incorporated into
+% WebKit, the browser engine used in Safari. The instrumentation is
+% built on top of the work by Just et al.~\cite{just11PLASTIC} and
+% instruments the three main components of the engine --- JavaScript 
+% bytecode interpreter, the document object model (DOM) engine, and the
+% event handling mechanism. The major benefit of working in the bytecode
+% interpreter as opposed to source is that the benefits of these years
+% of engineering efforts in optimizing the production interpreter and
+% the source to bytecode compiler can be retained.
+
+% WebKit’s JavaScript bytecode interpreter (JavaScriptCore) is
+% instrumented to implement the IFC semantics presented earlier for
+% enforcing dynamic IFC for JavaScript. In WebKit, bytecode is generated
+% by a source-code compiler. The goal here is to not modify the
+% compiler, but slight changes are requried to it to make it compliant
+% with the instrumentation. The modification is to emit a slightly
+% different, but functionally equivalent bytecode sequence for
+% \texttt{finally} blocks; this is needed for accurate 
+% computation of IPDs. 
+
+% In WebKit, bytecode is organized into code blocks. Each code block is
+% a sequence of bytecodes with line numbers and corresponds to the
+% instructions for a function or an \texttt{eval} statement. A code block is
+% generated when a function is created or an \texttt{eval} is executed.  
+% The instrumentation performs control flow analysis on a code block
+% when it is created and generates a CFG for it before it starts
+% executing. For exceptions, the synthetic exit node is added to the CFG
+% along with the edges as described earlier. The IPDs of its nodes are
+% calculated by static analysis of its bytecode; they are computed using
+% an algorithm by Lengauer and Tarjan with CFG as an input to the
+% algorithm~\cite{Lengauer}. 
+
+% The interpreter is a rather standard stack machine, with several
+% additional data structures for JavaScript-specific features like scope
+% chains, variable environments, prototype chains and function 
+% objects. The bytecode interpreter executes in a shared space with
+% other browser components also referred to as the heap. Local variables
+% are held in registers on the call stack. The instrumentation adds a
+% label to all data structures, including registers, object properties
+% and scope chain pointers, adds code to propagate explicit and implicit
+% labels and implements the permissive upgrade check. This also handles
+% the JavaScript-specific IFC concerns proposed
+% in~\cite{csf12,post14}. Additionally, all native JavaScript methods in
+% the Array, RegExp, and String objects are instrumented. 
+
+% The label is a word size bit-set (currently 64 
+% bits); each bit in the bit-set represents label from a distinct domain
+% (like google.com). Join on labels is simply bitwise or. The
+% formalization of the bytecodes, the semantics of its bytecode
+% interpreter with the instrumentation of dynamic IFC, and the proof of
+% correctness of instrumentation of the bytecodes with the IFC 
+% semantics is shown in~\cite{post14Extended}. The instrumentation
+% optimizes the common case of computations that mostly use local
+% variables (registers in the bytecode) by implementing a variant of
+% \emph{sparse labeling}~\cite{plas09}. Until a function reads a value
+% from the heap with a label different from the current $\pc$, labels  
+% are propagated only on heap-writes, but not on in-register
+% computations. Until that point, all registers are assumed to be
+% implicitly labeled with the $\pc$. 
+
+% Security labels are also attached to every node in the DOM graph and
+% all its properties, including pointer to other nodes. Appropriate 
+% IFC checks are added in the native C code implementing all DOM APIs up
+% to Level 3. The instrumentation includes changes to some of the
+% additional data structures in the DOM to prevent leaks shown
+% in~\cite{csf15}. Additional instrumentation carries the labels from the
+% native C code to the JavaScript interpreter. 
+
+% Input events on webpages like mouse clicks, key presses and network
+% receives trigger JavaScript functions called handlers. The event
+% handling logic of a browser is complex. Each input event can trigger
+% handlers registered not just on the node on which the event occurs
+% (e.g., the button which is clicked), but also on its ancestors in the
+% HTML parse tree. This is called \emph{event dispatch.} 
+% This can leak information implicitly through the
+% presence or absence of links between the node and its ancestors or
+% through different phases of event handling. To handle such leaks,
+% changes are made to the event handling loop, labeling every event and
+% event handler. The instrumentation is based on the formalization of
+% the event handling loop with the IFC checks as presented in~\cite{csf15}. 
+
+% The instrumentation adds approximately 7000 lines of code above the
+% existing code.  
+
+

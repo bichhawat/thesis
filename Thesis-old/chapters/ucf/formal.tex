@@ -1,0 +1,300 @@
+\section{Formal Model} 
+\label{sec:formalexc}
+
+This section formally models the semantics of the language with
+dynamic IFC instrumentation including unstructured control flow and
+exceptions. The language from Figure~\ref{basic:syntax} is extended to
+include unstructured control flow constructs like \texttt{break},
+\TT{continue}, \TT{return} and exceptions. Programs are considered as a 
+collection of functions (without parameter-passing). The control flow
+analysis is performed on a function before it is executed and is
+abstractly represented as a CFG in the formal model.
+% \footnote{The
+% terms \emph{function} and \emph{CFG} are used interchangeably in the
+% rest of this section.}
+Thus, the program itself is modeled as a huge
+control flow graph ($\cfg$). IPDs are computed using the algorithm by
+Lengauer and Tarjan~\cite{Lengauer} when the CFG is created. The CFG
+is statically constructed (only once) as new functions are called or
+discovered at runtime. For a non-branching node $\inst \in \cfg$,
+$\Succ(\inst)$ denotes $\inst$’s unique successor. For a conditional 
+branching node $\inst$,  $\Left(\inst)$ and $\Right(\inst)$ denote
+successors when the condition is \TT{true} and \TT{false},
+respectively.  
+
+The syntax of the language modeling the nodes in a CFG is shown in
+Figure~\ref{fig:exc:syntax}. The command 
+\texttt{if}~$\expr$~\texttt{then}~$\comm_1$~\texttt{else}~$\comm_2 $
+is represented as the node \texttt{branch}~$\expr$ with $\Left(\cfg,
+\inst) = \comm_1$ and $\Right(\cfg, \inst) = \comm_2$. Similarly,
+\texttt{while}~$\expr$~\texttt{do}~$\comm$ is represented as
+\texttt{branch}~$\expr$ with $\Left(\inst) = \comm$ and
+$\Right(\inst)$ being the command following \texttt{while} in the
+program. A \texttt{jmp} node in the CFG corresponds to \texttt{break}
+and \texttt{continue} with $\Succ(\inst)$ pointing to the next
+node in the CFG according to the operation. It is also assumed that a
+function always ends with a \texttt{return} statement and thus a CFG
+normally ends with the \texttt{return} node. Multiple return
+statements in a function are represented using a single
+\texttt{return} node. $\Succ(\inst)$ points the
+node to return to in the previous CFG, while the return value is saved
+in a global variable that can be accessed by the program later on. 
+When a new CFG is added for a function, the \texttt{return} node of
+that CFG points to the successor node of the function call in the
+previous CFG. However, the IPDs are computed when the CFGs are
+intraprocedural. Every node in the program's CFG is uniquely
+identifiable. 
+
+In general, every function has an associated exception table that maps
+each potentially exception-throwing instruction in the function to the 
+appropriate exception handler within the function. This is represented
+by adding a $\Right$ edge in the CFG from the instruction's node to
+the handler's node; \texttt{throw} has only one outgoing edge. 
+It is conservatively assumed that any unknown code may throw an
+exception, so function call is exception-throwing for this purpose. If a
+function contains unhandled exceptions, the corresponding edges in the
+CFG point to the $\SEN$ of the CFG. The $\SEN$ is only created if one
+of the previous functions in the call-stack has an appropriate exception
+handler for the unhandled exceptions in the current function. When an
+$\SEN$ node is created, an edge is added from the $\SEN$ of the CFG to
+a node in the previous CFG, which is either the \texttt{catch} node or
+the $\SEN$ of that CFG. $\Succ$ denotes one of these edges. If there
+are no appropriate handlers in the call-stack, the exception-throwing
+nodes have an edge to the \emph{end} node of the program CFG. For 
+simplicity of exposition, it is assumed here that all exceptions
+belong to a single class --- for different types of exceptions, the
+exception class would also be matched for determining the appropriate 
+exception handler.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\begin{align*}
+\expr	:=~& \TT{n}~\arrowvert~\TT{x} ~\arrowvert~\expr_1 \odot \expr_2 \\
+% \comm	:=~& \sk~\arrowvert~\TT{x} := \expr~\arrowvert 
+%  ~\comm_1;\comm_2~\arrowvert~
+%              \texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2~\arrowvert~
+%              \texttt{while}~\expr~\texttt{do}~\comm~\arrowvert~\texttt{break}~\arrowvert~\\ 
+%  & \texttt{continue}~\arrowvert~ \texttt{return}~\expr~\arrowvert~
+%    \texttt{try}~\comm~\texttt{catch}~(\TT{x})~\comm~\arrowvert~
+%    \texttt{throw}~\expr~\arrowvert~ f(\expr_1, \dots, \expr_n)~\\
+\inst :=~& \TT{end}~\arrowvert~\TT{x} := \expr~\arrowvert~
+           \texttt{branch}~\expr~\arrowvert~ \texttt{jmp}~\arrowvert~ \texttt{return}~\arrowvert~
+           \texttt{throw}~\expr~\arrowvert~\texttt{catch}~\TT{x}~\arrowvert~\SEN~
+\end{align*}
+\caption{Language Syntax}\label{fig:exc:syntax}
+\end{figure}  
+
+Program configurations for commands (nodes) are
+represented as $\langle \sigma, \inst, \rho \rangle$, where
+$\sigma$ represents the memory store as before, $\inst$ represents the
+currently executing node, 
+% $\cstack$ represents the call-stack, which is a stack of
+% functions called during the execution of the program,
+and $\rho$ is the $\pc$-stack. The configuration for expressions is
+the same as before: $\langle \sigma, \expr \rangle$. 
+% Expressions
+% include $t$, which stands for temporary scoped variables. For
+% instance in \texttt{catch} ($t$), the scope of $t$ is the
+% \texttt{catch} block and $t$ is assigned a value before being
+% used. Temporary variables also evaluate to the value contained in
+% them, but are not accessed from the memory store $\sigma$ and thus,
+% inaccessible to the adversary.
+
+% The call-stack $\cstack$ contains one call-frame for each incomplete 
+% function call. A call-frame contains the return address, which is a
+% node in the CFG of the previous frame. $|\cstack|$ denotes the size of
+% the call-stack and $!\cstack$ its top frame. 
+
+Each entry of the $\pc$-stack $\rho$ is a pair $(\ell, \inst)$,
+where $\ell$ is a security label, and $\inst$ is a node in the
+CFG. When a new control context is entered, the new $\pc$-label, which
+is a join of the current context label and the existing $\pc$-label
+(the label on the top of the stack), is pushed together with the IPD
+$\inst$ of the entry point of the control  context. $(\inst)$ uniquely
+identifies where the control of the context ends. In the semantics,
+the meta-function $\isIPD$ pops the stack. It takes the current 
+instruction and the current $\pc$-stack, and returns a new
+$\pc$-stack. $!\rho$ returns the top frame of the
+$\pc$-stack. $\Gamma(!\rho)$ returns the current context 
+label, also represented as $\pc$ in the semantics.
+\begin{equation*}
+ \isIPD(\inst, \rho) := 
+ \begin{cases}
+   \rho.\mathit{pop()} & \mbox{if}~ !\rho = (\_, \inst)
+\\ \rho & \mbox{otherwise}
+ \end{cases}
+\end{equation*} 
+As explained in Section~\ref{sec:excsen}, a new node $(\ell,
+\inst)$ is pushed onto $\rho$ only when $\inst$ (the IPD)
+differs from the corresponding entry on the top of the stack or it is
+not $\SEN$ (Theorem~\ref{thm2:exc}). Otherwise, $\ell$ is joined 
+with the label on the top of the stack. This is formalized in the
+function $\rho.\push(\ell, \inst)$. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\begin{framed}
+\begin{mathparpagebreakable}
+\inferrule*[left=\mbox{\labelthis{es:cmd:a}{assn}}]
+{\inst = (\texttt{x}:=\expr) \\ \langle \sigma, \expr \rangle \bsexp
+  \TT{n}^m \\ l = \Gamma(\sigma(\TT{x})) \\ l = \lab_\TT{x} \vee l =
+  \lab_\TT{x}\pl \\ \pc = \Gamma(!\rho) \\
+  k =  \left\{\begin{array}{ll}
+        \pc \sqcup m, & \pc  \sqsubseteq \lab_\TT{x} \arcr
+        ((\pc \sqcup m)\sqcap \lab_\TT{x} )\pl, & \pc  \not\sqsubseteq \lab_\TT{x} \arcr
+        \end{array}\right\} \\ 
+ \sigma' = \sigma[\TT{x} \mapsto \TT{n}^k] \\
+  \inst' = \Succ(\inst) \\ \rho' =
+  \isIPD(\inst', \rho)}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+  \sigma', \inst',  \rho' \rangle}
+\and
+%%%    
+\inferrule*[left=\mbox{\labelthis{es:cmd:b}{branch}}]
+{\inst = \texttt{branch}~\expr \\ 
+  \langle \sigma, \expr \rangle \bsexp \TT{b}^{\lab} \\ 
+  \inst' = \left\{\begin{array}{ll}
+        \Left(\inst), & \textit{if }~  \TT{b} = \TT{true} \arcr
+        \Right(\inst), & \textit{otherwise } \arcr
+        \end{array}\right\} \\ 
+  \rho'' = \rho.\push(\lab, \IPD{\inst}) \\
+  \rho' = \isIPD(\inst', \rho'')
+}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+  \sigma, \inst',  \rho' \rangle}
+\and
+\inferrule*[left=\mbox{\labelthis{es:cmd:j}{jmp, ret, sen}}]
+{\inst = \texttt{jmp} ~\textit{or}~ \texttt{return} ~\textit{or}~ \SEN \\ 
+  \inst' = \Succ(\inst) \\ 
+  \rho' = \isIPD(\inst', \rho)
+}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+  \sigma, \inst',  \rho' \rangle}
+%%%
+% \and
+% \inferrule*[left=\mbox{\labelthis{es:cmd:r}{return}}]
+% {\inst = \texttt{return} \\ 
+%     % \langle \sigma, \expr \rangle \bsexp \TT{n}^{\lab} \\ 
+%     % \mathit{retValue} = \TT{n}^{\lab} \\
+%   \inst' = \Succ(\inst) \\ 
+%   % \cstack' = \cstack.\mathit{pop}() \\
+%   \rho' = \isIPD(\inst', \rho)
+% }
+% {\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+%   \sigma, \inst',  \rho' \rangle}
+%%%
+\and
+\inferrule*[left=\mbox{\labelthis{es:cmd:t}{throw}}]
+{\inst = \texttt{throw}~\expr \\ 
+    \langle \sigma, \expr \rangle \bsexp \TT{n}^{k} \\ 
+    \pc = \Gamma(!\rho) \\
+    \eV = \TT{n}^{(k\,\sqcup\,\pc)} \\
+  \inst' = \Succ(\inst) \\ 
+  \rho' = \isIPD(\inst', \rho)
+}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+  \sigma, \inst',  \rho' \rangle}
+%%%
+\and
+\inferrule*[left=\mbox{\labelthis{es:cmd:c}{catch}}]
+{\inst = \texttt{catch}~\TT{x} \\ 
+  \eV = \TT{n}^m \\ l = \Gamma(\sigma(\TT{x})) \\ l = \lab_\TT{x} \vee l =
+  \lab_\TT{x}\pl \\ \pc = \Gamma(!\rho) \\
+  k =  \left\{\begin{array}{ll}
+        \pc \sqcup m, & \pc  \sqsubseteq \lab_\TT{x} \arcr
+        ((\pc \sqcup m)\sqcap \lab_\TT{x} )\pl, & \pc  \not\sqsubseteq \lab_\TT{x} \arcr
+        \end{array}\right\} \\ 
+ \sigma' = \sigma[\TT{x} \mapsto \TT{n}^k] \\
+  \inst' = \Succ(\inst) \\ 
+  \rho' = \isIPD(\inst', \rho)
+}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+  \sigma', \inst',  \rho' \rangle}
+%%%
+% \and
+% \inferrule*[left=\mbox{\labelthis{es:cmd:f}{func}}]
+% {\inst = f() \\ 
+%     % \langle \sigma, \expr_i \rangle \bsexp \TT{n}_i^{\lab_i} \\ 
+%     % \lab = \bigsqcup_{i = 1 .. n} {\lab_i} \\
+%   \inst' = \cfg(f).n_s \\
+%   \rho'' = \rho.\push(\lab, \IPD{\inst}) \\
+%   \cstack' = \cstack.\push(\cfg(f), \Left(\inst)) \\ 
+%   \rho' = \isIPD(\inst', \rho'', \cstack')
+% }
+% {\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+%   \sigma, \inst',  \rho' \rangle}
+%%%    
+% \and
+% \inferrule*[left=\mbox{\labelthis{es:cmd:s}{sen}}]
+% {\inst = \SEN \\ 
+%   \inst' = \Succ(\inst) \\
+%   \rho' = \isIPD(\inst', \rho)
+% }
+% {\langle \sigma, \inst,  \rho \rangle \rightarrow \langle
+%   \sigma, \inst',  \rho' \rangle}
+\and
+%%%    
+\inferrule*[left=\mbox{\labelthis{es:cmd:e}{end}}]
+{\inst = \texttt{end}}
+{\langle \sigma, \inst,  \rho \rangle \rightarrow \_}
+%%%
+\end{mathparpagebreakable}
+\end{framed}
+\caption{Semantics}\label{fig:sem-exc}
+\end{figure*}
+
+% \subsection{Semantics and IFC with CFGs}
+% \label{sec:sem-exc}
+
+The derivation rules in Figure~\ref{fig:sem-exc} define small-step
+semantics that define the judgment: $\langle \sigma, \inst, 
+\rho\rangle \rightarrow \langle\sigma', \inst',  \rho'\rangle$  
+(as big-step semantics cannot model unstructured control flow). The
+rules for expressions are the same as in
+Figure~\ref{fig:basic-semantics}. The rules are informally explained
+above. The soundness of the analysis including unstructured control
+flow and exceptions is proven below.
+
+To state the theorem formally, the equivalence of different data
+structures with respect to the adversary needs to be defined. Value
+and memory equivalence is defined as before in
+Definitions~\ref{def:gpua:veq} and~\ref{def:gpua:seq}. To prove
+termination-insensitive non-interference, some additional definitions
+and auxiliary lemmas are defined below. The detailed proofs can be
+found in Appendix~\ref{app:exc}.
+
+\begin{mydef}[$pc$-stack equivalence]
+\label{def:exc:pc}
+For two pc-stacks $\rho_1, \rho_2$, $\rho_1 \sim_\lab \rho_2$ iff
+the corresponding nodes of $\rho_1$ and $\rho_2$ 
+having label less than or equal to $\lab$ are equal. 
+\end{mydef}
+
+\begin{mydef}[State equivalence]
+\label{def:exc:ceq}
+Two states $s_1 = \langle \sigma_1, \iota_1, \rho_1\rangle$ and $s_2 = \langle
+\sigma_2, \iota_2, \rho_2\rangle$ are equivalent, written as
+$s_1 \sim_\lab s_2$, iff $\sigma_1 \eq \sigma_2$, $\iota_1 = \iota_2$,
+and $\rho_1  \sim_\lab \rho_2$.
+\end{mydef}
+
+\begin{myLemma}[Confinement Lemma]
+\label{lem:exc:conf}
+If $~\langle \sigma, \iota, \rho \rangle~\rightarrow~\langle \sigma',
+\iota', \rho' \rangle$ and $\Gamma(!\rho) \not\sqsubseteq \lab$, then
+$\sigma \sim_\lab \sigma'$, and $\rho \sim_\lab \rho'$.
+\end{myLemma}
+
+\begin{myThm}
+\label{thm:exc:ni}
+Suppose:
+\begin{enumerate}
+\item $\langle \sigma_1, \iota_1, \rho_1 \rangle \sim_\lab
+\langle \sigma_2, \iota_2, \rho_2\rangle$
+\item $\langle \sigma_1, \iota_1, \rho_1 \rangle
+  \rightarrow^{*} \langle \sigma_1', \texttt{end}, [] \rangle$
+\item $\langle \sigma_2, \iota_2, \rho_2 \rangle \rightarrow^{*}
+  \langle \sigma_2', \texttt{end}, []\rangle$
+\end{enumerate}
+Then, $\sigma_1' \sim_\lab \sigma_2'$.
+\end{myThm}

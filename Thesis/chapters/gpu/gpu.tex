@@ -1,0 +1,33 @@
+\chapter{Generalized Permissive-Upgrade}
+\blfootnote{The content of this
+  chapter is based on the work published as part of the paper,
+  ``Generalizing Permissive-Upgrade in Dynamic Information Flow
+  Analysis''~\cite{plas14}} 
+ 
+Although the permissive-upgrade strategy as described above is useful,
+its development in literature is incomplete so far: Austin and
+Flanagan's original paper~\cite{plas10}, and the work building on it
+(Chapter~\ref{ch:ipu}), develops permissive-upgrade for
+\emph{only} a two-point security lattice, containing levels $L$ and
+$H$ with $L \sqsubset H$, and the new label 
+$P$. A generalization to a pointwise product of such two-point
+lattices (and, hence, a powerset lattice) was suggested by Austin and
+Flanagan in the original paper, but not fully developed. As explained
+later in Section~\ref{sec:gen:ipus}, this generalization works for the
+improved permissive-upgrade strategy and can be proven sound. 
+
+However, that still leaves open the question of generalizing
+permissive-upgrade to arbitrary lattices. It is not even clear
+hitherto that this generalization exists. This chapter shows by
+construction that a generalization of permissive-upgrade to arbitrary
+lattices does indeed exist and that it is, in fact,
+non-obvious. Specifically, the rule for adding partially-leaked labels
+and the definition of store (memory) equivalence needed to prove
+non-interference are reasonably involved. 
+
+
+% \input{chapters/gpu/background}
+\input{chapters/gpu/impgen}
+\input{chapters/gpu/approach}
+
+% \Blindtext

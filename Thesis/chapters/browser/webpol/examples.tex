@@ -1,0 +1,234 @@
+\section{Expressiveness of {\sys}}
+\label{sec:examples}
+
+The expressiveness of {\sys} policies is illustrated through the
+following examples.
+
+\begin{lstlisting}[float, caption=Password strength checking script that leaks the password,label=egscript1,language=C]
+var p = document.getElementById("pwd");
+p.addEventListener("keypress", function (e){
+  var score = checkPwdStrength(p.value);
+  document.getElementById("pwdStrength").innerText = score; 
+  new Image().src = "http://stealer.com/pwd.jsp?pwd="+p +score;
+});
+\end{lstlisting}
+
+\subsection{Example 1: Password strength checker}  
+Many websites deploy \emph{password strength checkers} on pages where
+users set new passwords. A password strength checker is an event
+handler from a third-party library that is triggered each time the
+user enters a character in the new password field. The handler
+provides visual feedback to the user about the strength of the
+password entered so far. Strength checkers usually check the length of
+the password and the diversity of characters used. Consequently, they
+do not require any network communication. However, standard browser
+policies cannot enforce this and the password strength checker can
+easily leak the password if it wants to. Listing~\ref{egscript1} shows
+such a ``leaky'' password checker. The checker installs a listener for 
+keypresses in the password field (line 2). In response to every
+keypress, the listener delivers its expected functionality by checking
+the strength of the password and indicating this to the user (lines 3,
+4), but then it leaks out the password to \texttt{stealer.com} by
+requesting an image at a URL that includes the password (lines 5, 6). 
+
+With {\sys}, the developer of the host web-page can prevent any
+exfiltration of the password by including the policy script:
+
+\medskip
+\texttt{document.getElementById("pwd").setLabel("HOST");}
+
+\medskip 
+\noindent This policy sets the label of the password field to the
+host's own domain using the function
+\texttt{setLabel()}. Subsequently, the IFC enforcement restricts all
+outgoing communication that depends on the password field to the host.
+
+Conceptually, this example is simple because it does not really
+leverage the fine-granularity of {\sys} policies and fine-grained
+dynamic IFC. Here, the third-party script does not need any network
+communication for its intended functionality and, hence, simpler
+confinement mechanisms that prohibit a third-party script from
+communicating with remote servers would also suffice. The next example 
+is a scenario where the third-party script legitimately needs remote
+communication, which leverages the fine-granularity of {\sys} policies
+and fine-grained dynamic IFC.
+
+\begin{lstlisting}[float, caption=Currency converter script that leaks a private amount,label=egcc,escapechar=\%]
+function currencyConverter() {
+	var toCur = document.getElementById("to").value;
+	var xh = new XMLHttpRequest();
+	xh.onreadystatechange = function() { %\label{startcallback}%
+		if (xh.readyState == 4) { %\iffalse && xhttp.status == 200 \fi %
+			currencyRate = eval(xhttp.responseText);%\label{startsend}%
+			var aAmt = document.getElementById("amt").value;
+			var convAmt = aAmt * currencyRate;
+			document.getElementById("camt").innerHTML = convAmt;%\label{ressend}%
+			xh.open("GET","http://currConv.com/amount.jsp?atc=" + aAmt);%\label{endsend}%
+			xh.send(); }} %\label{endcallback}%
+	xh.open("GET","http://currConv.com/conv.jsp?toCur=" + toCur, true);
+	xh.send(); }
+\end{lstlisting}
+
+
+\subsection{Example 2: Currency conversion}
+Consider a web-page from an e-commerce website which displays the cost
+of an item that the user intends to buy. The amount is listed in the
+site's native currency, say US dollars (USD), but for the user's
+convenience, the site also allows the user to see the amount converted
+to a currency of his/her choice. For this, the user selects a currency
+from a drop-down list. A third-party JavaScript library reads both the
+USD amount and the second currency, converts the amount to the second
+currency and inserts it into the web-page, next to the USD amount.
+%
+The third-party script fetches the current conversion rate from its
+back-end service at \texttt{currConv.com}. Consequently, it must send
+the \emph{name} of the second currency to its back-end service, but
+must not send the amount being converted (that is private
+information). The web browser's same-origin policy has been relaxed
+(using, say, CORS~\cite{cors}) to allow the script to talk to its
+back-end service at \texttt{currConv.com}. The risk is that the script
+can now exfiltrate the private amount. Listing~\ref{egcc} shows a
+leaky script that does this. On line~\ref{endcallback}, the script
+makes a request to its back-end service passing to it the two
+currencies. The callback handler (lines
+\ref{startcallback}--\ref{endcallback}) reads the amount from the page
+element \texttt{amt}, converts it and inserts the result into the page
+(lines \ref{startsend}--\ref{ressend}). Later, it leaks out the amount
+to the back-end service on line~\ref{endsend}, in contravention of the
+intended policy.
+
+With {\sys}, this leak can be prevented with the following policy that
+sets the label of the amount to the host only:
+
+\medskip
+\texttt{document.getElementById("amt").setLabel("HOST")}
+
+\medskip
+\noindent This policy will prevent exfiltration of the amount and will not
+interfere with the requirement to exfiltrate the second
+currency. Importantly, no modifications are required to a script that
+does not try to leak data (e.g., the script obtained by dropping the
+leaky line~\ref{endsend} of Listing~\ref{egcc}).
+
+\begin{lstlisting}[float,caption=Policy that allows counting clicks but hides details of the clicks,label=eganal1]
+var p = document.getElementbyId("sect_name");
+p.addEventListener("click",function(event){
+  event.setLabel("HOST"); });
+\end{lstlisting}
+
+\subsection{Example 3: Web analytics} 
+To better understand how
+users interact with their websites, web developers often include
+third-party analytics scripts that track user clicks and keypresses to
+generate useful artifacts like page heat-maps (which part of the page
+did the user interact with most?). Although a web developer might be
+interested in tracking only certain aspects of their users'
+interaction, the inclusion of the third-party scripts comes with the
+risk that the scripts will also record and exfiltrate other private
+user behavior (possibly for monetizing it later). Using {\sys}, the
+web developer can write precise policies on which user events an
+analytics script can access and when. Several examples of this are
+shown. 
+
+\begin{lstlisting}[float, caption=Analytics script that counts clicks,label=egan]
+clickCount = 0;
+var p = document.getElementbyId("sect_name");  
+p.addEventListener("click",function clkHdlr(e){ clickCount += 1; });
+\end{lstlisting}
+
+To allow a script to only count the number of occurrences of a class
+of events (e.g., mouse clicks) on a section of the page, but to hide
+the details of the individual events (e.g., the coordinates of every
+individual click), the web developer can add a policy handler on the
+top-most element of the section to set the label of the individual
+event objects to \texttt{HOST}. This prevents the analytics script's
+listening handler from examining the details of individual events, but
+since the handler is still invoked at each event, it can count their
+total number. Listings~\ref{eganal1} and~\ref{egan} show the policy
+handler and the corresponding analytics script that counts clicks in a
+page section named \texttt{sect\_name}.
+
+\begin{lstlisting}[float,caption=Policy that only tracks whether a click
+  happened or not,label=eganal2]
+var alreadyClicked = false;
+var p = document.getElementById("sect_name");
+p.addEventListener("click",function(event){
+  if (alreadyClicked = true) 
+     event.setContext("HOST");
+  else {
+     alreadyClicked = true; 
+     event.setLabel("HOST");
+}});
+\end{lstlisting}
+
+Next, consider a restriction of this policy, which allows the
+analytics script to learn only whether or not \emph{at least one}
+click happened in the page section, completely hiding clicks beyond
+the first. This policy can be represented in {\sys} using a local
+state variable in the policy to track whether or not a click has
+happened and the function \texttt{setContext()}. Listing~\ref{eganal2}
+shows the policy. The policy uses a variable \texttt{alreadyClicked}
+to track whether or not the user has clicked in the section. Upon the
+user's first click, the policy handler sets the event's label to the
+host's domain (line~8). This makes the event object private but allows
+the analytics handler to trigger and record the occurrence of the
+event. On every subsequent click, the policy handler sets the event's
+\emph{context} to the host domain using \texttt{setContext()}
+(line~5). This prevents the analytics script from exfiltrating any
+information about the event, including the fact that it occurred.
+
+Finally, note that a developer can subject different page sections to
+different policies by attaching different policy handlers to them. The
+most sensitive sections may have a policy that unconditionally sets
+the event context to the host's, effectively hiding all user events in
+those sections. Less sensitive sections may have policies like those
+of Listings~\ref{eganal2} and~\ref{eganal1}. Non-sensitive sections
+may have no policies at all, allowing analytics scripts to see all
+events in them.
+
+\begin{lstlisting}[float, caption=Example policy to prevent overlay-based
+  stealing of keystrokes,label=overlay,language=C]
+document.body.addEventListener("keypress", function(event){
+    var o = window.getComputedStyle(event.target).getPropertyValue("opacity");
+    if (o < 0.5) 
+         event.setLabel("HOST");
+});
+\end{lstlisting}
+
+\subsection{Example 4: Defending against overlay-based attacks}
+To bypass {\sys} policies, an adversarial script may ``trick'' a user
+using transparent overlays. For example, suppose a script wants to
+exfiltrate the contents of a password field that is correctly
+protected by a {\sys} policy. The script can create a transparent
+overlay on top of the password field. Any password the user enters
+will go into the overlay, which \emph{isn't} protected by any policy
+and, hence, the script can leak the password.
+
+Such attacks can be prevented easily in {\sys} using a \emph{single}
+policy, attached to the top element of the page, that labels data
+entered into all significantly transparent overlays as
+\texttt{HOST}. Listing~\ref{overlay} shows such a policy. This
+particular policy labels all keypress events on elements of opacity
+below $0.5$ as \texttt{HOST}, thus preventing their exfiltration. The
+threshold value $0.5$ can be changed, and the policy can be easily
+extended to other user events like mouse clicks.
+
+\subsection{Summary of {\sys} expressiveness} 
+The security community has extensively studied several
+aspects of policy labeling, colloquially called the \emph{dimensions
+  of declassification} (see~\cite{dimDecl} for a survey). Broadly
+speaking, {\sys} policies cover three of these dimensions---the
+policies specify what data is declassified (dimension: what), to which
+domains (dimension: to whom) and under what state (dimension:
+when). ``What data is declassified'' is specified by selectively
+attaching policies to elements of the page. ``Which domains get
+access'' is determined directly by the labels that the policy
+sets. Finally, labels generated by policy handlers can depend on
+state, as illustrated in Listing~\ref{eganal2}.
+
+There are two other common dimensions of labeling---who can label the
+data (dimension: who) and where in the code can the labels change
+(dimension: where). These dimensions are fixed in {\sys} due to the
+specifics of the problem: All policies are specified by the host page
+in statically defined policies.
+

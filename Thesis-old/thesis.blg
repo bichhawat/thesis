@@ -1,0 +1,65 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: thesis.aux
+The style file: abbrvnat.bst
+Database file #1: bibliography.bib
+Warning--to sort, need author or key in infoleaks
+Warning--to sort, need author or key in csp
+Warning--to sort, need author or key in fbjs
+Warning--to sort, need author or key in caja
+Warning--to sort, need author or key in cors
+Warning--to sort, need author or key in dromaeo
+Warning--to sort, need author or key in alexa
+Warning--to sort, need author or key in sunspider
+Warning--empty year in alexa
+Warning--empty year in caja
+Warning--empty year in cors
+Warning--empty year in csp
+Warning--empty year in dromaeo
+Warning--empty year in fbjs
+Warning--empty year in sunspider
+Warning--empty year in sop
+Warning--empty year in adsafe
+Warning--empty publisher in crowdflow
+You've used 108 entries,
+            2773 wiz_defined-function locations,
+            1189 strings with 23038 characters,
+and the built_in function-call counts, 57396 in all, are:
+= -- 5263
+> -- 2850
+< -- 128
++ -- 974
+- -- 860
+* -- 4193
+:= -- 7949
+add.period$ -- 333
+call.type$ -- 108
+change.case$ -- 603
+chr.to.int$ -- 102
+cite$ -- 242
+duplicate$ -- 2945
+empty$ -- 5037
+format.name$ -- 1036
+if$ -- 12789
+int.to.chr$ -- 7
+int.to.str$ -- 1
+missing$ -- 99
+newline$ -- 551
+num.names$ -- 404
+pop$ -- 1503
+preamble$ -- 1
+purify$ -- 501
+quote$ -- 0
+skip$ -- 2426
+stack$ -- 0
+substring$ -- 2504
+swap$ -- 783
+text.length$ -- 73
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1168
+warning$ -- 18
+while$ -- 530
+width$ -- 0
+write$ -- 1415
+(There were 18 warnings)

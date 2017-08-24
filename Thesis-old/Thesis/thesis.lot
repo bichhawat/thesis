@@ -1,0 +1,14 @@
+\select@language {english}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Execution steps in two runs of the program from Listing~\ref {list2}, with two variants of the rule \textsc {\ref {bs:cmd:ags}}\relax }}{27}{table.caption.15}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Performance of examples from Section~\ref {sec:examples}. All time in ms. The numbers in parenthesis are additional overheads relative to \textbf {Base}.\relax }}{77}{table.caption.46}
+\contentsline {table}{\numberline {8.2}{\ignorespaces Performance on two real-world websites. All time in ms. The numbers in parenthesis are additional overheads relative to \textbf {Base}.\relax }}{79}{table.caption.49}
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Examples for all possible transitions of low-equivalent to low-equivalent values\relax }}{92}{table.caption.51}

@@ -1,0 +1,447 @@
+\section{Soundness and Decoding Semantics}
+\label{sec:lir:decoding}
+
+The LIR policy defined earlier enforces that the information released 
+by a program about every secret is bounded by its pre-determined budget. 
+However, to prove that the actual information released by the approach is 
+soundly accounted for, it needs to be shown that the the budget
+reduction performed as part of LIR is well-founded in an information
+theoretic sense. To this end, the result of Shannon's source coding
+theorem~\referp{shannon} is leveraged to utilize the trace generated
+by the semantics containing the declassified values. 
+
+Recall that Shannon's source coding theorem states that if 
+different outputs of a program can be associated with uniquely-decodable
+codes, i.e., given a bit string there are no two different  
+interpretations of the sequence of codewords, the information 
+leaked by the program about the secret inputs through these outputs 
+as computed using Shannon entropy is upper-bounded by the average 
+length of these codes. The trace projected to an adversary contains all  
+the bits the adversary can observe about the secret inputs 
+to the program. The projected trace can, thus, be regarded as a coding 
+of the information released about the secrets to the adversary. 
+Hence, if it can be proven that the trace projected to an adversary
+is uniquely-decodable then its average length over all executions
+is an upper bound on the information leaked by the program as 
+computed by the definition of Shannon entropy. 
+
+In order to prove the soundness of the approach, this section presents a  
+decoding semantics that simulates the adversary's approach to decode the 
+information it obtains via the trace. The purpose of the decoding 
+semantics is to show that the adversary-projected trace 
+corresponds to a uniquely-decodable code, i.e., decoding the trace would 
+result in a unique final memory store for the adversary, thereby showing 
+that our enforcement is sound. The salient features of the semantics are:
+\begin{enumerate}
+\item Decoding semantics is specialized to a fixed adversary at level
+   $\attacker$.
+\item Decoding semantics operates on adversary-projected data structures,
+  i.e., an $\attacker$-projected memory, where the secret inputs are 
+  replaced by $\star$ that represents an unknown 
+  value (as shown in Definition~\ref{def:lir:msp}) and
+  $\attacker$-projected budget store, where the budgets having a 
+  budget-label higher than the adversary's level  
+  are replaced by $0$ (as in Definition~\ref{def:lir:bmp}). 
+  % $$\iota\proj = \mathop{\Large \forall}_{x \in \sigma} \Big(\iota\proj(x) = -^l
+  % \wedge l \sqsubseteq \attacker ~?~ \blabel(x) ~:~ 0 \Big)$$
+\item At declassification points, the decoding semantics
+  reads a value from the $\attacker$-projected trace. 
+\item Decoding semantics completely skips the code that is executed 
+  under a $\pc$ influenced by secrets (having the value $\star$).
+\end{enumerate}
+
+% In order to prove that the projected trace corresponds to a uniquely-decodable
+% code, this section presents a decoding semantics that is almost
+% similar to the LIR semantics from Section~\ref{sec:semantics}, except
+% for the following differences:
+% \begin{enumerate}
+% \item Decoding semantics is specialized to a fixed adversary,
+%   represented as $\attacker$.
+% \item Decoding semantics operates on an $\attacker$-projected memory
+%   (where the secret inputs are replaced by $\star$, representing an unknown
+%   value as shown in Definition~\ref{def:lir:msp}) and
+%   $\attacker$-projected budget store (where secret budget 
+%   values are replaced by $0$ as in Definition~\ref{def:lir:bmp}). 
+%   % $$\iota\proj = \mathop{\Large \forall}_{x \in \sigma} \Big(\iota\proj(x) = -^l
+%   % \wedge l \sqsubseteq \attacker ~?~ \blabel(x) ~:~ 0 \Big)$$
+% \item At declassification points, the decoding semantics
+%   reads a value from the trace, which is also $\attacker$-projected. 
+% \item Decoding semantics completely skips the code that is executed under a
+%   $\pc$ influenced by $\star$.
+% \end{enumerate}
+
+\begin{mydef}[Memory store projection]
+\label{def:lir:msp}
+The projection of a memory store, $\sigma$, w.r.t. an adversary at
+level $\attacker$, written $\sigma\proj$, is defined as:
+\begin{align*}
+\sigma\proj = \lambda \emph{\TT{x}}. 
+\begin{cases}
+\sigma(\emph{\TT{x}}), &\text{if} ~ \big(\Gamma(\sigma(\emph{\TT{x}})) \sqsubseteq \attacker\big) \\
+\star^{(\bot,\{\emph{\TT{x}}\})}, &\text{otherwise}
+\end{cases}
+\end{align*}
+\end{mydef}
+% \begin{mydef}[Memory store projection]
+% \label{def:lir:msp}
+% The projection of a memory store, $\sigma$, w.r.t. an adversary at
+% level $\attacker$, written $\sigma\proj$, is defined as:
+% $$\sigma\proj = \Pi(\sigma, \attacker) = 
+% \left \{\emph{\TT{x}}~\middle|~ \left(\emph{\TT{x}} =
+% \left\{\begin{array}{ll}
+%         \emph{\TT{y}}, & \text{if} ~ (\emph{\TT{y}} \in \sigma) \wedge \big(\Gamma(\sigma(\emph{\TT{y}})) \sqsubseteq \attacker\big) \\
+%          \star^{(\bot,\{\emph{\texttt{x}}\})}, & \text{otherwise}
+%         \end{array}\right\} 
+% \right)\right\}
+% $$
+% $$\sigma\proj = \mathop{\Large \forall}_{x \in \sigma} \Big(\sigma\proj(x) =
+%   \big(\Gamma(\sigma(x)) \sqsubseteq \attacker ~?~ \sigma(x) ~:~ \star^{(\bot,
+%     \{\texttt{x}\})} \big)\Big)$$
+% \end{mydef}
+
+\begin{figure}[!htbp]
+\begin{framed}
+\begin{mathparpagebreakable}
+%%%%%%%%%%%%%%%%%%CONST
+\inferrule*[left=\mbox{\labelthis{lir:exp:sc}{s-const}}]
+{ } 
+{\langle\sigma, \iota, \TT{n}, \trace \rangle \simsem
+  \TT{n}^{(\bot,\{\})}, \iota, \trace}
+\and
+%%%%%%%%%%%%%%%%%%VAR
+\inferrule*[left=\mbox{\labelthis{lir:exp:sv}{s-var}}]
+{\sigma(\TT{x})  = \TT{v}^{(k, \dep_o)} \\ 
+  \dep' = \Reduce(\dep_o, \iota, k_o, \blabel) \\
+  \dep = \dep_o \setminus \dep' \\ 
+  k = k_o  \bigsqcup\limits_{\TT{x}  \in \dep'} \ilabel(\TT{x})  }
+{\langle\sigma, \iota, \TT{x}, \trace \rangle \simsem \TT{v}^{(k, \dep)},
+  \iota, \trace}
+\and
+%%%%%%%%%%%%%%%%%%AOP
+\inferrule*[left=\mbox{\labelthis{lir:exp:saop}{s-aop}}]
+{\langle \sigma, \iota, \expr_1, \trace \rangle \simsem
+  \TT{v}_1^{(k_1, \dep_1)}, \iota_1, \trace_1 \\ \langle \sigma,
+  \iota_1,   \expr_2, \trace_1 \rangle \simsem \TT{v}_2^{(k_2, \dep_2)},
+  \iota', \trace' \\ \TT{v}= \TT{v}_1 \aop \TT{v}_2 \\ (k, \dep) =
+  (k_1, \dep_1) \sqcup (k_2, \dep_2) 
+}
+{ \langle\sigma,  \iota,  (\expr_1 \aop \expr_2), \trace \rangle
+  \simsem\TT{v}^{(k, \dep)}, \iota', \trace'}
+\and
+%%%%%%%%%%%%%%%%%%COP
+\inferrule*[left=\mbox{\labelthis{lir:exp:scop}{s-cop}}]
+{\langle \sigma, \iota, \expr_1, \trace \rangle \simsem
+  \TT{v}_1^{(k_1, \dep_1)}, \iota_1, \trace_1 \\ \langle \sigma,
+  \iota_1,   \expr_2, \trace_1 \rangle \simsem \TT{v}_2^{(k_2, \dep_2)},
+  \iota', \trace' \\ \TT{v}= \TT{v}_1 \cop \TT{v}_2 \\ (k, \dep) =
+  (k_1, \dep_1) \sqcup (k_2, \dep_2) 
+}
+{ \langle\sigma,  \iota,  (\expr_1 \cop \expr_2), \trace \rangle
+  \simsem\TT{v}^{(k, \dep)}, \iota', \trace'}
+\and
+%%%%%%%%%%%%%%%%%%OPER-COP
+\inferrule*[left=\mbox{\labelthis{lir:exp:sdn}{s-dcopn}}]
+{
+\langle\sigma,  \iota,  (\expr_1 \cop \expr_2), \trace \rangle
+  \simsem\TT{v}^{(k, \dep)}, \iota', \trace' \\
+  \pc \not\sqsubseteq k 
+}
+{\langle\sigma,  \iota, \dec(\expr_1 \op \expr_2), \trace
+  \rangle \simsem\TT{v}^{(k, \dep)}, \iota', \trace'}
+\and
+%%%%%%%%%%%%%%%%%%OPER-COP
+\inferrule*[left=\mbox{\labelthis{lir:exp:sdr}{s-dcopr}}]
+{
+  \langle\sigma,  \iota,  (\expr_1 \cop \expr_2), \trace \rangle
+  \simsem\TT{v}_o^{(k_o, \dep_o)}, \iota_1, \trace_1 \\
+  pc \sqsubseteq k_o   \\
+  \dep' = \Delta(\dep_o, k_o, \ilabel) \\
+  \dep'' = \Reduce(\dep',\iota_1, k_o, \blabel) \\ 
+  \dep = \dep' \setminus \dep'' \\ 
+  m =  k_o \bigsqcup\limits_{\TT{x} \in \dep''}
+  \ilabel(\TT{x}) \bigsqcup\limits_{\TT{y} \in \dep} \blabel(\TT{y}) \\
+%\iota' = \mathbb{I}(\iota_1, \dep)\\
+ ( \TT{v}, k, \iota', \trace') =  \left\{\begin{array}{ll}
+        (\TT{v}_t, k_t, \mathbb{I}(\iota_1, \dep_t), \trace''), & \textit{if} ~(\trace_1 = \TT{v}_t^{k_t} :: \trace'') \wedge (k_t = m) \wedge (\dep \neq \emptyset)\arcr
+        (\TT{v}_{o}, m, \iota_1, \trace_1), & \textit{otherwise}
+        \end{array}\right\} 
+% pc \sqsubseteq k_o   \\
+%  \dep' = \Delta(\dep_o, k_o, \ilabel) \\
+% \dep'' = \Reduce(\dep',\iota_2, k_o, \blabel) \\ 
+%   \dep = \dep' \setminus \dep'' \\ 
+% m =  k_o \bigsqcup\limits_{\TT{x} \in \dep''}
+%   \ilabel(\TT{x}) \bigsqcup\limits_{\TT{y} \in \dep} \blabel(\TT{y}) \\
+% \iota' = \mathbb{I}(\iota_2, \dep)\\
+%  (\trace', \TT{v}, k) =  \left\{\begin{array}{ll}
+%         (\trace'', \TT{v}_t, k_t), & \textit{if} ~~ (\dep \neq \emptyset) \wedge (\trace_2 = \TT{v}_t^{k_t} :: \trace'') \arcr
+%         (\trace_2, \TT{v}_{o}, m), & \textit{otherwise}
+%         \end{array}\right\} 
+% \trace' = \left\{\begin{array}{ll}
+%         \trace'', & \textit{if} ~ (\dep \neq \emptyset) \wedge (\trace_2 =\TT{v}:: \trace'') \arcr
+%         \trace_2, & \textit{otherwise}
+%         \end{array}\right\} \\
+% (\dep \neq \emptyset) ~?~ (\trace_2 =\TT{v}^l :: \trace') : 
+% (\trace' = \trace_2 \wedge v=\TT{v}_o \wedge l = l_o \bigsqcup\limits_{x \in \dep}
+%   (\ilabel(\TT{x}) \sqcup \blabel(\TT{x})))
+}
+{\langle\sigma,  \iota, \dec(\expr_1 \op \expr_2), \trace
+  \rangle \simsem\TT{v}^{(k, \{\})}, \iota', \trace'}
+% \and
+% %%%%%%%%%%%%%%%%%%OPER-COP
+% \inferrule*[left=\mbox{\labelthis{lir:exp:sdn}{s-dcopn}}]
+% {\langle \sigma,  \iota, \expr_1, \trace \rangle \simsem
+%   \TT{v}_1^{(k_1, \dep_1)}, \iota_1, \trace_1 \\
+%   \langle \sigma, \iota_1, \expr_2,\trace_1  \rangle \simsem
+%   \TT{v}_2^{(k_2, \dep_2)}, \iota_2, \trace_2  \\\\
+%   \TT{v} = \TT{v}_1 \op \TT{v}_2
+%   \\ \dep = \dep_1  \cup \dep_2 \\ k = k_1 \sqcup k_2
+%   \\ pc \not\sqsubseteq k \\
+% }
+% {\langle\sigma,  \iota, \dec(\expr_1 \op \expr_2), \trace
+%   \rangle \simsem\TT{v}^{(k, \dep)}, \iota_2, \trace_2}
+\end{mathparpagebreakable}
+\end{framed}
+\caption{Decoding semantics of expressions}
+\label{fig:lir:sem-sim-e}
+\end{figure}
+
+\begin{figure}[!tb]
+\begin{framed}
+\begin{mathpar}
+%%%%%%%%%%%%%%%%%%SKIP
+\inferrule*[left=\mbox{\labelthis{lir:cmd:ssk}{s-skip}}]
+{ }
+{\langle   \sigma, \iota, \sk, \trace \rangle \simsem
+  \langle \sigma, \iota, \trace \rangle}
+\and
+%%%%%%%%%%%%%%%%%%ASSN
+\inferrule*[left=\mbox{\labelthis{lir:cmd:sa}{s-assn}}]
+{ \pc \sqsubseteq \Gamma(\sigma(\TT{x})) \\
+\langle   \sigma, \iota, \expr, \trace \rangle
+\simsem \TT{n}^{(m, {\dep'})}, \iota', \trace'
+\\  k = \pc \sqcup m \\ \dep = \Delta(\dep', k, \ilabel)
+}
+{\langle   \sigma,  \iota, (\TT{x} := \expr), \trace \rangle
+ \simsem \langle \sigma[\TT{x} \mapsto
+  \TT{n}^{(k,{\dep})}], \iota', \trace' \rangle}
+\and
+%%%%%%%%%%%%%%%%%%SEQ
+\inferrule*[left=\mbox{\labelthis{lir:cmd:ss}{s-seq}}]
+  {\langle   \sigma, \iota, \comm_1, \trace \rangle \simsem
+  \langle  \sigma', \iota', \trace_1 \rangle  \\ \langle   \sigma',
+  \iota', \comm_2, \trace_1 \rangle \simsem \langle
+  \sigma'',\iota'', \trace' \rangle
+  }
+  {\langle   \sigma, \iota, \comm_1;\comm_2, \trace \rangle
+  \simsem \langle \sigma'', \iota'', \trace' \rangle}
+\and
+%%%%%%%%%%%%%%%%%%IFN
+\inferrule*[left=\mbox{\labelthis{lir:cmd:sien}{s-if-else-n}}]
+  {\langle   \sigma, \iota,  \expr, \trace \rangle \simsem
+ \TT{v}^{(k_o,{\dep})}, \iota', \trace_1 \\\TT{v}\neq \star
+  \\
+i = \left\{\begin{array}{ll}
+        1, & \textit{if} ~ (\TT{v} = \texttt{true}) \arcr
+        2, & \textit{otherwise}
+        \end{array}\right\} \\
+k = k_o \bigsqcup\limits_{\TT{x} \in \dep} \ilabel(\TT{x})
+\\ \langle   \sigma, \iota', \comm_i, \trace_1
+  \rangle \simsemup \langle \sigma', \iota'',
+  \trace' \rangle}
+  {\langle   \sigma, \iota,
+  (\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2),
+  \trace \rangle \simsem  \langle \sigma', \iota'',
+  \trace' \rangle}
+\and
+%%%%%%%%%%%%%%%%%%IFS
+\inferrule*[left=\mbox{\labelthis{lir:cmd:sies}{s-if-else-s}}]
+  {\langle \sigma, \iota,  \expr, \trace \rangle \simsem
+  \star^{(\_, \_)}, \iota', \trace'
+  }
+  {\langle   \sigma, \iota,
+  (\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2),
+  \trace \rangle \simsem  \langle \sigma, \iota', \trace' \rangle}
+\and
+%%%%%%%%%%%%%%%%%%W_F_S
+\inferrule*[left=\mbox{\labelthis{lir:cmd:swfs}{s-while-fs}}]
+  {\langle   \sigma, \iota, \expr, \trace \rangle \simsem
+ \TT{v}^{(\_, \_)}, \iota', \trace' \\ (\TT{v} = \star) \vee (\TT{v} = \texttt{false})
+  }
+  {\langle   \sigma,\iota,
+  \texttt{while}~\expr~\texttt{do}~\comm, \trace
+  \rangle \simsem  \langle \sigma, \iota', \trace' \rangle}
+\and
+%%%%%%%%%%%%%%%%%%W_T
+\inferrule*[left=\mbox{\labelthis{lir:cmd:swt}{s-while-t}}]
+  {\langle   \sigma, \iota, \expr, \trace \rangle \simsem
+  \texttt{true}^{(k_o,{\dep})}, \iota_1, \trace_1 \\
+  k = k_o \bigsqcup\limits_{x \in \dep} \ilabel(\TT{x})
+  % \forall x \in \dep.(l := l \sqcup \ilabel(\TT{x}))
+  \\ \langle   \sigma, \iota_1, \comm;
+  \texttt{while}~\expr~\texttt{do}~\comm, \trace_1
+  \rangle \simsemup \langle \sigma', \iota', \trace_2 \rangle
+  }
+  {\langle   \sigma,  \iota,
+  \texttt{while}~\expr~\texttt{do}~\comm, \trace
+  \rangle \simsem  \langle \sigma'',\iota'', \trace'' \rangle}
+
+\end{mathpar}
+\end{framed}
+\caption{Decoding semantics of commands}
+\label{fig:lir:sem-sim-c}
+\end{figure}
+
+%% We describe the different notations used in the formalism.
+%% $\sigma\proj$ for any adversary at level $\attacker$ is the projection
+%% of the initial memory $\sigma$ with all the high values
+%% $(\not\sqsubseteq \attacker)$ replaced with $\star$, i.e.,
+%% $$\sigma\proj = \mathop{\Large \forall}_{x \in \sigma} \Big(\sigma\proj(\TT{x})
+%% = \big(\Gamma(\sigma(\TT{x})) \sqsubseteq \attacker \implies \sigma(\TT{x}) \,\diamond\,
+%% \star^{(\bot, \{\texttt{x}\})} \big)\Big)$$
+%%  The values in the projected memory are represented as either
+%%  $\emph{\TT{n}}^{(l,\dep)}$ or $\star^{(l,\dep)}$, where
+%% $l$ like before captures the label of all the provenances that have
+%% expired their budget and $\dep$ is the set of provenances that
+%% affected the value through the execution. The initial labels not lower
+%% than or equal to the adversary's level are represent by $\top$ instead
+%% of their original label in $\ilabel$ and $\blabel$, i.e.,
+%% $$\forall x \in \ilabel. (\ilabel(\TT{x}) = l) \not\sqsubseteq \attacker
+%% \implies \ilabel(\TT{x}) = \top$$
+%% and similarly for $\blabel$. These are referred to as projected
+%% label-map and projected budget-label map.
+%% Thus, if any of the secrets in the
+%% provenance set expires their budget, the security level $l$ becomes
+%% $\top$ indicating that no more information can be released by this
+%% value to $\attacker$. Additionally, if the budget label of an initial
+%% value (the level to which the release happens) is ``secret'' ($\top$)
+%% with respect to the adversary, its initial budget is set to $0$. This
+%% is represented by taking a projection of the allowed budgets with
+%% respect to the adversary, given by $\iota\proj$
+%% % $$\iota\proj = (\forall x \in \iota. \blabel(\TT{x}) \not\sqsubseteq \attacker
+%% % \implies \iota(\TT{x}) = 0)$$
+%% Similarly, given a trace of released values
+%% $\trace$, $\trace\proj$ is the projected trace as described before.
+%% % $\Gamma(\sigma(\TT{x}))$ is defined as the join of the label of the value
+%% % and the labels of all the variables that the value is dependent on,
+%% % i.e., if $\sigma(\TT{x}) = \emph{\TT{n}}^{(l, \dep)}$, then $\Gamma(\sigma(\TT{x})) = l \sqcup
+%% % \big(\bigsqcup\limits_{y \in \dep} \ilabel(y)\big)$. Similarly, for $\TT{v}_s =
+%% % \sigma^s(\TT{x}) = n_s^{(l,\dep')}$, $\Gamma(\TT{v}_s) = l \sqcup \Gamma(\dep') =
+%% % l \bigsqcup\limits_{x \in \dep'} \ilabel(\TT{x})$. Like before,
+%% % $\Gamma_f(v^{(l, \dep)})$ returns the first part of the label, i.e., $l$.
+
+%% % We define the simulation semantics of expressions and commands in
+%% % Figures~\ref{fig:sem-sim-e} and~\ref{fig:sem-sim-c}.
+%% % \TODO{describe the simulation semantics}
+
+Program configurations for expressions and commands are extended with
+the projected trace and projections of the memory and budget store,
+given by $\langle \sigma\proj, \iota\proj, \expr, \trace\proj \rangle$
+and $\langle \sigma\proj, \iota\proj, \comm, \trace\proj \rangle$,
+respectively. $\sigma\proj$, $\iota\proj$, and $\trace\proj$
+represent the $\attacker$-projected memory, budget-map and trace,
+respectively.  
+
+The semantics of expression and command evaluation is shown in
+Figures~\ref{fig:lir:sem-sim-e} and~\ref{fig:lir:sem-sim-c} and is
+mostly similar to LIR semantics presented earlier
+(Figures~\ref{fig:lir:sem-e} and~\ref{fig:lir:sem-c}) except that the
+decoding semantics takes the trace  $\trace$ as input. The rules
+generate a new trace $\trace'$, which is a suffix of the original
+trace $\trace$. The  main difference in the semantics of expressions
+shows up in the \refrule{lir:exp:sdr} rule --- when declassification
+occurs, the  declassified value is read from the trace (as opposed to
+the one computed by local evaluation in the sub-expressions, which is
+generally $\star$). The main difference in the semantics of commands
+is in the branching rules. Branching or looping on $\star$ values
+skips the execution as shown in rules \refrule{lir:cmd:sies} and
+\refrule{lir:cmd:swfs}.  
+
+The proof for the projected-trace being uniquely-decodable is based on the
+decoding semantics progressing on the trace generated by the LIR
+semantics and resulting in a unique final memory with respect to the 
+adversary. This requires defining equivalence between the memory 
+stores in the two semantics. The memory equivalence
+(Definition~\ref{def:lir:simseq}) is defined based on the 
+observational equivalence of the values in the original memory store and 
+the projected memory store (Definition~\ref{def:lir:eq}). 
+The idea behind the definition of value equivalence is that if a value is 
+visible to the adversary in the original memory store, then the value is 
+also visible to the adversary in the projected store 
+(Definition~\ref{def:lir:eq-1}). If the value is not visible to the 
+adversary in the original memory store, then either the value shall never 
+be declassified to the adversary in either semantics 
+(Definition~\ref{def:lir:eq-2a} and~\ref{def:lir:eq-2b}) or the value can 
+be declassified to the adversary under both the semantics 
+(Definition~\ref{def:lir:eq-2c}). 
+
+\begin{mydef}
+\label{def:lir:eq}
+Two values $\emph{\TT{v}}_o$ and $\emph{\TT{v}}_s$, where $\emph{\TT{v}}_o$ is a value in the original
+memory store and $\emph{\TT{v}}_s$ is a value in the projected memory store for
+simulation, are observationally equivalent at level $\attacker$,
+written $\emph{\TT{v}}_o \sigeq \emph{\TT{v}}_s$ iff
+\begin{enumerate}[label=\emph{\arabic*}., ref={\ref{def:lir:eq}.\arabic*}]
+\item\label{def:lir:eq-1} $\emph{\TT{v}}_o = \emph{\TT{n}}_o^{(k, \dep)}$, $\emph{\TT{v}}_s =
+  \emph{\TT{n}}_s^{(k',\dep')}$, $\emph{\TT{n}}_o = \emph{\TT{n}}_s$ and
+  $(k = k') \sqsubseteq \attacker$ and $\dep = \dep'$ (or)
+\item\label{def:lir:eq-2} $\emph{\TT{v}}_o = \emph{\TT{n}}_o^{(k, \dep)}$, $\Gamma(\emph{\TT{v}}_o) \not\sqsubseteq
+  \attacker$,  $\emph{\TT{v}}_s = \star^{(k',\dep')}$ and either:
+  \begin{enumerate}[label=\emph{(\alph*)}, ref={\ref{def:lir:eq-2}(\alph*)}]
+  \item\label{def:lir:eq-2a} $k \not\sqsubseteq \attacker ~\wedge ~k'
+    \not\sqsubseteq \attacker$
+  \item \label{def:lir:eq-2b} $k \sqsubseteq \attacker~\wedge~\exists \emph{\TT{x}} \in
+    \dep. (\blabel(\emph{\TT{x}}) \not\sqsubseteq \attacker) ~\wedge ~k' \not\sqsubseteq
+    \attacker$
+  \item\label{def:lir:eq-2c} $(k = k') \sqsubseteq \attacker~ \wedge
+    ~\dep = \dep'$
+  \end{enumerate}
+\end{enumerate}
+\end{mydef}
+
+\begin{mydef}
+\label{def:lir:simseq}
+Given a memory store $\sigma$ and a projected memory store
+$\sigma'\proj$, their equivalence $\sigeq$ at level
+$\attacker$ is defined as: 
+$\forall \emph{\TT{x}}.~ \sigma(\emph{\TT{x}}) \sigeq
+\sigma'\proj(\emph{\TT{x}})$ 
+\end{mydef}
+
+
+Under a given memory $\sigma$ and budget store
+$\iota$, if a program executes to completion under the LIR semantics
+and generates a trace $\trace$, then for any chosen adversary
+$\attacker$ the same program executing under $\attacker$-projected 
+memory ($\sigma\proj$) and budget store ($\iota\proj$) along with the
+projected trace $\trace\proj$ results in an observationally equivalent
+final memory stores obtained at the end of both the executions with
+respect to the adversary $\attacker$ (Theorem~\ref{thm:lir:csim}).
+
+\begin{myThm}[Simulation Theorem]
+\label{thm:lir:csim}
+If 
+$\langle \sigma, \iota, \comm \rangle \lirsem \langle \sigma', \iota',
+\trace \rangle$,  then 
+% $\exists \sigma'. \sigma \sigeq \sigma_1\proj \wedge \langle
+$\langle \sigma\proj, \iota\proj, \comm, \trace\proj
+\rangle  \simsem \langle \sigma'',\iota'',
+\trace'' \rangle$ such that $\sigma' \sigeq \sigma''$,
+$\iota' \eq \iota''$ and $\trace'' = \emptyTrace$
+\end{myThm}
+
+The proof of the theorem and the various auxiliary lemmas 
+required to prove the theorem are described in
+Appendix~\ref{sec:app:lir}.  As a sanity check, when the budgets of
+all the secrets in the store are $0$, the LIR semantics satisfy
+non-interference (Corollary~\ref{cor:lir:ni}). 
+
+\begin{mycor}[Non-interference]
+\label{cor:lir:ni}
+If $\langle \sigma_1, \iota_1, \comm \rangle
+\lirsem \langle \sigma_1', \iota_1', \trace_1 \rangle$, 
+ $\langle \sigma_2, \iota_2, \comm \rangle
+\lirsem \langle \sigma_2', \iota_2', \trace_2 \rangle$, 
+ $\sigma_1 \eq \sigma_2$, and $\iota_1\proj = \iota_2\proj = 0$, 
+then $\sigma_1' \eq \sigma_2'$.
+\end{mycor}
+

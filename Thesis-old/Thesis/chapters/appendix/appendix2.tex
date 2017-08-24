@@ -1,0 +1,516 @@
+\clearpage
+\section{Proofs of Precision for Dynamic IFC with Unstructured Control
+  Flow and Exceptions}
+\label{app:exc-pre}
+\begin{myThm}[Precision]\label{app:thm1:exc}
+Choosing any node other than the IPD to lower the pc-label will either
+give unsound results or be less precise.
+\end{myThm}
+\begin{proof}
+Consider a branch-point $b \in \mathcal{N}$ with IPD $\IPD{b} = i \in
+\mathcal{N}$. \\ 
+Assume that $(n \in \mathcal{N} )\neq i$ is the node where the context 
+of the predicate expression in $b$ is removed. Thus, either:
+\begin{itemize}
+\item $b < n < i$: Then, $\exists p. n \not\in \pathG{b}{n_e}$. Thus,
+  if $n$ performs an action that should not 
+  have been performed in the context of the predicate expression in
+  $b$, it might leak information about the predicate expression in
+  $b$. 
+\item $b < i < n$: Then, for any $n' \in \mathcal{N}$ such that  $i <
+  n' < n$ performing an operation that should not be performed in the context of $b$ would
+  be reported illicit as $n'$ would be executed in the context of
+  $b$. 
+\begin{itemize}
+\item   If $\dom{n'}{b}$, then $\forall p. n' \in \pathG{b}{n_e}$. Hence, the
+      statement $n'$ executes   irrespective of whether 
+      the branch at $b$ is taken or not and hence,   does not depend on
+      the predicate expression in $b$, i.e., there is   no implicit flow
+      from the predicate expression in $b$ to $n'$, but   still the
+      program might be rejected. 
+\item   If $n'$ is a statement executing under the context of another
+      branch-point $b'$, such that $\dom{b'}{b}$, then as $b'$ does
+      not have any implicit flow from the predicate expression in $b$, any
+      statement executing under the context of the prediate expression in
+      $b'$ should not be influenced by the context of the predicate
+      expression in $b$. Hence, the program might be rejected even though
+      there is no information leak.
+\end{itemize} 
+\item $i <> n$: $\forall p.n \not\in \pathG{i}{n_e}~$ or $~\forall p.n
+  \not\in \pathG{b}{n_e}$, $n$ will never be reached. Thus, the context
+  of $b$ shall not be removed until $n_e$ such that $b < i <
+  n_e$. Similar reasoning as  in the second case with $n = n_e$.
+\end{itemize} 
+ Hence, the most precise node where one can safely remove the context of
+$b$ is $n =\mathit{IPD}(b) = i$.
+\end{proof}
+
+\begin{myThm}\label{app:thm2:exc}
+The actual IPD of a node having $\SEN$ as its IPD is the node on
+the top of the pc-stack, which lies in a previously called function.
+\end{myThm}
+\begin{proof}
+Assume two functions $F$ and $G$ given by the CFGs $\cfg =
+(\mathcal{N}, \mathcal{E}, n_s, n_e, \mathcal{L})$ and $\cfg' =
+(\mathcal{N}', \mathcal{E}', n'_s, n'_e, \mathcal{L}')$,
+respectively. The program's start and exit node are given by $N_s$ and
+$N_e$, respectively. Consider a branch-point $b' \in \mathcal{N}'$ having
+$\SEN$ as its IPD. Assume a branch-point $b \in \mathcal{N}$ such
+that $b < b' < (i = \mathit{IPD}(b))$, $(i \in \mathcal{N}) \neq
+\SEN$, $b$ is the last executed branch-point and 
+ top of the pc-stack contains $i$. \\
+$\forall p.i \in \pathG{b}{n_e}$. Thus, $\dom{i}{b'}$
+such that $b < b' < i$. \\
+T.S. $\not\exists n \in \pathG{b'}{i}~|~(\dom{n}{b'})
+\wedge (b' < n < i)$. \\
+Proof by contradiction:
+Assume $\exists n.\dom{n}{b'}~|~b' < n < i$. Then the node $n$ either lies in the
+function $F$ or $G$ or in another function $H$ given by the CFG $\cfg'' =
+(\mathcal{N}'', \mathcal{E}'', n''_s, n''_e, \mathcal{L}'')$, such
+that $F$ calls $H$ and $H$ calls $G$.
+\begin{itemize}
+\item $n \in \mathcal{N}'$: As $\mathit{IPD}(b') = \SEN$ and $\SEN$ is
+  the last node in a function($\cfg'$), $\exists p.n \not\in \pathG{b}{n_e}$. 
+\item $n \in \mathcal{N}''$: As $\forall p. n \in \pathG{b'}{N_e}$ and
+  $G() < b'$, thus, $\forall p. n \in \pathG{G()}{N_e}$,
+  which means $\mathit{IPD}(G()) \neq \SEN$. Hence, the top of the
+  pc-stack then would have $\mathit{IPD}(G()) = (n'' \in
+  \mathcal{N}'') \leq n$ and   not $i$.
+\item $n \in \mathcal{N}$: When the call to $G$ or any other
+  function $H$ is made, it would push $i$, IPD of the branch-point on
+  the top of the  pc-stack.
+\end{itemize}
+Thus, $\not\exists n \in \pathG{b'}{i}~|~(\dom{n}{b'})
+\wedge (b' < n < i)$. Hence, the top of the pc-stack, $i$ is the
+actual IPD of any node $b'$ having $\SEN$ as its intra-procedural IPD. 
+\end{proof}
+
+\clearpage
+\section{Proofs for IFC with Unstructured Control Flow}
+\label{app:exc}
+
+%%%   CONFINEMENT LEMMA
+\begin{myLemma}[Confinement Lemma]
+\label{app:exc:lem:conf}
+If $~\langle \sigma, \iota, \rho \rangle~\rightarrow~\langle \sigma',
+\iota', \rho' \rangle$ and $\Gamma(!\rho) \not\sqsubseteq \lab$, then
+$\sigma \sim_\lab \sigma'$, and $\rho \sim_\lab \rho'$.
+\end{myLemma}
+\begin{proof}
+$\Gamma(!\rho) = \pc$ in the proof that follows.\\
+As $\pc \not\sqsubseteq \lab$, the nodes in the pc-stack 
+that have label less than or equal to $\lab$ will remain
+unchanged. Branching instructions pushing a new node would have label
+of at least $\pc$ due to monotonicity of pc-stack. Even if
+$\iota'$ is the IPD corresponding to the $!\rho.\ipd$, it would only
+pop the top node. Thus, all the nodes that have label less than or
+equal to $\lab$ will remain unchanged. Hence, $\rho \sim_\lab \rho'$.\\
+To show: $\sigma \sim_\lab \sigma'$. \\
+By induction on the derivation rules and case analysis on the last rule: 
+\begin{itemize}
+\item \refrule{es:cmd:a}, \refrule{es:cmd:c}: Similar to cases~\refrule{bs:cmd:agn}
+  and~\refrule{bs:cmd:ags} of Lemma~\ref{lem:app:gpua:conf}.
+\item \refrule{es:cmd:b}, \refrule{es:cmd:j}, \refrule{es:cmd:t}: $\sigma = \sigma'$
+\end{itemize}
+\end{proof}
+%%% End of confinement
+
+\begin{myLemma}
+\label{app:exc:lem:pcstack}
+If $~\langle \sigma_0, \iota_0, \rho_0 \rangle~\rightarrow^{n}~\langle
+\sigma_n, \iota_n, \rho_n \rangle$ and $\forall (0 \leq i \leq
+n).\Gamma(!\rho_i) \not\sqsubseteq \lab$, then  $\rho_0 \sim_\lab \rho_n$
+\end{myLemma}
+\begin{proof}
+Proof by induction on $n$. \\
+Basis: $\rho_0 \sim_\lab \rho_0$\\
+IH : $\rho_0 \sim_\lab \rho_{n-1}$\\
+From Definition~\ref{def:exc:pc}, all nodes labeled less than or equal
+to $\lab$ of $\rho_0$ and $\rho_{n-1}$ are equal. From
+Lemma~\ref{app:exc:lem:conf}, $\rho_{n-1} \sim \rho_n$ so, all nodes
+labeled less than or equal to $\lab$ of $\rho_{n-1}$ and $\rho_n$ are
+equal. Thus, all nodes labeled less than or equal to $\lab$ of
+$\rho_0$ and $\rho_n$ are equal and by Definition~\ref{def:exc:pc},
+$\rho_0 \sim \rho_n$.
+\end{proof}
+
+\begin{myLemma}{\emph{$\star$-preservation Lemma}}\\
+\label{app:exc:lem:evol}
+If $~\langle \sigma, \iota, \rho \rangle~ \rightarrow
+~\langle \sigma', \iota', \rho' \rangle$, \\
+then $\forall
+ \emph{\TT{x}}. \Gamma(\sigma(\emph{\TT{x}})) = \lab\pl \wedge
+ (\Gamma(!\rho) 
+ \not\sqsubseteq \lab) \implies \Gamma(\sigma'(\emph{\TT{x}})) = 
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$
+\end{myLemma}
+\begin{proof}
+Proof by induction on the derivation and case analysis on the last
+rule.
+\begin{itemize}
+\item \refrule{es:cmd:a}, \refrule{es:cmd:c}: from the premise
+\item \refrule{es:cmd:b}, \refrule{es:cmd:j}, \refrule{es:cmd:t}: $\sigma = \sigma'$
+\end{itemize}
+\end{proof}
+
+\begin{mycor}
+\label{app:exc:cor:cor1}
+If $~\langle \sigma, \iota, \rho \rangle~ \rightarrow
+~\langle \sigma', \iota', \rho' \rangle$, and
+$\Gamma(\sigma(\emph{\TT{x}})) = \lab\pl $ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab'$, then 
+$\Gamma(!\rho) \sqsubseteq \lab$.
+\end{mycor}
+\begin{proof}
+Immediate from Lemma~\ref{app:exc:lem:evol}.
+\end{proof}
+
+\begin{myLemma}
+\label{app:exc:lem:sigeq}
+If $~\langle \sigma_0, \iota_0, \rho_0 \rangle~ \rightarrow^{\star}
+~\langle \sigma_n, \iota_n, \rho_n \rangle$ and 
+$\forall (0 \leq i \leq n).\Gamma(!\rho_i) \not\sqsubseteq \lab$, 
+then $\sigma_0 \sim_\lab \sigma_n$
+\end{myLemma}
+\begin{proof}
+By induction on $n$. \\
+Basis: $\sigma_0 \sim_\lab \sigma_0$ by Definition~\ref{def:gpua:seq}.\\
+IH: $\sigma_0 \sim_\lab \sigma_{n-1}$.\\
+From IH and Definition~\ref{def:gpua:seq}, $\forall
+\TT{x}.(\sigma_0(\TT{x}) \sim_\lab \sigma_{n-1}(\TT{x})$. 
+From Lemma~\ref{app:exc:lem:conf}, $\sigma_{n-1} \sim_\lab \sigma_n$. Thus,
+$\forall \TT{x}.(\sigma_{n-1}(\TT{x}) \sim_\lab \sigma_n(\TT{x})$\\
+Assume that $\sigma_0(\TT{x}) = \TT{v}_0^k$, 
+$\sigma_{n-1}(\TT{x}) = \TT{v}_{n-1}^{k'}$, and
+$\sigma_n(\TT{x}) = \TT{v}_n^{k''}$ either:
+\begin{itemize}
+\item $(k = k') = \lab' \sqsubseteq \lab \wedge v_0 = v_{n-1}$ : 
+  \begin{enumerate}
+  \item $(k' = k'') = \lab' \sqsubseteq \lab \wedge v_{n-1} = v_n$: 
+    $(k = k'') = \lab' \sqsubseteq \lab \wedge v_0 = v_n$. Thus, $\sigma_0(\TT{x})
+    \sim_\lab \sigma_n(\TT{x})$.
+  \item $k' = \lab'$ and $k''  =  \lab''\pl   \wedge
+    \lab'' \sqsubseteq \lab' \sqsubseteq \lab$: By
+    definition~\ref{def:gpua:veq}.5. Thus, $\sigma_0(\TT{x})
+    \sim_\lab \sigma_n(\TT{x})$.
+  \end{enumerate}
+
+\item $k = \lab_1 \not\sqsubseteq \lab \wedge k' =
+  \lab_2 \not\sqsubseteq \lab $: 
+  \begin{enumerate}
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =
+    \lab_3 \not\sqsubseteq \lab $. By
+    definition~\ref{def:gpua:veq}.2, $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$.
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =
+    \lab_3\pl  $: $\lab_1 \not\sqsubseteq \lab$. Thus, by
+    definition~\ref{def:gpua:veq}.5, $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$. 
+  \end{enumerate}
+
+\item $k =   \lab_1  \pl   \wedge k' = \lab_2  \pl  $:  
+  \begin{enumerate}
+  \item $k' =   \lab_2  \pl   \wedge k'' = \lab_3  \pl  $: By
+    definition~\ref{def:gpua:veq}.3, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$.  
+  \item $k' =   \lab_2  \pl   \wedge k'' = \lab_3 \wedge (\lab_3
+    \not\sqsubseteq \lab)$: By definition~\ref{def:gpua:veq}.4,
+    $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$.
+  \item $k' =   \lab_2  \pl   \wedge k'' = \lab_3 \wedge (\lab_2
+    \sqsubseteq \lab_3)$:   
+      By corollary~\ref{app:exc:cor:cor1}, $\Gamma(!\rho_{n-1})
+      \sqsubseteq \lab_2$. As $\Gamma(!\rho_{n-1}) \not\sqsubseteq 
+      \lab$ and $\lab_2 \sqsubseteq \lab_3$, so $\lab_3
+      \not\sqsubseteq \lab$. By definition~\ref{def:gpua:veq}.4, $\sigma_0(\TT{x}) \sim_\lab
+      \sigma_n(\TT{x})$.
+  \end{enumerate}
+
+\item $k =   \lab_1  \pl   \wedge k' =
+  \lab_2~s.t.~(\lab_2 \not\sqsubseteq \lab)$: Either
+  \begin{itemize}
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =
+    \lab_3 \not\sqsubseteq \lab$: By definition~\ref{def:gpua:veq}.4, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =     \lab_3  \pl
+    $: By definition~\ref{def:gpua:veq}.3, $\sigma_0(\TT{x}) \sim_\lab 
+    \sigma_n(\TT{x})$
+  \end{itemize}
+
+\item $k =   \lab_1  \pl   \wedge k' = \lab_2~s.t.~ (\lab_1 \sqsubseteq \lab_2)$: 
+  \begin{itemize}
+  \item $k' = k'' = \lab_2$: By definition~\ref{def:gpua:veq}.4, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =
+    \lab_3 \not\sqsubseteq \lab$: By definition~\ref{def:gpua:veq}.4, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$
+  \item $k' = \lab_2 \not\sqsubseteq \lab \wedge k'' =
+    \lab_3  \pl $: By definition~\ref{def:gpua:veq}.3, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$
+  \end{itemize}
+
+\item $k = \lab_1  \wedge k' = \lab_2 \pl  ~s.t.~ (\lab_1
+  \not\sqsubseteq \lab)$: 
+  \begin{enumerate}
+  \item $k' =   \lab_2  \pl   \wedge k'' = \lab_3  \pl  $: By
+    definition~\ref{def:gpua:veq}.5, $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$ 
+  \item  $k' =   \lab_2  \pl   \wedge k'' =
+    \lab_3~s.t.~(\lab_3 \not\sqsubseteq \lab)$: By
+    definition~\ref{def:gpua:veq}.2, $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$ 
+  \item  $k' =   \lab_2  \pl   \wedge k'' = \lab_3~s.t.~(\lab_2
+    \sqsubseteq \lab_3)$ : By corollary~\ref{app:exc:cor:cor1}, 
+    $\Gamma(!\rho_{n}) \sqsubseteq \lab_2$. As $\Gamma(!\rho_{n})
+    \not\sqsubseteq  \lab$ and $\lab_2 \sqsubseteq \lab_3$, so $\lab_3 
+    \not\sqsubseteq \lab$. By definition~\ref{def:gpua:veq}.2,
+    $\sigma_0(\TT{x}) \sim_\lab \sigma_n(\TT{x})$.
+  \end{enumerate}
+
+\item $k = \lab_1  \wedge k' =  
+  \lab_2 \pl  ~s.t.~ (\lab_2 \sqsubseteq \lab_1)$: Also,
+  $(\lab_2 \sqsubseteq \lab_1 \sqsubseteq \lab)$.
+  \begin{enumerate}
+  \item $k' =   \lab_2  \pl   \wedge k'' = \lab_3  \pl  $: As $\lab_2
+    \sqsubseteq \lab$ and $\Gamma(!\rho_n) \not\sqsubseteq \lab$,
+    $\Gamma(!\rho_n) \not\sqsubseteq \lab_2$.  By
+    lemma~\ref{app:exc:lem:evol}, $\lab_3 \sqsubseteq \lab_2 $. Thus, 
+    $\lab_3\sqsubseteq \lab_2 \sqsubseteq \lab_1$. By
+    definition~\ref{def:gpua:veq}.5, $\sigma_0(\TT{x}) \sim_\lab
+    \sigma_n(\TT{x})$
+  \item  $k' =   \lab_2  \pl   \wedge k'' = \lab_3$: As $\lab_2
+    \sqsubseteq \lab$ and $\Gamma(!\rho_n) \not\sqsubseteq \lab$,
+    $\Gamma(!\rho_n) \not\sqsubseteq \lab_2$. But, by
+    Lemma~\ref{app:exc:lem:pcstack}, $\Gamma(!\rho_n) \sqsubseteq
+    \lab_2$. By contradiction, this case does not hold.
+  \end{enumerate}
+\end{itemize}
+\end{proof}
+
+
+%%% SUPPORTING LEMMA 1
+\begin{myLemma}
+\label{app:exc:lem:sl1}
+Suppose \\
+$\langle \sigma_1, \iota, \rho_1 \rangle~\rightarrow~\langle 
+\sigma_1', \iota_1',\rho_1' \rangle$, \\
+$\langle \sigma_2, \iota, \rho_2 \rangle~\rightarrow~\langle  
+\sigma_2', \iota_2',\rho_2' \rangle$, \\
+$\sigma_1 \sim_\lab \sigma_2$, 
+$\rho_1 \sim_\lab \rho_2$, 
+$\Gamma(!\rho_1) = \Gamma(!\rho_2) \sqsubseteq \lab$, and
+either $\Gamma(!\rho_1') = \Gamma(!\rho_2') \sqsubseteq \lab)$ or
+$\Gamma(!\rho_1') \not\sqsubseteq \lab \wedge \Gamma(!\rho_2')
+\not\sqsubseteq \lab)$ \\ 
+then $\sigma_1' \sim_\lab \sigma_2'$ and $\rho_1' \sim_\lab \rho_2'$.
+\end{myLemma}
+\begin{proof}
+Every instruction executes \emph{isIPD} at the end of the operation. 
+If $\iota_i'$ is the IPD corresponding to the $!\rho_i.\ipd$, then it pops
+the first node on the pc-stack. As $\rho_1 \sim \rho_2$ and
+$\Gamma(!\rho_1)  = \Gamma(!\rho_2)$, $\iota_i'$ would either pop in
+both the runs or in none. Thus, $\rho_1' sim \rho_2'$
+(\refrule{es:cmd:b} rule is explained below). \\
+Assume $\sigma_1(x) = v_1^{k_1}$, $\sigma_2(x) = v_2^{k_2}$,
+$\sigma_1'(x) = v_{1'}^{k_1'}$ and $\sigma_2'(x) = v_{2'}^{k_2'}$. \\
+Proof by case analysis on the instruction type:
+\begin{itemize}
+\item \refrule{es:cmd:a}, \refrule{es:cmd:c}:
+  $\Gamma(!\rho_1) = \Gamma(!\rho_2) = \pc \sqsubseteq \lab$
+  \begin{itemize} 
+  \item $\pc \sqsubseteq \lab_1 \wedge \pc \sqsubseteq \lab_2$: As
+    $\TT{n}^m$ is equivalent, $\sigma_1'(x) \sim_\lab \sigma_2'(x)$.  
+
+  \item $\pc \not\sqsubseteq \lab_1 \wedge \pc \not\sqsubseteq
+    \lab_2$: By Definition~\ref{def:gpua:veq}.3, $\sigma_1'(x)
+    \sim_\lab \sigma_2'(x)$.   
+
+  \item $\pc \sqsubseteq \lab_1 \wedge
+    \pc  \not\sqsubseteq \lab_2$: $k_2' \sqsubseteq \pc$ and $\pc
+    \sqsubseteq k_1'$. By Definition~\ref{def:gpua:veq}.3
+    and~\ref{def:gpua:veq}.4, $\sigma_1'(x) \sim_\lab \sigma_2'(x)$.
+    Similarly for the analogous case. 
+  \end{itemize}
+
+\item \refrule{es:cmd:b}: As $\TT{b}^{\lab_i}$ is equivalent in the
+  two runs, either $\lab_1 = \lab_2 \sqsubseteq \lab$ or $\lab_1
+  \not\sqsubseteq \lab \wedge \lab_2 \not\sqsubseteq \lab$ ($\lab_i$
+  does not have $\pl$). 
+  The IPD of $\iota$ would be the same in both the cases. If the IPD
+  is $\SEN$, then the label of $!\rho_i$ is joined with the
+  label obtained above, which is either less than or equal to $\lab$
+  and same in both the runs (or) not less than or equal to $\lab$ in
+  both the runs. Thus, either $\Gamma(!\rho_1') = \Gamma(!\rho_2')$ or
+  $\Gamma(!\rho_1') \not\sqsubseteq \lab \wedge \Gamma(!\rho_2')
+  \not\sqsubseteq \lab$.
+  Because $\rho_1 \sim \rho_2$, $\rho_1' \sim_\lab \rho_2'$. \\
+  If the IPD is not $\SEN$, then it is some other node, which makes the
+  $\ipd$ field the same.  
+  Thus, the pushed node is the same in both the cases or has label not
+  less than or equal to $\lab$ and hence, $\rho_1' \sim_\lab \rho_2'$
+  $\sigma'_1 = \sigma_1 \sim_\lab \sigma_2 = \sigma'_2$.
+
+\item Other rules: $\sigma'_1 = \sigma_1 \sim_\lab \sigma_2 = \sigma'_2$.
+\end{itemize}
+\end{proof}
+%%% End of supporting lemma 1
+
+
+
+%%% SUPPORTING LEMMA 2
+\begin{myLemma}
+\label{app:exc:lem:sl2}
+ Suppose
+\begin{enumerate}
+\item $\langle \sigma_0', \iota_0, \rho_0' \rangle~\rightarrow~\langle
+  \sigma_1', \iota_1', \rho_1' \rangle~\rightarrow^{n-1}~ \langle
+  \sigma_n', \iota_n', \rho_n' \rangle$,
+\item $\langle \sigma_0'', \iota_0, \rho_0'' \rangle~\rightarrow~
+  \langle \sigma_1'', \iota_1'', \rho_1''
+  \rangle~\rightarrow^{m-1}~\langle \sigma_m'', \iota_m'', \rho_m''
+  \rangle $, 
+\item $(\rho_0'  \sim_\lab \rho_0'')$, $(\sigma_0' \sim_\lab \sigma_0'')$, 
+\item $ (\Gamma(!\rho_0')=\Gamma(!\rho_0'') \sqsubseteq \lab)$,
+  $(\Gamma(!\rho_n')=\Gamma(!\rho_m'') \sqsubseteq \lab)$,
+\item $\forall(0 < i < n).(\Gamma(!\rho_i') \not\sqsubseteq \lab)~\wedge~
+\forall(0 < j < m).(\Gamma(!\rho_j'') \not\sqsubseteq \lab)$,
+\end{enumerate}
+then $(\iota_n' = \iota_m'')$, $(\rho_n' \sim_\lab \rho_m'')$, and
+$(\sigma_n' \sim_\lab \sigma_m'')$. 
+\end{myLemma}
+\begin{proof}
+  Starting with the same instruction and high context in both the runs
+  can result in two different instructions, $\iota_1'$ and
+  $\iota_1''$. This is only possible if $\iota$ was some branching
+  instruction in the first place and this divergence happened in a
+  high context. 
+  \begin{enumerate}
+  \item To prove $\iota_n' = \iota_m''$: \\
+    From the property of the IPDs, 
+    if $\iota_0$ pushes a node with label
+    $\not\sqsubseteq \lab$ on top of $\pc$-stack
+    which was originally $\sqsubseteq \lab$, $\IPD{\iota_0}$ pops
+    that node. Since the runs start from the same instruction $\iota_0$,
+    $\iota_n' = \iota_m'' = \IPD{\iota}$, where $\Gamma(!\rho)
+    \sqsubseteq \lab$.  
+  
+  \item To prove $\rho_n' \sim_\lab \rho_m''$: 
+    \begin{itemize}
+      \item $n > 1$ and $m > 1$: $\Gamma(!\rho_1') \not\sqsubseteq
+        \lab \wedge \Gamma(!\rho_1'') \not\sqsubseteq \lab$, because
+        $\iota_0$ has the same IPD and $\iota_1',\iota_1''$ are not
+        the IPDs. As $\rho_0' \sim \rho_0''$ and $\Gamma(!\rho_1')
+        \not\sqsubseteq \lab \wedge \Gamma(!\rho_1'') \not\sqsubseteq \lab$, 
+        from Lemma~\ref{app:exc:lem:sl1}, 
+        $\rho_1' \sim \rho_1''$ and $!\rho_1'.\ipd = !\rho_1''.\ipd =
+        \IPD{\iota_0}$, if $\iota_1' \neq \IPD{\iota_0}$ and $\iota_1''
+        \neq \IPD{\iota_0}$. As $\iota_n' = \iota_m'' = \IPD{\iota_0}$, it pops
+        the $!\rho_1'$ and $!\rho_1''$, which correspond to $\rho_n'$ and $\rho_m''$ in
+        the $n$th and $m$th step. 
+        Because $\rho_1' \sim \rho_1''$ and from
+        Lemma~\ref{app:exc:lem:pcstack}, $\rho_n' \sim \rho_m''$.
+      \item $n = 1$ and $m > 1$: If $\iota_1' =
+        \IPD{\iota_0}$, and $\Gamma(!\rho_1') \sqsubseteq \lab$. 
+        It pops the node pushed by $\iota_0$, i.e., $\Gamma(!\rho_n')
+        \sqsubseteq \lab$. In the other run as
+        $\Gamma(!\rho_1'') \not\sqsubseteq \lab$ and $\Gamma(!\rho_m'')
+        \sqsubseteq \lab$, by the property of IPD $\iota_m'' =
+        \IPD{\iota_0}$, which would pop from the $\pc$-stack $!\rho_m''$,
+        the first frame labelled $\not\sqsubseteq \lab$ on the
+        $\pc$-stack. Thus, $\rho_n' \sim \rho_m''$. 
+       \item $n > 1$ and $m = 1$: Similar to the above case. 
+       \end{itemize}
+     \item To prove $\sigma_n' \sim_\lab \sigma_m''$: 
+       \begin{enumerate}
+       \item $n > 1$ and $m > 1$: 
+         From Lemma~\ref{app:exc:lem:sl1}, $\sigma_1' \sim_\lab
+         \sigma_1''$. From Lemma~\ref{app:exc:lem:sigeq}, $\sigma_1'
+         \sim_\lab \sigma_{n-1}'$ and $\sigma_1''
+         \sim_\lab \sigma_{m-1}''$. And from Lemma~\ref{app:exc:lem:conf}
+         $\sigma_{n-1}' \sim_\lab \sigma_n'$ and $\sigma_{m-1}''
+         \sim_\lab \sigma_m''$. Similar case analysis as above for
+         different cases of equivalence. 
+       \item $n = 1$ and $m > 1$: In case of \refrule{es:cmd:b}, $\sigma_0' =
+         \sigma_1'$ and $\sigma_0'' = \sigma_1''$. Thus, $\sigma_1' \sim_\lab
+         \sigma_1''$. From the above case, if  $\sigma_1' \sim_\lab
+        \sigma_1''$, then  $\sigma_n' \sim_\lab \sigma_m''$.
+      \item $n > 1$ and $m = 1$: Symmetric case of the above. 
+      \end{enumerate}
+   
+    \end{enumerate}
+  
+\end{proof}
+
+\begin{mydef}[Trace]
+\label{def:trace}
+A trace is defined as a sequence of configurations or states resulting from a
+program evaluation, i.e., for a program evaluation $\mathcal{P} = s_1 \rightarrow s_2
+\rightarrow \ldots \rightarrow s_n$ where $s_i = \langle \sigma_i,
+\iota_i, \rho_i\rangle$, the corresponding trace is given 
+as $\mathcal{T}(\mathcal{P}) := s_1 :: s_2 :: \ldots :: s_n$.
+\end{mydef}
+
+\begin{mydef}[Epoch-trace]
+\label{def:etrace}
+An epoch-trace for an adversary at level $\lab$, ($\mE_\lab$) over a
+trace $\mathcal{T} = s_1 :: s_2 :: \ldots :: s_n$ where $s_i = \langle
+\sigma_i, \iota_i, \rho_i\rangle$  is defined inductively as:
+\begin{align*}
+  \mE_\lab(nil) &:=~nil \\
+  \mE_\lab(s_i :: \mathcal{T}) &:=
+  \begin{cases}
+   s_i :: \mE(\mathcal{T})~ & \mathit{if}~~~\Gamma(!\rho_i)
+   \sqsubseteq \lab,\\
+   \mE(\mathcal{T}) & \mathit{else~if} ~~\Gamma(!\rho_i)
+   \not\sqsubseteq \lab.
+  \end{cases}
+\end{align*}
+\end{mydef}
+
+\begin{myThm}[Termination-Insensitive Non-interference]
+\label{app:exc:thm:ni} 
+Suppose $\mathcal{P}$ and  $\mathcal{P}'$ are two program
+evaluations. \\
+Then for their respective epoch-traces with respect to an adversary at
+level $\lab$ given by:\\
+\hspace{5 mm} $\mE_\lab(\mathcal{T}(\mathcal{P})) = s_1 :: s_2 :: \ldots ::
+s_n$,\\
+\hspace{5 mm} $\mE_\lab(\mathcal{T}(\mathcal{P}')) = s_1' :: s_2' :: \ldots ::
+s_m'$,\\
+if $s_1 \sim_\lab s_1'$ and $n \leq m$,\\
+then\\
+\hspace{5 mm} $s_n \sim_\lab s_n'$
+\end{myThm}
+\begin{proof}
+Proof by induction on $n$.\\
+Basis: $s_1 \sim_\lab s_1'$, by assumption. \\
+IH: $s_k \sim_\lab s_k'$ \\
+To prove: $s_{k+1}
+\sim_\lab s_{k+1}'$. \\
+Let $s_k \rightarrow_i s_{k+1}$ and $s_k \rightarrow_{i'} s'_{k+1}$, then:
+\begin{itemize}
+\item $i = i' = 1$: From Lemma~\ref{app:exc:lem:sl1}, $s_{k+1}
+  \sim_\lab s_{k+1}'$.
+\item $i > 1$ or $i' > 1$: From Lemma~\ref{app:exc:lem:sl2}, $s_{k+1}
+  \sim_\lab s_{k+1}'$.
+\end{itemize}
+\end{proof}
+
+\begin{mycor}
+\label{app:exc:cor:ni}
+Suppose:
+\begin{enumerate}
+\item $\langle \sigma_1, \iota_1, \rho_1 \rangle \sim_\lab
+\langle \sigma_2, \iota_2, \rho_2\rangle$
+\item $\langle \sigma_1, \iota_1, \rho_1 \rangle
+  \rightarrow^{*} \langle \sigma_1', \texttt{end}, [] \rangle$
+\item $\langle \sigma_2, \iota_2, \rho_2 \rangle \rightarrow^{*}
+  \langle \sigma_2', \texttt{end}, []\rangle$
+\end{enumerate}
+Then, $\sigma_1' \sim_\lab \sigma_2'$.
+\end{mycor}
+\begin{proof}
+$\sigma_1, \sigma_2$ and $\rho_1, \rho_2$ are empty at the end of $*$
+steps. From the semantics, in context $\sqsubseteq \lab$
+both runs would push and pop the same number of nodes. Thus, both take
+same number of steps in the epoch-trace. Assume it to be $k$ . Then in
+Theorem~\ref{app:exc:thm:ni}, $n = m = k$. Thus, $s_k \sim_\lab s_k'$, where
+$s_k = \langle \sigma_1', \texttt{end}, []\rangle$ and $s_k' = \langle
+\sigma_2', \texttt{end}, [] \rangle$. By Definition~\ref{def:exc:ceq},
+$\sigma_1' \sim_\lab  \sigma_2'$.
+\end{proof}

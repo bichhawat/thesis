@@ -1,0 +1,245 @@
+\section{Limited Information Release}
+\label{sec:lir-desc}
+Limited information release (LIR) is an information release policy
+that declassifies some (limited) parts of sensitive information. 
+% \dg{``Fraction of information'' is not a well-defined
+%   phrase. Rephrase this sentence.}
+The motivation for LIR is that, in
+general, certain information flows leak only an insignificant part of
+a secret. As an example, the \emph{comparison} of a secret with a
+constant value is largely considered acceptable and its rejection by
+standard IFC analyses is too restrictive in
+practice~\referp{scd,dta}. Such information leaks are usually
+acceptable if one can guarantee that an adversary cannot widen the
+declassification to launder information. 
+%The need for such policies is motivated with a couple of examples below.
+
+In the real-world, such policies find a wide range of applications. For instance, 
+in the advertisement example from Listing~\ref{egLeak}, the third-party 
+ad service does not need to know the exact age of the viewer for determining 
+the preferred advertisement. It is sufficient to know whether the viewer is 
+a child or an adult (or a teenager). A similar example is that of a music 
+app that hosts advertisements for music shows and concerts in a town. Based
+on the age and the preferences of the user, the advertisements might differ 
+in each case. 
+
+\begin{lstlisting}[float,caption=Password Checker, label=egpc]
+dbPwd $=$ getActualPassword(user);
+uPwd $=$ readUserPassword();
+login $=$ (dbPwd $==$ uPwd);
+\end{lstlisting}
+
+Another common use-case of such policies is user authentication 
+based on a secret password or a PIN. The password checker in 
+Listing~\ref{egpc} compares the secret password to 
+the password entered by the user. The public variable \texttt{login}
+reflects whether these match, indicating whether the login was
+successful. Strict non-interference would normally prohibit 
+assignments to the low variable \texttt{login} as the value is 
+derived from the secret password. However, releasing the login 
+status to the user cannot be avoided. Normally, a user can login 
+in a single try but the probability of an adversary guessing the
+correct password in one (or even a few) tries can be
+assumed to be negligible when the password is strong and chosen 
+randomly~\referp{relSec}. 
+%In general, a brute-force attack on the secret would be 
+%required, and if the secret is from a large domain then such an 
+%attack is not a threat. 
+Thus, the assignment to the \texttt{login} variable may be permitted 
+for a few tries before the user's account gets locked.
+
+Generally in these applications, there is a trade-off between some 
+private information leak and better services.
+
+%\subsection{Motivating Examples}
+%\label{sec:examples}
+%\begin{lstlisting}[float,caption=Age-based Advertisement, label=egLeak2]
+% age $=$ getCurrentAge(birthday, birthyear);
+% if (age $<$ 13)
+%    preference $=$ "child";
+% else if (age $<$ 20)
+%    preference $=$ "teenager";
+% else 
+%    preference $=$ "adult";
+%\end{lstlisting}
+%
+%\subsubsection{Age-based advertisements}
+%A third-party advertising library might want to display ads %to its users
+%based on the viewer's age. Consider the program snippet in
+%Listing~\ref{egLeak2}, a modified version of the program in
+%Listing~\ref{egLeak} which determines the preferred advertisements based on the
+%secret value \texttt{age}. The third-party ad service does not 
+%need to know the exact age of the viewer for that purpose. It is
+%sufficient to know whether the viewer is
+%a child, a teenager or an adult. While leaking very little information
+%this provides focussed functionality and might
+%even be required in some jurisdictions to protect minors from inappropriate
+%ads. As another example, consider a music app that hosts
+%advertisements for music shows and concerts in a town. Based
+%on the age (whether the user is an adult, a teenager or a child) and
+%the preferences of the user, the advertisement might display different
+%categories. Again, there is a tradeoff between some 
+%private information and better services. %do not require access to the
+% precise age and would leak very little information about the user's age.  
+% Limited information release allows
+% such small leaks through comparisons on the sensitive value.
+
+
+
+% \medskip
+%\subsubsection{Password checker}
+%User authentication is often based on a secret password or PIN.
+ % in the context of the secret
+%information. Limited information release allows assignments under such
+% checks and, thus, deems the program secure.
+
+% \begin{lstlisting}[float,caption=Shortcut Key Usage,label=egsk]
+% window.addEventListener("keypress", function(event) {
+%        if (event.altKey) {
+%           send("ALT key pressed!");
+%  }});
+% \end{lstlisting}
+
+% \dg{I don't see how LIR can help the next two examples. Either explain
+%   or drop these examples.}
+% % \medskip
+% \paragraph{Analytics}
+% Many web pages include analytics scripts to track user behavior on
+% the page in order to improve the user
+% experience. Most of these analytics scripts track events
+% on the web page. One such analytics code is shown in
+% Listing~\ref{egsk}, which tracks whether or not the
+% \texttt{alt} modifier is pressed by the user. To prevent precise
+% keylogging, the event
+% properties (the keys pressed) are secret in this case, hence this
+% program snippet does not satisfy non-interference. However, the only
+% information that the script gains in this case is whether or not the
+% \texttt{alt} modifier was pressed by the user. Such checks could be
+% allowed in practice unless the script tries to track %and keep a log of
+% all the keys pressed by the user.
+
+% \begin{lstlisting}[float,caption=Sanity Check,label=egsc]
+%  if (textInput $\neq$ NULL)
+%     useInput ();
+%  else
+%     error("no input");
+% \end{lstlisting}
+% % \medskip
+% \paragraph{Sanity check}
+% Another common case where information release is acceptable is during
+% sanity checks, e.g., whether input has been provided or not, as shown in
+% Listing~\ref{egsc}. The \texttt{textInput} could be some secret value
+% but in order to use the value it might be necessary to check if the value is
+% non-null. If no input is
+% provided, the error ``\texttt{no input}'' only reveals that the
+% secret \texttt{textInput} is equal to \texttt{NULL}.
+% % Information release in such cases could be acceptable and allowed.
+% % Limited information release allows this kind of release.
+
+
+%\subsection{Limited Information Release Policy}
+%\label{sec:lir-policy}
+
+In practice, certain operations involving Boolean-valued expressions, 
+and implicit flows leak very 
+little information, which might be required for providing proper
+functionality. King \emph{et al.}~\refert{king08implicit} 
+investigate the occurrence of implicit flows in some standard 
+algorithms and discuss the pros and cons of handling implicit 
+flows. Russo \emph{et al.}~\referp{implicit} also observe
+that implicit flows cannot be exploited in non-malicious code to 
+leak secrets efficiently. The LIR policy is, thus, guided by two key tenets: 
+
+\begin{itemize}
+\item \textbf{Declassification of Boolean-valued expressions.}  As has been
+  observed previously~\referp{scd, dta} and is exemplified
+  above, comparison operations and other Boolean values often provide a
+  low bandwidth channel for information leak. For
+  instance, $h \neq l$ only reveals whether the two values in $h$ and
+  $l$ are equal or not. Similarly, $h < l$ and $h > l$ only reveal
+  that the value of $h$ is lesser and greater than the value of $l$,
+  respectively. With LIR, such comparison operations and Boolean-valued  
+  expressions are treated as potential points of information release. 
+  As all operations need not be declassified, 
+  information is released only for those 
+  operations that are explicitly annotated with \TT{declassify}.
+
+\begin{lstlisting}[float, caption=Laundering attack via implicit flows, label=lst:laundering]
+pub $=$ 0; i $=$ 1;
+while (i $\leq 2^{31}$) { @\label{imp:while}@
+if ((sec $\&$ i) $==$ i) @\label{imp:if}@
+pub $=$ pub $|$ i;
+i $=$ i $<<$ 1;
+}
+\end{lstlisting}
+
+\item \textbf{Bounding the information released.} 
+  Unfortunately, allowing information release when
+  only an insignificant amount of information is leaked can be widened
+  to leak the complete secret~\referp{relSec,delRelease}. 
+  The example in Listing~\ref{lst:laundering} is a classical example 
+  of a laundering attack. It implicitly leaks the secret value
+  in \texttt{sec} to the variable \texttt{pub} without any direct assignments.
+  Every time the check on line~\ref{imp:if} is performed, it leaks one
+  bit of \texttt{sec}. The whole secret gets implicitly laundered into
+  the variable \texttt{pub} as this comparison is performed in a loop of 
+  length equal to the size of the secret (in bits).
+  
+  To limit the amount of information that can be leaked through 
+  laundering attacks, LIR introduces a notion of \emph{budget} (a
+  natural number) associated with a sensitive value, which is an
+  upper bound on the amount of information that is allowed to leak about
+  the sensitive value. A budget is associated with every secret in the
+  program and defaults to $0$, if left unspecified. 
+\end{itemize}
+
+% \medskip
+Intuitively, a program is said to satisfy limited information release,
+if the information released about the initial value of each secret in
+the system is limited by its pre-specified budget. If no information 
+is released about any secret or if the budgets for all the secrets 
+reduce to $0$, LIR reduces to the standard
+non-interference policy. It is important to note that even when
+staying within the bounds of the budget one can leak the entire secret
+via comparison operations. For instance, if an equality comparison
+$h==l$ involving a secret value $h$ and a public value $l$ 
+returns \TT{true}, a public adversary knows that the value of $h$ is
+the same as the value in $l$. 
+% The bounds are only meaningful in an
+% average sense like in many other existing entropy-based notions of
+% information leakage~\referp{denning82, clark, smith2009}. In other
+% words, LIR only ensures that the average information leak over
+% multiple executions is bounded by the specified budget and it should
+% not be understood as providing leakage bounds over a single
+% execution. \dg{The previous sentence directly contradicts the implied
+%   meaning of sentences in the introduction. Here, you are claiming
+%   that dynamic analysis provides only average bounds; in the
+%   introduction, you claimed the exact opposite. This is a serious
+%   issue. The story has to be straight.}
+
+%\dg{I think I've said this many times. I don't understand why we are
+%  restricting declassification to comparisons only. POPL readers will
+%  ask the same question, but somehow we don't seem willing to change
+%  this. Why?} 
+%
+%\TODO{The reason we restrict ourselves to comparisons is that for 
+%	other operations the declassification operation would count all 
+%	32/64 bits and the budget would expire instantly. It doesn't make 
+%	sense to add a policy that allows all 32/64 bits to be leaked. 
+%	Rather, I would expect that the policy is specified separately 
+%	as we do in WebPol.
+%}
+
+Although declassification of only Boolean-valued expressions is 
+allowed by LIR, this can be extended to other expressions as well. 
+In such cases, where the expression being declassified has a 
+data type having $n$ possible values, the leak is 
+accounted for by assuming that $\log_{2}n$ bits are leaked. 
+As in this paper we consider only Boolean and integer data types, 
+we restrict the information release to only Boolean expressions.  
+Declassifying an integer value would effectively mean that all bits 
+of information about the secret value have been released and the 
+secret value could have been simply declassified.
+
+
+

@@ -1,0 +1,98 @@
+\section{Improved Permissive-Upgrade Strategy}
+\label{sec:ipus}
+
+The original permissive-upgrade strategy, however, lacks 
+permissiveness; it rejects secure programs like the one shown in
+Listing~\ref{lst2}. Consider that \TT{x} is labeled $H$
+and \TT{w}, \TT{y} are labeled $L$. With the original permissive-upgrade
+strategy, the label of \TT{z} on
+line~\ref{lineref2} would remain $P$ and the execution would be
+terminated when branching on \TT{z} on line~\ref{lineref3}. With the 
+improvement $$H \sqcup P = H$$ the analysis can accept such programs
+while remaining sound. With the improvement, \TT{z} would be labeled
+$H$ on line~\ref{lineref2}, which would allow the execution to branch
+on line~\ref{lineref3}, thus, 
+taking the execution to completion. 
+The idea behind the improvement is that an $H$-labeled value is
+never observable at $L$-level. Similarly, the result of any operation
+involving an $H$-labeled value is also never observable at
+$L$-level. Thus, any operation involving a partially-leaked value and
+a $H$-labeled value does not reveal any information to an adversary at
+level $L$ about the partially leaked value. 
+
+\begin{lstlisting}[float,label=lst2,caption=Example showing the
+  impermissiveness of the original permissive-upgrade strategy][escapechar=@]
+y = false
+if (not(x))
+  y = true@\label{lineref1}@
+z = y || x@\label{lineref2}@
+if (not(z))@\label{lineref3}@
+  w = true
+\end{lstlisting}
+
+The final label $k$ in the assignment rule \refrule{bs:cmd:ap} under
+the improved permissive-upgrade strategy becomes: 
+$$ k = % \left\lbrace
+\begin{cases}
+m & \mbox{ if } \pc = L \\
+H  & \mbox{ if } \pc = H \mbox{ and } l = H\\
+P  & \mbox{ otherwise}
+\end{cases} % \right.
+$$
+
+The soundness results of the original permissive-upgrade strategy can
+be extended to show the soundness of the improved permissive-upgrade
+strategy. However, a significant difficulty in proving the theorem
+using the modified notation for the imperative language is that the
+definition of $\sim$ is not transitive. The same problem arises for
+the soundness proofs in~\cite{plas10}. There, the authors resolve the
+issue by defining a special relation called evolution. The need for
+evolution is averted here using the auxiliary lemmas listed
+below. Lemma~\ref{lem:evol} proves the required result substituting
+evolution.  
+
+\begin{myLemma}[Expression Evaluation]
+\label{lem:expeval}
+If $\langle \sigma_1, e \rangle \bsexp \emph{\TT{n}}_1^{k_1}$ and $\langle 
+\sigma_2, e \rangle \bsexp \emph{\TT{n}}_2^{k_2}$ and $\sigma_1 \sim_L
+\sigma_2$, then $\emph{\TT{n}}_1^{k_1} \sim_L \emph{\TT{n}}_2^{k_2}$.
+\end{myLemma}
+\begin{proof} By induction on $e$.
+\end{proof}
+
+\begin{myLemma}[Evolution]
+\label{lem:evol}
+  If $~\pc = H$ and $\langle \sigma, c \rangle \bscmd \sigma'$, then
+  \\ $\forall \emph{\TT{x}}.\Gamma(\sigma(\emph{\TT{x}})) = P
+  \implies \Gamma(\sigma'(\emph{\TT{x}})) = P$. 
+\end{myLemma}
+\begin{proof} By induction on the derivation rules and case
+  analysis on the last rule.
+\end{proof}
+
+\begin{myLemma}[Confinement for improved permissive-upgrade with a
+  two-point lattice]
+\label{lem:conf}
+  If $~\pc = H$ and $\langle \sigma, c \rangle
+  \bscmd \sigma' $, then $\sigma \sim_L \sigma'$.
+\end{myLemma}
+\begin{proof} By induction on the derivation rules.
+\end{proof}
+
+\begin{myThm}[TINI for improved permissive-upgrade with a two-point lattice]
+  With the assignment rule \refrule{bs:cmd:ap} and the modified syntax of
+  Figure~\ref{pus:syntax}, if 
+  $~\sigma_1 \sim_L \sigma_2$ and $\langle \sigma_1, c \rangle
+  \bscmd \sigma_1' $ and $\langle \sigma_2, c
+  \rangle\bscmd \sigma_2' $, then $\sigma_1' \sim_L
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} By induction on $c$ and case
+  analysis on the last step.
+\end{proof}
+
+The detailed proofs are provided in Appendix~\ref{app:ipu}. 
+Note that the definitions and proofs presented in this chapter are
+specific to the two-point lattice and with respect to an adversary at
+level $L$. 
+

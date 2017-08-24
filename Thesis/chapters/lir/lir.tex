@@ -1,0 +1,177 @@
+\chapter{Bounding Information Leaks Dynamically}
+\label{ch:lir}
+
+Information flow control allows tracking of sensitive and private
+information while preventing leaks to unauthorized public 
+channels. However, in some cases it is required that (some part of) 
+the sensitive data be accessible over certain public channels. This
+violates the security property of non-interference but is needed for  
+practical reasons. This is generally achieved by specifying special
+declassification policies, which allow for such release of
+information. For instance, the declassification policy 
+\lstinline{declassify(pwd == input)} would treat the result of the
+equality check (\lstinline{pwd == input})  as public, thus allowing
+information to be released to the user. The enforcement generally
+requires \TT{declassify} annotations to be added to the code to
+specify which operations need to release the value. Most of the
+approaches require policy specifications by the developer that define
+\emph{what} information can be released by the program when the data
+to be declassified is part of the untrusted code; else the untrusted
+code can arbitrarily add \TT{declassify} annotations and release
+information at will. 
+
+An alternative approach to declassification is to \emph{quantify} the
+amount of information a program releases about a sensitive value and
+to determine an acceptable upper bound, which accepts or rejects the
+program. The information released is generally quantified by computing
+the difference in the entropy, a measure of uncertainty, of
+information contained in the sensitive value before and after the
+release with respect to an adversary~\cite{shannon, guessing,
+  smith2009, clarkson2009, csf12GLeakage}. Research in quantitative
+information flow has focused on statically analyzing the program
+and determining a worst-case bound on the amount of information that a
+program can release as a whole~\cite{denning82, clark, clarkson2009,
+  smith2009, backes, kopf}. These approaches rely on the assumption
+that the probability distribution of the output values is known 
+upfront. 
+
+Quantitative information flow analysis methods, in general, yield
+leakage bounds over all possible executions of a program. A dynamic
+analysis, on the other hand, considers only the path being taken in
+the current execution, which in general consensus seems to be unsound
+for quantifying information leaks. However, such an analysis would prove
+useful in scenarios like the Web where the program to be analyzed
+might only be available at runtime and one needs to only bound the
+amount of information released by the program about a sensitive value
+to untrusted sources~\cite{bielovaPLAS}. 
+
+% McCamant and Ernst~\cite{mccamant} provide a dynamic
+% analysis for quantifying information flows but do not prove the
+% soundness of their approach. They, however, provide a simulation-based 
+% proof for quantifying the amount of information released by the
+% program about a secret for a simple system with a two-level
+% lattice. However, it is unclear how their technique scales for
+% multiple security levels or multiple secrets in the system. Moreover, 
+% the approach is more suitable for quantification than bounding
+% information leaks; bounding information leaks introduces additional
+% issues as detailed in later sections. Other prior work~\cite{csf13} used
+% self-information to quantify the number of bits of information that
+% could be leaked about a secret value. However, this technique requires
+% the knowledge of the probability distribution or individual probabilities
+% of the outputs that are based on secret values. In cases where it is
+% difficult to determine the probability of the outputs upfront, the use
+% of this measure for analysis does not help much. 
+
+In the context of dynamic analysis, bounding information leaks helps
+control the information leakage at runtime. The motivation of this
+work is, thus, to provide an analysis that bounds information leaks
+dynamically at runtime and to prove that the approach is sound. 
+McCamant and Ernst~\cite{mccamant} provide the only dynamic 
+quantitative information flow analysis but do not prove the
+soundness of their approach. They, however, provide a simulation-based 
+proof~\cite{plas07} for quantifying the amount of information
+released by the program about a secret for a simple system with a
+two-level lattice. They track information flow more finely at the
+granularity of bits by restricting the language's variables to single
+bits. They maintain a shadow bit for every variable that
+indicates the secrecy level (public or secret) of the value in the
+variable. However, it is unclear how their technique scales for
+multiple security levels or multiple secrets in the system. 
+
+Moreover, the approach by McCamant and Ernst~\cite{mccamant} 
+is more suitable for quantification rather than for \emph{bounding} 
+information leaks; bounding information leaks introduces additional 
+non-trivial complications and leakage channels as detailed in later
+sections. Other prior work by Besson \emph{et al.}~\cite{csf13} 
+used self-information to
+quantify the number of bits of information that could be leaked about
+a secret value. However, this technique requires the knowledge of the
+probability distribution or individual probabilities of the outputs
+that are based on secret values. In cases where it is difficult to
+determine the probability of the outputs upfront, the use of this
+measure for analysis does not help much.   
+
+This chapter explores an alternative approach, where the developer can
+specify a \emph{budget} for every sensitive value in the system
+(defaulting to zero if not specified), which is basically an upper
+bound on the amount of information allowed to leak about that
+value. An underlying enforcement mechanism ensures that no more
+information about that value is leaked than what is specified by the
+budget.  
+
+\begin{lstlisting}[float,belowskip=-0.5em,caption=Age-based Advertisement, label=egLeak]
+ age $=$ getCurrentAge(birthday, birthyear);
+ if (age $<$ 18)
+    preference $=$ "child";
+ else
+    preference $=$ "adult";
+\end{lstlisting}
+
+Additionally, in scenarios
+like the Web where the untrusted third-party code changes quite often,
+it is difficult for the developer to keep up with the changes and
+modify the \emph{what} policy specifications accordingly. For
+instance, consider the program snippet in Listing~\ref{egLeak} where
+the displayed advertisements for some web-page depend on the viewer's
+age. The exact age is considered sensitive data, but in order to
+provide its functionality only  an abstraction of the age is required,
+namely whether \lstinline{age < 18}. The developer might specify
+\lstinline{declassify(age < 18)} as a declassification policy.
+However, different jurisdictions might entail adaptations to this rule  
+(requiring a different check on \lstinline{age}), resulting in a
+cumbersome process where the developer needs to update the policy
+frequently. If, however, the developer associates a budget of $3$ with
+the initial value in the variable \lstinline{age} (meaning that only
+$3$ bits of information about \lstinline{age} are allowed to leak),
+this example will be accepted in the envisioned model. If the
+advertiser changes the criteria to include another check whether the
+user is a teenager, this comparison can be included without requiring 
+any change to the policy. The soundness of the underlying enforcement 
+would ensure that no more information than the specified budget can
+ever leak.  
+
+Bounding information leaks has additional advantages --- it provides 
+a formal meaning for allowing certain operations like the one 
+described in Listing~\ref{egLeak} while establishing important
+security properties related to them. There are a number of 
+real-world programs that allow a limited number of such 
+operations to be performed, e.g., a password checker allows $3$ tries
+before it locks the user's account. 
+
+Bounding information leaks in a purely dynamic setting is still largely 
+an open problem. As the property of non-interference does not allow 
+any information release, this chapter proposes a new security 
+property, \emph{limited information release}, an end-to-end guarantee 
+that allows the flow of secret information to public channels in a 
+controlled manner by declassifying fragments of the secret. The 
+policy enforces that the only information leaked about the secrets 
+by a program is bounded by their pre-specified budgets. 
+A sound enforcement of the property is described and proven sound 
+information-theoretically by coding the outputs generated through
+information releases and showing that the output codes are
+uniquely-decodable. We utilize an important result by
+Shannon~\cite{shannon}, which states  that the average length of
+uniquely-decodable codes upper bounds the Shannon entropy of the
+outputs. 
+
+% The challenge, however, is to build an enforcement mechanism that
+% quantifies such information leaks soundly at runtime. As  a solution,
+% this chapter proposes \emph{limited information release}, an
+% information release policy that allows the flow of secret information
+% to public channels in a controlled manner by declassifying fragments
+% of the secret. The 
+% policy enforces that the information leaked about the secrets by a
+% program is bounded by the specified budgets. The soundness of
+% the approach is proven by coding the outputs generated through
+% information leaks and by showing that the codes are
+% uniquely-decodable. The proof utilizes an important result
+% by~\cite{shannon} that the average length of uniquely-decodable codes
+% upper bounds the Shannon entropy of the outputs. 
+
+% \medskip
+
+\input{chapters/lir/overview}
+\input{chapters/lir/lir-policy}
+\input{chapters/lir/language}
+\input{chapters/lir/dynamicqif}
+\input{chapters/lir/decoding}

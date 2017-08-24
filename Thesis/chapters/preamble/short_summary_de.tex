@@ -1,0 +1,39 @@
+\section*{Kurzzusammenfassung}
+
+Seit Jahren werden Computersysteme und -Anwendungen immer komplexer
+und verarbeiten eine Unmenge private und sensible Daten. Die
+Komplexit\"at der Anwendungen tr\"agt neben der Existenz von (un)gewollt
+eingef\"ugten Software Fehlern zur Weitergabe dieser sensiblen
+Informationen bei. Information Flow Control (IFC, zu Deutsch
+Informations-Fluss-Analyse) Mechanismen sind Gegenstand intensiver
+Forschung um diesem Problem entgegen zu wirken. Grunds\"atzlich basieren
+diese Ans\"atze auf der Anwendung von vordefinierten Sicherheitsregeln,
+die die Unbeeinflussbarkeit (engl. non-interference) garantieren. Der
+\"uberwiegende Teil dieser Techniken nutzt statische Analyse zur
+Erzeugung der Regeln. Dem gegen\"uber steht die Tatsache, dass
+Anwendungen, insbesondere im Bereich Web-Anwendungen, in dynamischen
+Sprachen wie JavaScript entwickelt werden, wodurch rein statische
+Analysen unzureichend sind. Dynamische Methoden auf der anderen Seite
+approximieren das Verhalten einer Anwendung und k\"onnen daher die
+grundlegende non-interference nicht garantieren. Sie tendieren dazu
+besonders restriktive Regeln zu erzeugen, wodurch auch der rechtm{\"a}{\ss}ige
+Zugriff auf Information verweigert wird. Beide Ans\"atze sind daher
+nicht zur Anwendung auf Systeme in der realen Welt geeignet.
+
+Das Ziel dieser Arbeit besteht darin die Benutzbarkeit von dynamischen
+IFC Mechanismen zu verbessern indem Techniken entwickelt werden, die
+die Genauigkeit und Toleranz steigern. Die Arbeit pr\"asentiert eine
+korrekte (engl. 'sound') Erweiterung der permissive-upgrade Strategie
+(eine Standardstrategie f\"ur dynamische IFC), die die Toleranz der
+Strategie verbessert und sie weithin anwendbar macht. Dar\"uber hinaus
+pr\"asentiere ich eine neue dynamische IFC Analyse, die auch komplexe
+Funktionen, wie unstruktierte Kontrollfl\"usse und Exceptions in
+Hochsprachen, abbildet. Obwohl Unbeeinflussbarkeit eine w\"unschenswerte
+Eigenschaft ist, gibt es Anwendungen, die rechtm{\"a}{\ss}igen Zugang zu
+sensiblen Daten ben\"otigen um ihre Funktion zu erf\"ullen. Um dies zu
+erm\"oglichen pr\"asentiert diese Arbeit einen Ansatz, der die ungewollte
+Weitergabe von Information quantifiziert und anhand eines
+vordefinierten Grenzwertes freigibt. Diese Techniken wurden in einen
+Web-Browser integriert, welcher es erlaubt die Definition von
+flexiblen und n\"utzlichen Informationsflussregeln f\"ur Web Anwendungen
+umzusetzen. 

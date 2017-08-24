@@ -1,0 +1,78 @@
+\section{Generalization of the Improved Permissive-Upgrade Strategy}
+\label{sec:gen:ipus}
+Austin and Flanagan point out that permissive-upgrade on a two-point
+lattice can be generalized to a pointwise product of such
+lattices. This generalization can also be extended to the improved 
+permissive-upgrade strategy presented in the previous chapter. 
+Specifically, let $X$ be an index set --- these
+indices are called principals in~\cite{plas10}. Let a label $l$ be a
+map of type $X \rightarrow \{L, H, P\}$ and let the subclass of pure
+labels contain maps $\lab, \pc$ of type $X \rightarrow \{L, H\}$. The
+order $\sqsubset$ and the join operation $\sqcup$ can be generalized
+pointwise to these labels. Finally, the rule \refrule{bs:cmd:ap} can be
+generalized pointwise by replacing it with the following rule:
+\begin{mathpar}
+\inferrule*[left=\mbox{\labelthis{bs:cmd:agp}{assn-gpus}}]
+{l := \Gamma(\sigma(\TT{x})) \qquad \langle
+    \sigma, \expr \rangle \bsexp \TT{n}^m} {\langle  \sigma,
+    \TT{x} := \expr  \rangle \bscmd \sigma[\TT{x} \mapsto
+    \TT{n}^{k}]} 
+\end{mathpar}
+where $k$ is defined as follows:
+\[ k(a) = % \left\lbrace
+\begin{cases}
+m(a) & \mbox{ if } \pc(a) = L \\
+H  & \mbox{ if } \pc(a) = H \mbox{ and } l(a) = H\\
+P & \mbox{ otherwise}
+\end{cases} % \right.
+\]
+It can be shown that for any semantic
+derivation in this generalized system, projecting all labels to a
+given principal yields a valid semantic derivation in the system with
+a two-point lattice. This immediately implies non-interference for the
+generalized system, where observations are \textbf{limited} to individual
+principals. 
+
+
+\begin{mydef}
+\label{def:eq-existing}
+  Two labeled values $\emph{\TT{n}}_1^k$ and $\emph{\TT{n}}_2^m$ are $a$-equivalent,
+  written $\emph{\TT{n}}_1^k \approx^a \emph{\TT{n}}_2^m$, iff either:
+  \begin{enumerate}
+  \item $k(a) = m(a) = L$ and $\emph{\TT{n}}_1 = \emph{\TT{n}}_2$ or
+  \item $k(a) = m(a) = H$ or
+  \item $k(a) = P$ or $m(a) = P$
+  \end{enumerate}
+\end{mydef}
+
+\begin{mydef}[Store equivalence]
+  Two stores $\sigma_1$ and $\sigma_2$ are $\lab$-equivalent,
+  written $\sigma_1 \approx^a  \sigma_2$, iff for every variable \emph{\TT{x}},
+  $\sigma_1(\emph{\TT{x}}) \approx^a  \sigma_2(\emph{\TT{x}})$.
+\end{mydef}
+
+\begin{myThm}[TINI for permissive-upgrade with a product lattice]
+  With the assignment rule \refrule{bs:cmd:agp}, if $~\sigma_1
+  \approx^a \sigma_2$ and $\langle \sigma_1, c \rangle \bscmd
+  \sigma_1' $ and $\langle \sigma_2, c \rangle \bscmd \sigma_2'
+  $, then $\sigma_1' \approx^a \sigma_2'$.
+\end{myThm}
+\begin{proof} Outlined above.
+\end{proof}
+
+% \paragraph{Remark} This generalization also makes sense if the 
+% principals are pre-ordered by a relation, say, $\leq$, with $a \leq b$
+% meaning that ``if $a$ has access, then $b$ must have access''. It can
+% be proved that the following is an \emph{invariant} on all labels $l$
+% that arise during program execution: $((a \leq b) \mathrel{\wedge}
+% (l(a) = L)) \implies l(b) = L$. Hence, the intuitive meaning of the
+% order $\leq$ is preserved during execution.
+
+This generalization of the two-point lattice to a \emph{product}
+of such lattices is interesting because a \emph{powerset} lattice
+can be simulated using such a product. However, this still leaves open
+the question of constructing a generalization of permissive-upgrade to
+an \emph{arbitrary} lattice (for instance, lattices like the one shown
+in Figure~\ref{fig:lattice}). Such a generalization is developed in
+the next section.
+

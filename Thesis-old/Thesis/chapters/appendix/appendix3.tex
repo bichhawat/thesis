@@ -1,0 +1,1867 @@
+\newpage
+\section{Proofs for Limited Information Release}
+\label{sec:app:lir}
+
+\begin{myLemma}[Trace-projection]
+\label{lem:app:lir:tp}
+$(\trace_1::\trace_2)\proj =~\trace_1\proj::\trace_2\proj$
+\end{myLemma}
+\begin{proof}
+By induction on $\trace_1$.\\
+Base case: If $\trace_1 = []$, then $([] :: \trace_2)\proj =
+\trace_2\proj = []::\trace_2\proj = []\proj :: \trace_2\proj$.\\
+Inductive case: IH: $(\trace_1::\trace_2)\proj
+=~\trace_1\proj::\trace_2\proj$ \\
+TS: $((\TT{n}^m:: \trace_1)::\trace_2)\proj
+=~(\TT{n}^m::\trace_1)\proj::\trace_2\proj$\\
+\begin{align}
+(\TT{n}^m::\trace_1)\proj = 
+  \begin{cases}
+   \TT{n}^m :: \trace_1\proj~ & \mathit{if }~ m \sqsubseteq \attacker,\\
+   \trace_1\proj & \mathit{else}.
+  \end{cases}
+\end{align}
+Also by associativity of list concatentation, $((\TT{n}^m::
+\trace_1)::\trace_2) = (\TT{n}^m:: (\trace_1::\trace_2))$. Again, 
+\begin{align}
+(\TT{n}^m:: (\trace_1::\trace_2))\proj = 
+  \begin{cases}
+   \TT{n}^m :: (\trace_1::\trace_2)\proj~ & \mathit{if }~ m \sqsubseteq \attacker,\\
+   (\trace_1::\trace_2)\proj & \mathit{else}.
+  \end{cases}
+\end{align}
+If $m \sqsubseteq \attacker$: 
+from (2), LHS = $\TT{n}^m :: (\trace_1::\trace_2)\proj$ and from (1), RHS =
+$\TT{n}^m::\trace_1\proj::\trace_2\proj$. From IH, LHS = RHS.
+Else: 
+from (2), LHS = $(\trace_1::\trace_2)\proj$ and from (1), RHS =
+$\trace_1\proj::\trace_2\proj$. From IH, LHS = RHS.
+\end{proof}
+
+\begin{myLemma}[Confinement of expressions]
+  \label{lem:app:lir:confe}
+  If \\
+  $\langle \sigma, \iota, \expr \rangle
+  \lirsem \emph{\TT{n}}^{(m, \dep)}, \iota', \trace$,
+  and $\Gamma(\pc) \not\sqsubseteq \attacker$, then 
+  $\iota \eq \iota'$ and $\trace\proj = \emptyTrace$
+\end{myLemma}
+
+\begin{proof}
+  Proof by induction on the derivation for expressions and case analysis on
+  the last rule. 
+  \begin{itemize}[leftmargin=.5in]
+
+  \item\refrule{lir:exp:c} and \refrule{lir:exp:v}: $\iota = \iota'$ and $\trace =  \emptyTrace$
+
+  \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop}: \\
+    IH1: If $\langle \sigma, \iota, \expr_1 \rangle
+    \lirsem \TT{n}_1^{(m_1, \dep_1)}, \iota_1, \trace_1$,
+    and $\pc \not\sqsubseteq \attacker$, then $\iota \eq \iota_1$
+    and $\trace_1\proj = \emptyTrace$\\
+    IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle
+    \lirsem \TT{n}_2^{(m_2, \dep_2)}, \iota', \trace_2$,
+    and $\pc \not\sqsubseteq \attacker$, then $\iota_1 \eq \iota'$
+    and $\trace_2\proj = \emptyTrace$\\
+    As $\pc \not\sqsubseteq \attacker$, $\iota \eq \iota_1$
+    and $\trace_1\proj = \emptyTrace$ and $\iota_1 \eq \iota'$
+    and $\trace_2\proj = \emptyTrace$. Thus,
+    $(\trace_1\proj::\trace_2\proj) = (\trace_1::\trace_2)\proj 
+    =\emptyTrace$. \\
+    As $\iota \eq \iota_1$, $\forall \TT{x} \in \iota. \blabel(\TT{x})
+    \sqsubseteq \attacker \implies \iota(\TT{x}) = \iota_1(\TT{x})$ and $\iota_1 
+    \eq \iota'$, $\forall \TT{x} \in \iota_1. \blabel(\TT{x}) 
+    \sqsubseteq \attacker \implies \iota_1(\TT{x}) = \iota'(\TT{x})$. Thus, $\forall
+    \TT{x} \in \iota. \blabel(\TT{x}) \sqsubseteq \attacker \implies \iota(\TT{x}) =
+    \iota'(\TT{x})$.
+
+  \item\refrule{lir:exp:dr}: From above reasoning, $\trace_1\proj::\trace_2\proj =
+    (\trace_1::\trace_2)\proj = \emptyTrace$ and $\forall
+    \TT{x} \in \iota. \blabel(\TT{x}) \sqsubseteq \attacker \implies \iota(\TT{x}) =
+    \iota_2(\TT{x})$. As $\pc \sqsubseteq k_o$ and $\pc \not\sqsubseteq
+    \attacker$, $k_o \not\sqsubseteq \attacker$. $\iota_2$ changes for
+    only those $x$ that have a budget label $\blabel(\TT{x}) \sqsupseteq
+    k_o$. Thus, $\forall \TT{x} \in \iota. \blabel(\TT{x}) \sqsubseteq \attacker
+    \implies \iota(\TT{x}) = \iota'(\TT{x})$. As $l \not\sqsubseteq \attacker$,
+    $\TT{n}^l\proj = \emptyTrace$. Thus, $\trace\proj =
+    (\trace_1::\trace_2::\TT{n}^l)\proj = \emptyTrace$
+
+  \item\refrule{lir:exp:dn}: From above reasoning, $\trace_1\proj::\trace_2\proj =
+    (\trace_1::\trace_2)\proj = \emptyTrace$ and $\forall
+    \TT{x} \in \iota. \blabel(\TT{x}) \sqsubseteq \attacker \implies \iota(\TT{x}) =
+    \iota_2(\TT{x})$. $\trace\proj = \emptyTrace$.
+  \end{itemize}
+\end{proof}
+
+\begin{myLemma}[Confinement]
+  \label{lem:app:lir:conf}
+  If $\langle \sigma, \iota, \comm \rangle
+  \lirsem \langle \sigma', \iota', \trace \rangle$,
+  and $\Gamma(\pc) \not\sqsubseteq \attacker$, then $\sigma \eq
+  \sigma'$, $\iota \eq \iota'$ and $\trace\proj = \emptyTrace$
+\end{myLemma}
+
+\begin{proof}
+  Proof by induction on the derivation for commands and case analysis on
+  the last rule.
+
+  \begin{itemize}[leftmargin=.5in]
+  \item\refrule{lir:cmd:sk}: $\sigma = \sigma'$, $\iota = \iota'$ and $\trace =
+    \emptyTrace$
+
+  \item\refrule{lir:cmd:an}: As $\pc \not\sqsubseteq \attacker$ and $\pc \sqsubseteq
+    \Gamma_f(\sigma(\TT{x}))$, $\Gamma_f(\sigma(\TT{x})) \not\sqsubseteq
+    \attacker$. Also, $(\Gamma_f(\sigma'(\TT{x})) = \pc \sqcup m)
+    \not\sqsubseteq \attacker$ and all other $\sigma(\TT{x})$ remains
+    unchanged. Thus, $\sigma \eq \sigma'$. From
+    Lemma~\ref{lem:app:lir:confe}, $\iota \eq \iota'$ and $\trace\proj
+    = \emptyTrace$.
+
+  \item\refrule{lir:cmd:s}: IH1: If $\langle \sigma, \iota, \comm_1 \rangle
+    \lirsem \langle \sigma', \iota', \trace_1 \rangle$,
+    and $\pc \not\sqsubseteq \attacker$, then $\sigma \eq
+    \sigma'$, $\iota \eq \iota'$ and $\trace_1\proj =
+    \emptyTrace$\\
+    IH2: If $\langle \sigma', \iota', \comm_2 \rangle
+    \lirsem \langle \sigma'', \iota'', \trace_2 \rangle$,
+    and $\pc \not\sqsubseteq \attacker$, then $\sigma' \eq
+    \sigma''$, $\iota' \eq \iota''$ and $\trace_2\proj =
+    \emptyTrace$\\
+    As $\eq$ is an equivalence relation, from IH1 and IH2,
+    $\sigma \eq \sigma''$, $\iota \eq \iota''$. From
+    Lemma~\ref{lem:app:lir:tp}, $(\trace_1 :: \trace_2) \proj = \emptyTrace$.
+
+  \item\refrule{lir:cmd:ie}: IH: If $\langle \sigma, \iota', \comm_i \rangle
+    \lirsemup \langle \sigma', \iota'', \trace_2 \rangle$,
+    and $\pc \sqcup (k, \dep) \not\sqsubseteq \attacker$, then $\sigma \eq
+    \sigma'$, $\iota' \eq \iota''$ and $\trace_2\proj =
+    \emptyTrace$\\
+    From Lemma~\ref{lem:app:lir:confe}, $\iota \eq \iota'$
+    and $\trace_1\proj = \emptyTrace$. Also, as $\pc \not\sqsubseteq
+    \attacker$, $\pc \sqcup l \not\sqsubseteq \attacker$ and from IH,
+    $\sigma \eq \sigma'$, $\iota' \eq \iota''$ and
+    $\trace_2\proj = \emptyTrace$. Thus, $\iota \eq \iota''$ and
+    $(\trace_1::\trace_2)\proj = \emptyTrace$
+
+  \item\refrule{lir:cmd:wt}: Similar to \refrule{lir:cmd:ie} and \refrule{lir:cmd:s}
+
+  \item\refrule{lir:cmd:wf}: $\sigma = \sigma'$. From Lemma~\ref{lem:app:lir:confe}, $\iota
+    \eq \iota'$ and $\trace\proj = \emptyTrace$
+  \end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:exptrli}
+If \\
+$\langle \sigma, \iota, \expr \rangle \lirsem \emph{\TT{n}}^{(l, \dep)},
+\iota', \trace$ and 
+$\exists \emph{\TT{x}} \in \sigma. \Big(\Gamma(\sigma(\emph{\TT{x}}))
+\not\sqsubseteq \attacker \wedge \big(\forall \emph{\TT{y}} \in
+\sigma. \emph{\TT{y}} \neq \emph{\TT{x}} \wedge 
+\Gamma(\sigma(\emph{\TT{y}})) \sqsubseteq \attacker\big)\Big)$, \\ then 
+$|\trace\proj| \leq \iota\proj(\emph{\TT{x}}) - \iota'\proj(\emph{\TT{x}})$. 
+\end{myLemma}
+\begin{proof}
+  Induction on the derivation for expressions and case analysis on the
+  last rule. 
+  \begin{itemize}[leftmargin=.5in]
+  \item\refrule{lir:exp:c}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+  \item\refrule{lir:exp:v}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+  \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop}: IH1: If $\langle \sigma, \iota, \expr_1 \rangle \lirsem  
+    \TT{n}_1^{(k_1, \dep_1)}, \iota_1, \trace_1$, and \\
+    $\exists \TT{x} \in \sigma. \Big(\Gamma(\sigma(\TT{x}))
+    \not\sqsubseteq \attacker \wedge \big(\forall \TT{y} \in \sigma. \TT{y} \neq \TT{x} \wedge
+    \Gamma(\sigma(\TT{y})) \sqsubseteq \attacker\big)\Big)$ then 
+    $|\trace_1\proj| \leq \iota\proj(\TT{x}) - \iota_1\proj(\TT{x})$. \\
+    IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle \lirsem  
+    \TT{n}_2^{(k_2, \dep_2)}, \iota', \trace_2$, and \\
+$\exists \TT{x} \in \sigma. \Big(\Gamma(\sigma(\TT{x}))
+\not\sqsubseteq \attacker \wedge \big(\forall \TT{y} \in \sigma. \TT{y} \neq \TT{x} \wedge
+\Gamma(\sigma(\TT{y})) \sqsubseteq \attacker\big)\Big)$ then  
+    $|\trace_2\proj| \leq \iota_1\proj(\TT{x}) - \iota'\proj(\TT{x})$. \\
+    From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| = \iota\proj(\TT{x}) -
+    \iota'\proj(\TT{x})$. Thus, $|(\trace_1::\trace_2)\proj| \leq \iota\proj(\TT{x}) -
+    \iota'\proj(\TT{x})$.
+  \item\refrule{lir:exp:dr}: Similar to \refrule{lir:exp:cop}, $|(\trace_1::\trace_2)\proj| \leq \iota\proj(\TT{x}) -
+    \iota_2\proj(\TT{x})$. Either:
+    \begin{itemize}
+      \item $k_o \sqsubseteq \attacker \wedge \TT{x} \in
+        \dep_o. \ilabel(\TT{x}) \not\sqsubseteq \attacker$: If $x \in
+        \dep. (\blabel(\TT{x}) \not\sqsubseteq \attacker) \implies l
+        \not\sqsubseteq \attacker$. Thus, $|\trace\proj| =
+        |\trace_1\proj| + |\trace_2\proj|$. As $\iota_2 = \iota'$,
+        $|\trace\proj| \leq \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$. \\ If 
+        $x \in \dep. (\blabel(\TT{x}) \sqsubseteq \attacker)
+        \implies l \sqsubseteq \attacker$ and $\iota'(\TT{x}) = \iota_2(\TT{x})
+        - 1$. $\trace = \trace_1 :: \trace_2 :: \TT{n}^l$. $|\trace\proj| =
+        |\trace_1\proj| + |\trace_2\proj| + 1$. Thus, $|\trace\proj|
+        \leq \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$. \\ If $\dep = \emptyset$ then
+        $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+        \iota_2$. Thus, $|\trace\proj| \leq \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$ 
+      \item $k_o \not\sqsubseteq \attacker$: $l \not\sqsubseteq
+        \attacker$. Thus, $|\trace\proj| = |\trace_1\proj| +
+        |\trace_2\proj|$. As $\iota_2 = \iota'$, $|\trace\proj| \leq
+        \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$. % If $\dep = \emptyset$ then  
+        % $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+        % \iota_2$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$
+    \end{itemize}
+  \item\refrule{lir:exp:dn}: Similar to \refrule{lir:exp:cop}, $|(\trace_1::\trace_2)\proj| \leq \iota\proj -
+    \iota_2\proj$. Thus, $|\trace\proj| \leq \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$
+  \end{itemize}
+\end{proof}
+
+\begin{myThm}[LIR for a single secret]
+\label{lem:app:lir:cmdtrli}
+If $\langle \sigma, \iota, \comm \rangle \lirsem \langle
+  \sigma', \iota', \trace \rangle$, and \\
+$\exists \emph{\TT{x}} \in \sigma. \Big(\Gamma(\sigma(\emph{\TT{x}}))
+\not\sqsubseteq \attacker \wedge \big(\forall \emph{\TT{y}} \in
+\sigma. \emph{\TT{y}} \neq \emph{\TT{x}} \wedge
+\Gamma(\sigma(\emph{\TT{y}})) \sqsubseteq \attacker\big)\Big)$, \\  then 
+$|\trace\proj| \leq \iota\proj(\emph{\TT{x}}) - \iota'\proj(\emph{\TT{x}})$. 
+\end{myThm}
+\begin{proof}
+  Induction on the derivation for commands and case analysis on the
+  last rule.  
+  \begin{itemize}[leftmargin=.5in]
+    \item\refrule{lir:cmd:sk}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+    \item\refrule{lir:cmd:an}: From Lemma~\ref{lem:app:lir:exptrli}.
+    \item\refrule{lir:cmd:s}: IH1: If $\langle \sigma, \iota, \comm_1 \rangle
+      \lirsem \langle \sigma', \iota', \trace_1 \rangle$, and \\
+      $\exists \TT{x} \in \sigma. \Big(\Gamma(\sigma(\TT{x}))
+      \not\sqsubseteq \attacker \wedge \big(\forall \TT{y} \in
+      \sigma. \TT{y} \neq \TT{x} \wedge 
+      \Gamma(\sigma(\TT{y})) \sqsubseteq \attacker\big)\Big)$ then 
+      $|\trace_1\proj| \leq \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$. \\
+      IH2: If $\langle \sigma', \iota', \comm_2 \rangle
+      \lirsem \langle \sigma'', \iota'', \trace_2 \rangle$, and\\
+      $\exists \TT{x} \in \sigma. \Big(\Gamma(\sigma(\TT{x}))
+      \not\sqsubseteq \attacker \wedge \big(\forall \TT{y} \in \sigma. \TT{y} \neq \TT{x} \wedge
+      \Gamma(\sigma(\TT{y})) \sqsubseteq \attacker\big)\Big)$ then 
+      $|\trace_2\proj| \leq \iota'\proj(\TT{x}) - \iota''\proj(\TT{x})$. \\
+      $x \in \sigma \implies \TT{x} \in \sigma_1$.\\
+      From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| \leq
+      \iota\proj(\TT{x}) - \iota''\proj(\TT{x})$. Thus, $|\trace\proj| \leq \iota\proj(\TT{x})
+      - \iota''\proj(\TT{x})$. 
+    \item\refrule{lir:cmd:ie}: From Lemma~\ref{lem:app:lir:exptrli}, $|\trace_1\proj| \leq
+      \iota\proj(\TT{x}) - \iota'\proj(\TT{x})$. \\
+      IH: If $\langle \sigma, \iota', \comm_i \rangle
+      \lirsemup \langle \sigma', \iota'', \trace_2 \rangle$, and\\
+      $\exists \TT{x} \in \sigma. \Big(\Gamma(\sigma(\TT{x}))
+      \not\sqsubseteq \attacker \wedge \big(\forall \TT{y} \in \sigma. \TT{y} \neq \TT{x} \wedge
+      \Gamma(\sigma(\TT{y})) \sqsubseteq \attacker\big)\Big)$  then 
+      $|\trace_2\proj| \leq \iota'\proj(\TT{x}) - \iota''\proj(\TT{x})$. \\
+      From IH and Lemma~\ref{lem:app:lir:exptrli}, $|\trace\proj| \leq
+      \iota\proj(\TT{x}) - \iota''\proj(\TT{x})$. 
+    \item\refrule{lir:cmd:wt}: Similar to \refrule{lir:cmd:ie}
+    \item\refrule{lir:cmd:wf}: From Lemma~\ref{lem:app:lir:exptrli}.
+  \end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:exptrl}
+If $\langle \sigma, \iota, \expr \rangle \lirsem \emph{\TT{n}}^{(l, \dep)},
+\iota', \trace$, then  
+$|\trace\proj| \leq \iota\proj - \iota'\proj$. 
+\end{myLemma}
+\begin{proof}
+  Induction on the derivation for expressions and case analysis on the
+  last rule. 
+  \begin{itemize}[leftmargin=.5in]
+  \item\refrule{lir:exp:c}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+  \item\refrule{lir:exp:v}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+  \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop}:\\
+    IH1: If $\langle \sigma, \iota, \expr_1 \rangle \lirsem  
+    \TT{n}_1^{(k_1, \dep_1)}, \iota_1, \trace_1$, then 
+    $|\trace_1\proj| \leq \iota\proj - \iota_1\proj$. \\
+    IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle \lirsem  
+    \TT{n}_2^{(k_2, \dep_2)}, \iota', \trace_2$, then  
+    $|\trace_2\proj| \leq \iota_1\proj - \iota'\proj$. \\
+    From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| = \iota\proj -
+    \iota'\proj$. Thus, $|(\trace_1::\trace_2)\proj| \leq \iota\proj -
+    \iota'\proj$.
+  \item\refrule{lir:exp:dr}: Similar to \refrule{lir:exp:cop}, $|(\trace_1::\trace_2)\proj| \leq \iota\proj -
+    \iota_2\proj$. Either:
+    \begin{itemize}
+      \item $k_o \sqsubseteq \attacker \wedge \forall \TT{x} \in
+        \dep_o. \ilabel(\TT{x}) \sqsubseteq \attacker$: If $\dep \neq
+        \emptyset$ then $\exists x. \iota_2(\TT{x}) > 0$ and $\iota_2(\TT{x})
+        -\iota'(\TT{x}) =1$. For more than one $x$, $\iota_2\proj -
+        \iota'\proj \geq 1$. Also, $\trace = \trace_1 :: \trace_2 ::
+        \TT{n}^l$. $|\trace\proj| = |\trace_1\proj| + |\trace_2\proj| +
+        1$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$ 
+      \item $k_o \sqsubseteq \attacker \wedge \exists \TT{x} \in
+        \dep_o. \ilabel(\TT{x}) \not\sqsubseteq \attacker$: If $\exists \TT{x} \in
+        \dep. (\blabel(\TT{x}) \not\sqsubseteq \attacker) \implies l
+        \not\sqsubseteq \attacker$. Thus, $|\trace\proj| =
+        |\trace_1\proj| + |\trace_2\proj|$. As $\iota_2 = \iota'$,
+        $|\trace\proj| \leq \iota\proj - \iota'\proj$. \\ If 
+        $\forall \TT{x} \in \dep. (\blabel(\TT{x}) \sqsubseteq \attacker)
+        \implies l \sqsubseteq \attacker$ and $\iota'(\TT{x}) = \iota_2(\TT{x})
+        - 1$. $\trace = \trace_1 :: \trace_2 :: \TT{n}^l$. $|\trace\proj| =
+        |\trace_1\proj| + |\trace_2\proj| + 1$. Thus, $|\trace\proj|
+        \leq \iota\proj - \iota'\proj$. \\ If $\dep = \emptyset$ then
+        $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+        \iota_2$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$ 
+      \item $k_o \not\sqsubseteq \attacker$: $l \not\sqsubseteq
+        \attacker$. Thus, $|\trace\proj| =
+        |\trace_1\proj| + |\trace_2\proj|$. As $\iota_2 = \iota'$,
+        $|\trace\proj| \leq \iota\proj - \iota'\proj$. If 
+        $\dep = \emptyset$ then 
+        $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+        \iota_2$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$
+    \end{itemize}
+  \item\refrule{lir:exp:dn}: Similar to \refrule{lir:exp:cop}, $|(\trace_1::\trace_2)\proj| \leq \iota\proj -
+    \iota_2\proj$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$
+  \end{itemize}
+\end{proof}
+
+\begin{myThm}[LIR]
+\label{thm:app:lir:cmdtrl}
+If $\langle \sigma, \iota, \comm \rangle \lirsem \langle
+  \sigma', \iota', \trace \rangle$, then 
+$|\trace\proj| \leq \iota\proj - \iota'\proj$. 
+\end{myThm}
+\begin{proof}
+  Induction on the derivation for commands and case analysis on the
+  last rule.  
+  \begin{itemize}[leftmargin=.5in]
+    \item\refrule{lir:cmd:sk}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+    \item\refrule{lir:cmd:an}: From Lemma~\ref{lem:app:lir:exptrl}.
+    \item\refrule{lir:cmd:s}: IH1: If $\langle \sigma, \iota, \comm_1 \rangle
+      \lirsem \langle \sigma', \iota', \trace_1 \rangle$, then 
+      $|\trace_1\proj| \leq \iota\proj - \iota'\proj$. \\
+      IH2: If $\langle \sigma', \iota', \comm_2 \rangle
+      \lirsem \langle \sigma'', \iota'', \trace_2 \rangle$, then 
+      $|\trace_2\proj| \leq \iota'\proj - \iota''\proj$. \\
+      From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| \leq
+      \iota\proj - \iota''\proj$. Thus, $|\trace\proj| \leq \iota\proj
+      - \iota''\proj$. 
+    \item\refrule{lir:cmd:ie}: From Lemma~\ref{lem:app:lir:exptrl}, $|\trace_1\proj| \leq
+      \iota\proj - \iota'\proj$. \\
+      IH: If $\langle \sigma, \iota', \comm_i \rangle
+      \lirsemup \langle \sigma', \iota'', \trace_2 \rangle$, then 
+      $|\trace_2\proj| \leq \iota'\proj - \iota''\proj$. \\
+      From IH and Lemma~\ref{lem:app:lir:exptrl}, $|\trace\proj| \leq
+      \iota\proj - \iota''\proj$. 
+    \item\refrule{lir:cmd:wt}: Similar to \refrule{lir:cmd:ie}
+    \item\refrule{lir:cmd:wf}: From Lemma~\ref{lem:app:lir:exptrl}.
+  \end{itemize}
+\end{proof}
+
+%%% Expression evaluation preserves budget equivalence and the length
+%%% of the trace generated
+% \begin{myLemma}
+% \label{lem:app:lir:expbtl}
+% If 
+% $\langle \sigma, \iota_1, \expr \rangle \lirsem 
+% \TT{n}_1^{(k_1, \dep_1)}, \iota', \trace'$ and \\
+% $\langle \sigma', \iota_2, \expr \rangle \lirsem 
+% \TT{n}_2^{(k_2, \dep_2)}, \iota'', \trace''$ and\\ $\pc \sqsubseteq \attacker$ and $\sigma
+% \eq \sigma'$ and $\iota_1 \eq \iota_2$, then \\
+% $\iota' \eq \iota''$ and $|\trace'\proj| =
+% |\trace''\proj|$ and $(k_1,\dep_1) \eq (k_2, \dep_2)$ 
+% \end{myLemma}
+
+% \begin{proof}
+%   Proof by induction on the derivation for expressions and case analysis
+%   on the last rule.
+
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:exp:c}: $\iota' = \iota_1 \eq \iota_2 = \iota''$,
+%     $\trace' = \trace'' = \emptyTrace$. \\ 
+%     $\bot = \bot$ and $\{\} = \{\}$. 
+
+%   \item\refrule{lir:exp:v}: $\iota' = \iota_1 \eq \iota_2 = \iota''$,
+%     $\trace' = \trace'' = \emptyTrace$. As $\sigma \eq
+%     \sigma'$, $\TT{n}_1^{(k_1,\dep_1)} \eq
+%     \TT{n}_2^{(k_2,\dep_2)}$. Thus, either \\
+%     $k_1 = k_2$ and $\dep_1 = \dep_2$: 
+%     As $\dep_1 = \dep_2$ and $\iota_1 \eq \iota_2$, either 
+%     final $k_1 =k_2$ and $\dep_1 = \dep_2$ or $k_1 \not\sqsubseteq
+%     \attacker$ and $k_2 \not\sqsubseteq \attacker$ (or) \\
+%     $k_1 \not\sqsubseteq \attacker$ and $k_2 \not\sqsubseteq
+%     \attacker$. Thus, final  $k_1 \not\sqsubseteq \attacker$ and $k_2 
+%     \not\sqsubseteq \attacker$
+
+%   \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop} IH1: If 
+%     $\langle \sigma, \iota_1, \expr_1 \rangle \lirsem
+%     n_{a_1}^{(l_{a_1}, \dep_{a_1})}, \iota_1', \trace_1'$ and 
+%     $\langle \sigma', \iota_2, \expr_1 \rangle \lirsem 
+%     n_{b_1}^{(l_{b_1}, \dep_{b_1})}, \iota_1'', \trace_1'' $ and 
+%     $\sigma \eq \sigma'$ and $\iota_1 \eq
+%     \iota_2$, then  $\iota_1' \eq \iota_1''$ and
+%     $|\trace_1'\proj| = |\trace_1''\proj|$ and $(l_{a_1},\dep_{a_1})
+%     \eq (l_{b_1}, \dep_{b_1})$. \\  
+%     IH2: If $\langle \sigma, \iota_1', \expr_2 \rangle \lirsem 
+%     n_{a_2}^{(l_{a_2}, \dep_{a_2})}, \iota_2', \trace_2'$ and $\langle 
+%     \sigma', \iota_1'', \expr_2 \rangle \lirsem 
+%     n_{b_2}^{(l_{b_2}, \dep_{b_2})}, \iota_2'', \trace_2'' $ and $\sigma
+%     \eq \sigma'$ and $\iota_1' \eq \iota_1''$,
+%     then $\iota_2' \eq \iota_2''$ and
+%     $|\trace_2'\proj| = |\trace_2''\proj|$ and $(l_{a_2},\dep_{a_2})
+%     \eq (l_{b_2}, \dep_{b_2})$.\\
+%     $k_1 = l_{a_1} \sqcup l_{a_2}$, $k_2 = l_{b_1} \sqcup l_{b_2}$ and 
+%     $\dep_1 = \dep_{a_1} \cup \dep_{a_2}$, $\dep_2 = \dep_{b_1} \cup
+%     \dep_{b_2}$. Thus, $(k_1, \dep_1) \eq (k_2, \dep_2)$. \\
+%     As $\iota_1 \eq \iota_2$ and $\sigma \eq
+%     \sigma'$, from IH1 $\iota_1' \eq \iota_1''$ and
+%     $|\trace_1'\proj| = |\trace_1''\proj|$. From IH2,
+%     $\iota_2' \eq \iota_2''$ and 
+%     $|\trace_2'\proj| = |\trace_2''\proj|$. \\
+%     Thus, $\iota' = \iota_2' \eq \iota_2'' = \iota''$.\\
+%     As $\trace' = \trace_1' :: \trace_2'$ and $\trace'' = \trace_1''
+%     :: \trace_2''$, $\trace'\proj = \trace_1'\proj :: \trace_2'\proj$
+%     and $\trace''\proj = \trace_1''\proj :: \trace_2''\proj$.
+%     Thus, $|\trace'\proj| = |\trace_1'\proj| + |\trace_2'\proj|$ and
+%     $|\trace''\proj| = |\trace_1''\proj| + |\trace_2''\proj|$. Hence,
+%     $|\trace'\proj| = |\trace''\proj|$. 
+
+%   \item\refrule{lir:exp:dr}: IH1 and IH2 are similar as above. Thus,
+%     $\iota_2' \eq \iota_2''$, $|\trace_1'\proj| =
+%     |\trace_1''\proj|$ and $|\trace_2'\proj| = |\trace_2''\proj|$. \\ 
+%     $l_{o_1} = l_{a_1} \sqcup l_{a_2}$, $l_{o_2} = l_{b_1} \sqcup l_{b_2}$ and 
+%     $\dep_{o_1} = \dep_{a_1} \cup \dep_{a_2}$, $\dep_{o_2} = \dep_{b_1} \cup
+%     \dep_{b_2}$. Thus, $(l_{o_1}, \dep_{o_1}) \eq (l_{o_2}, \dep_{o_2})$.\\    
+%     $\TT{n}_1 = n_{a_1} \aop n_{a_2}$ and $\TT{n}_2 = n_{b_1} \aop n_{b_2}$. \\
+%      From Definition~\ref{def:lir:leq} either: \\
+%      $(l_{o_1} = l_{o_2} = k_o \sqsubseteq \attacker) \wedge \dep_{o_1}
+%      = \dep_{o_2} = \dep_o$ and because $\iota_2' \eq
+%      \iota_2''$ either:  \\
+%      $l_{t_1} =l_{t_2}$ and $\dep_{t_1} = \dep_{t_2}$ or $l_{t_1} \not\sqsubseteq
+%      \attacker$ and $l_{t_2} \not\sqsubseteq \attacker$ (or) \\
+%      $l_{t_1} \not\sqsubseteq \attacker$ and $l_{t_2} \not\sqsubseteq
+%      \attacker$. Thus,  $l_{t_1} \not\sqsubseteq \attacker$ and $l_{t_2} 
+%      \not\sqsubseteq \attacker$. \\
+%      Again as $\iota_2' \eq \iota_2''$ either: $l_{1}
+%      =l_{2}$ and $\dep_{1} = \dep_{2} = \dep$ or $l_{1}
+%      \not\sqsubseteq  \attacker$ and $l_{2} \not\sqsubseteq
+%      \attacker$, and $\iota' \eq \iota''$. \\ 
+%      Hence, if $\dep \neq \emptyset$ then
+%      $\trace' = \trace_1' :: \trace_2' :: \TT{n}_1^{k_1}$ and $\trace'' =
+%      \trace_1'' :: \trace_2'' :: \TT{n}_2^{k_2}$  else  $\trace' = \trace_1' ::
+%      \trace_2'$ and $\trace'' =  \trace_1'' :: \trace_2''$.      Thus,
+%      $|\trace'\proj| = |\trace''\proj|$ and $(k_1, \dep_1)
+%      \eq (k_2, \dep_2)$.   (or)\\
+%      % $\Gamma(v_1) \not\sqsubseteq \attacker \wedge \Gamma(v_2)
+%      % \not\sqsubseteq \attacker$ and $(k_1 = k_2 \sqsubseteq \attacker)
+%      % \wedge \dep_1 = \dep_2$. 
+%      % Consider $\exists \TT{x} \in \dep_1. (\ilabel(\TT{x}) \sqsubseteq
+%      % \attacker)$. Either final $k_1 \not\sqsubseteq
+%      % \attacker \wedge k_2 \not\sqsubseteq \attacker$ or $k_1
+%      % \sqsubseteq \attacker  \wedge k_2 \sqsubseteq \attacker$. In both
+%      % cases, $\dep \neq \emptyset$ and
+%      % $\trace' = \trace_1' :: \trace_2' :: \TT{n}_1^{k_1}$ and $\trace'' =
+%      % \trace_1'' :: \trace_2'' :: \TT{n}_2^{k_2}$. As $\dep_1 = \dep_2$,
+%      % $\iota' \eq \iota''$ (or) \\ 
+%      if $l_{t_1} \not\sqsubseteq \attacker$ and $l_{t_2} 
+%      \not\sqsubseteq \attacker$, $k_1 \not\sqsubseteq \attacker \wedge k_2
+%      \not\sqsubseteq \attacker$. If $\dep_1 \neq \emptyset$ and
+%      $\dep_2 \neq \emptyset$ then $\trace' = \trace_1' :: \trace_2' ::
+%      \TT{n}_1^{k_1}$ and $\trace'' =  \trace_1'' :: \trace_2'' ::
+%      \TT{n}_2^{k_2}$ \\
+%      else if both are empty then $\trace' = \trace_1' ::
+%      \trace_2'$ and $\trace'' =  \trace_1'' :: \trace_2''$ \\
+%      else if one is empty and the other is not, w.l.o.g. $\trace' =
+%      \trace_1' :: \trace_2'::\TT{n}_1^{k_1}$ and $\trace'' =  \trace_1'' ::
+%      \trace_2''$. However, as $k_1 \not\sqsubseteq \attacker \wedge
+%      k_2\not\sqsubseteq \attacker$, $\trace'\proj = 
+%      \trace_1'\proj::\trace_2'\proj$ and $\trace''\proj = 
+%      \trace_1''\proj::\trace_2''\proj$. Also, $\forall x. \blabel(\TT{x})
+%      \sqsubseteq \attacker$, $k_1 \not\sqsubseteq \blabel(\TT{x}) \wedge
+%      k_2 \not\sqsubseteq \blabel(\TT{x})$. Thus, $\iota_2$ does not change
+%      for them. Hence, $\iota' \eq \iota''$ \\ 
+%      Thus, $|\trace'\proj| = |\trace''\proj|$ and $(k_1, \dep_1)
+%      \eq (k_2, \dep_2)$ .
+
+%    \item\refrule{lir:exp:dn}: Similar to aop.
+  
+%  \end{itemize}
+% \end{proof}
+
+% \begin{myLemma}
+% \label{lem:app:lir:explir}
+% If $\langle \sigma, \iota_1, \expr \rangle \lirsem 
+% \TT{n}_1^{(k_1, \dep_1)}, \iota', \trace'$ and \\
+% $\langle \sigma', \iota_2, \expr \rangle \lirsem 
+% \TT{n}_2^{(k_2, \dep_2)}, \iota'', \trace''$ and $\pc \sqsubseteq
+% \attacker$ and  \\
+% $\sigma' \eq \sigma$ and $\iota_1 \eq \iota_2$ and  
+% $\trace' \eq \trace''$, then \\ $\TT{n}_1^{(k_1, \dep_1)}
+% \eq \TT{n}_2^{(k_2, \dep_2)}$. 
+% \end{myLemma}
+% \begin{proof}
+%   Induction on the derivation and case analysis on the last rule. 
+%   From Lemma~\ref{lem:app:lir:expbtl}, $\iota' \eq \iota''$ and
+%   $|\trace'\proj| = |\trace''\proj|$.
+  
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:exp:c}: $\TT{n}_1 = \TT{n}_2$, $k_1 = k_2 = \bot$ and $\dep_1 = \dep_2 =
+%     \{\}$. 
+    
+%   \item\refrule{lir:exp:v}: As $\sigma \eq \sigma'$, $\sigma(\TT{x})
+%     \eq \sigma'(\TT{x})$ and $\TT{n}_1^{(m_1, \dep_1')}
+%     \eq \TT{n}_2^{(m_2, \dep_2')}$. From Lemma~\ref{lem:app:lir:expbtl},
+%     $(k_1, \dep_1) \eq (k_2, \dep_2)$. Thus, final
+%     $\TT{n}_1^{(k_1, \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$.
+
+%   \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop} 
+%     IH1: If $\langle \sigma, \iota', \expr_1 \rangle \lirsem 
+%     n_{a_1}^{(l_{a_1}, \dep_{a_1})}, \iota_1', \trace_1'$ and $\langle 
+%     \sigma', \iota'', \expr_1 \rangle \lirsem 
+%     n_{b_1}^{(l_{b_1}, \dep_{b_1})}, \iota_1'', \trace_1'' $ and $\sigma'
+%     \eq \sigma$ and $\iota' \eq \iota''$ and
+%     $\trace_1' \eq \trace_1''$,   then \\
+%     $n_{a_1}^{(l_{a_1}, \dep_{a_1})} \eq n_{b_1}^{(l_{b_1},
+%       \dep_{b_1})}$. \\ 
+%     IH2: If $\langle \sigma, \iota_1', \expr_2 \rangle \lirsem 
+%     n_{a_2}^{(l_{a_2}, \dep_{a_2})}, \iota_2', \trace_2'$ and $\langle 
+%     \sigma', \iota_1'', \expr_2 \rangle \lirsem 
+%     n_{b_2}^{(l_{b_2}, \dep_{b_2})}, \iota_2'', \trace_2'' $ and $\sigma'
+%     \eq \sigma$ and $\iota_1' \eq \iota_1''$ and 
+%     $\trace_2' \eq \trace_2''$, then\\
+%     $n_{a_2}^{(l_{a_2}, \dep_{a_2})} \eq n_{b_2}^{(l_{b_2},
+%       \dep_{b_2})}$.\\
+%      $\TT{n}_1 = n_{a_1} \aop n_{a_2}$ and $\TT{n}_2 = n_{b_1} \aop n_{b_2}$. \\
+%      $k_1 = l_{a_1} \sqcup l_{a_2}$ and $k_2 = l_{b_1} \sqcup l_{b_2}$. \\
+%      $\dep_1 = \dep_{a_1} \cup \dep_{a_2}$ and $\dep_2 = \dep_{b_1}
+%      \cup \dep_{b_2}$. \\ 
+%      We know that $\trace' \eq \trace''$ and from
+%      Lemma~\ref{lem:app:lir:expbtl}, $|\trace_1'\proj| =
+%      |\trace_1''\proj|$. Thus, $\trace_1' \eq
+%      \trace_1''$. Similarly, $\trace_2' \eq \trace_2''$.\\
+%      From IH1 and IH2, $n_{a_1}^{(l_{a_1}, \dep_{a_1})}
+%      \eq n_{b_1}^{(l_{b_1}, \dep_{b_1})}$ and
+%      $n_{a_2}^{(l_{a_2}, \dep_{a_2})} \eq 
+%      n_{b_2}^{(l_{b_2}, \dep_{b_2})}$. Thus, $n_{1}^{(l_{1}, \dep_1)} \eq 
+%      n_{2}^{(l_{2}, \dep_{2})}$. 
+     
+%    \item\refrule{lir:exp:dr}: IH1 and IH2 are similar as above. Also, $\trace_1' \eq
+%      \trace_1''$ and $\trace_2' \eq \trace_2''$. 
+%      $\TT{n}_1 = n_{a_1} \aop n_{a_2}$ and $\TT{n}_2 = n_{b_1} \aop n_{b_2}$. \\
+%      $k_1 = l_{a_1} \sqcup l_{a_2}$ and $k_2 = l_{b_1} \sqcup l_{b_2}$. \\
+%      $\dep_1 = \dep_{a_1} \cup \dep_{a_2}$ and $\dep_2 = \dep_{b_1}
+%      \cup \dep_{b_2}$.\\ 
+%      From equivalence definition either: \\
+%      $\TT{n}_1 = \TT{n}_2 = n \wedge (k_1 = k_2 = l \sqsubseteq \attacker) \wedge \dep_1
+%      = \dep_2$ and hence if $\dep \neq \emptyset$ then
+%      $\trace'\proj = \trace_1'\proj :: \trace_2'\proj :: \TT{n}_1^{k_1}$
+%      and $\trace''\proj = \trace_1''\proj :: \trace_2''\proj ::
+%      \TT{n}_2^{k_2}$, then $\TT{n}_1^{k_1} = \TT{n}_2^{k_2}$ else if $\dep =
+%      \emptyset$ then $\forall \TT{x} \in
+%      \dep_t. (\iota_2(\TT{x}) = 0 \vee k_o \not\sqsubseteq \blabel(\TT{x}))$. As
+%      $\forall \TT{x} \in \dep_t. \ilabel(\TT{x}) \sqsubseteq \attacker$, $\TT{n}_1^{k_1} =
+%      \TT{n}_2^{k_2}$ (or)\\ 
+%      $\Gamma(v_1) \not\sqsubseteq \attacker \wedge \Gamma(v_2)
+%      \not\sqsubseteq \attacker$ and $(k_1 = k_2 \sqsubseteq \attacker)
+%      \wedge \dep_1 = \dep_2 =\dep_t$. 
+%      Consider $\exists \TT{x} \in \dep_t. (\ilabel(\TT{x}) \not\sqsubseteq
+%      \attacker)$. Either $\exists \TT{x} \in \dep_t. (\blabel(\TT{x}) \not\sqsubseteq
+%      \attacker)$ or $\forall \TT{x} \in \dep_t. (\blabel(\TT{x}) \sqsubseteq
+%      \attacker)$. Hence, final $k_1 \not\sqsubseteq
+%      \attacker \wedge k_2 \not\sqsubseteq \attacker$ or $k_1
+%      \sqsubseteq \attacker  \wedge k_2 \sqsubseteq \attacker$. In both
+%      cases, if $\dep \neq \emptyset$ then
+%      $\trace' = \trace_1' :: \trace_2' :: \TT{n}_1^{k_1}$ and $\trace'' =
+%      \trace_1'' :: \trace_2'' :: \TT{n}_2^{k_2}$. Thus, if $k_1
+%      \sqsubseteq \attacker  \wedge k_2 \sqsubseteq \attacker$, then 
+%      $\trace'\proj = \trace_1'\proj :: \trace_2'\proj :: \TT{n}_1^{k_1}$
+%      and $\trace''\proj = \trace_1''\proj :: \trace_2''\proj ::
+%      \TT{n}_2^{k_2}$ and $\TT{n}_1^{k_1} = \TT{n}_2^{k_2}$ else final $k_1 \not\sqsubseteq
+%      \attacker \wedge k_2 \not\sqsubseteq \attacker$. Thus, $v_1
+%      \eq v_2$. If $\dep = \emptyset$ then $\forall \TT{x} \in
+%      \dep_t. (\iota_2(\TT{x}) = 0 \vee k_o \not\sqsubseteq \blabel(\TT{x}))$,
+%      and $k_1 \not\sqsubseteq
+%      \attacker \wedge k_2 \not\sqsubseteq \attacker$ (or) \\ 
+%      $k_1 \not\sqsubseteq \attacker \wedge k_2
+%      \not\sqsubseteq \attacker$. Thus, $v_1 \eq v_2$
+ 
+%    \item\refrule{lir:exp:dn}: Similar as [aop, cop]. 
+%      % Also, $\trace_1' \eq
+%      % \trace_1''$ and $\trace_2' \eq \trace_2''$. 
+%      % $\TT{n}_1 = n_{a_1} \aop n_{a_2}$ and $\TT{n}_2 = n_{b_1} \aop n_{b_2}$. \\
+%      % $k_1 = l_{a_1} \sqcup l_{a_2}$ and $k_2 = l_{b_1} \sqcup l_{b_2}$. \\
+%      % $\dep_1 = \dep_{a_1} \cup \dep_{a_2}$ and $\dep_2 = \dep_{b_1}
+%      % \cup \dep_{b_2}$.\\ 
+%      % From equivalence definition either: \\
+%      % $\TT{n}_1 = \TT{n}_2 = n \wedge (k_1 = k_2 = l \sqsubseteq \attacker) \wedge \dep_1
+%      % = \dep_2$ and hence $\TT{n}_1^{(k_1, \dep_1)} = \TT{n}_2^{(k_2, \dep_2)}$ (or)\\
+%      % $\Gamma(v_1) \not\sqsubseteq \attacker \wedge \Gamma(v_2)
+%      % \not\sqsubseteq \attacker$ and $(k_1 = k_2 \sqsubseteq \attacker)
+%      % \wedge \dep_1 = \dep_2$. Thus, $v_1 \eq v_2$ (or) \\ 
+%      % $k_1 \not\sqsubseteq \attacker \wedge k_2
+%      % \not\sqsubseteq \attacker$. Thus, $v_1 \eq v_2$ 
+
+%    \item[cop:] Similar to aop
+%   \end{itemize}
+% \end{proof}
+
+% \begin{myLemma}
+% \label{lem:app:lir:cmdbtl}
+% If \\
+% $\langle \sigma, \iota, \comm \rangle \lirsem \langle
+% \sigma_1, \iota_1, \trace \rangle$ and $\langle 
+% \sigma', \iota', \comm \rangle \lirsem \langle
+% \sigma_1', \iota_1', \trace' \rangle$ and \\
+% $\sigma \eq \sigma'$ and $\iota \eq \iota'$ then 
+% $\iota_1 \eq \iota_1'$ and $|\trace\proj| =
+%   |\trace'\proj|$ 
+% \end{myLemma}
+% \begin{proof}
+% \begin{itemize}[leftmargin=.5in]
+% \item\refrule{lir:cmd:sk} $\iota_1 = \iota \eq \iota' = \iota_1'$ and
+%   $\trace = \trace' = \emptyTrace$.\\
+%   $\sigma_1 = \sigma \eq \sigma' = \sigma_1'$.
+% \item\refrule{lir:cmd:an} From Lemma~\ref{lem:app:lir:expbtl}, $\iota_1 \eq
+%   \iota_1'$ and $|\trace\proj| =  |\trace'\proj|$. \\
+%   If $\trace \eq \trace'$, then from Lemma~\ref{lem:app:lir:explir},
+%   $\TT{n}_1^{(m_1, \dep_1')} \eq \TT{n}_2^{(m_2, \dep_2')}$. As $l =
+%   pc \sqcup m$, $\TT{n}_1^{(k_1, \dep_1')} \eq \TT{n}_2^{(k_2,
+%     \dep_2')}$. If $k_1 = k_2 \sqsubseteq \attacker$ and $\dep_1' =
+%   \dep_2'$ then $\dep_1 = \dep_2$. Else $k_1 \not\sqsubseteq
+%   \attacker$ and $k_2 \not\sqsubseteq \attacker$. Thus, $\TT{n}_1^{(k_1,
+%     \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$. Hence, $\sigma_1
+%   \eq \sigma_1'$
+% \item\refrule{lir:cmd:s} IH1: If 
+% $\langle \sigma, \iota, \comm_1 \rangle \lirsem \langle
+% \sigma_1, \iota_1, \trace_1 \rangle$ and $\langle 
+% \sigma', \iota', \comm_1 \rangle \lirsem \langle
+% \sigma_1', \iota_1', \trace_1' \rangle$ and \\
+% $\sigma \eq \sigma'$ and $\iota \eq \iota'$ then 
+% $\iota_1 \eq \iota_1'$ and $|\trace_1\proj| =  |\trace_1'\proj|$
+% and if $\trace_1 \eq \trace_1'$ then $\sigma_1 \eq \sigma_1'$\\
+% IH2: If 
+% $\langle \sigma_1, \iota_1, \comm_2 \rangle \lirsem \langle
+% \sigma_2, \iota_2, \trace_2 \rangle$ and $\langle 
+% \sigma_1', \iota_1', \comm_2 \rangle \lirsem \langle
+% \sigma_2', \iota_2', \trace_2' \rangle$ and \\
+% $\sigma_1 \eq \sigma_1'$ and $\iota_1 \eq \iota_1'$ then 
+% $\iota_2 \eq \iota_2'$ and $|\trace_2\proj| =  |\trace_2'\proj|$
+% and if $\trace_2 \eq \trace_2'$ then $\sigma_2 \eq
+% \sigma_2'$\\
+% From IH1, $\iota_1 \eq \iota_1'$ and if $\trace_1
+% \eq \trace_1'$, $\sigma_1 \eq \sigma_1'$. 
+% From IH2, $\iota_2 \eq \iota_2'$ and $|\trace_2\proj| =
+% |\trace_2'\proj|$ and if $\trace \eq \trace'$, then $\trace_2
+% \eq \trace_2'$ and $\sigma_2 \eq \sigma_2'$.
+% \end{itemize}
+% \end{proof}
+
+% \begin{myThm}
+%   \label{thm1}
+%   If \\
+%   $\langle \sigma, \iota, \comm \rangle \lirsem \langle
+%   \sigma_1, \iota_1, \trace \rangle$ and $\langle 
+%   \sigma', \iota', \comm \rangle \lirsem \langle
+%   \sigma_1', \iota_1', \trace' \rangle$ and \\
+%   $\pc \sqsubseteq \attacker$ and 
+%   $\sigma \eq \sigma'$ and $\iota \eq \iota'$ and 
+%   either:
+%   \begin{enumerate}
+%   \item $\trace \eq \trace'$, then $\iota_1 \eq
+%     \iota_1'$ and $\sigma_1 \eq
+%     \sigma_1'$
+%   \item $\trace \not\eq \trace'$, then $\trace\proj
+%     \not\subset \trace'\proj$ and $\trace'\proj \not\subset \trace\proj$
+%   \end{enumerate}
+% \end{myThm}
+
+% \begin{proof}
+%   Proof by induction on command derviation and case analysis on the
+%   last rule.
+
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:cmd:sk} $\iota_1 = \iota \eq \iota' = \iota_1'$ and
+%     $\trace = \trace' = \emptyTrace$.\\
+%     $\sigma_1 = \sigma \eq \sigma' = \sigma_1'$.
+
+%   \item\refrule{lir:cmd:an} From Lemma~\ref{lem:app:lir:expbtl}, $\iota_1 \eq
+%     \iota_1'$ and $|\trace\proj| =  |\trace'\proj|$. \\
+%     If $\trace \eq \trace'$, then from Lemma~\ref{lem:app:lir:explir},
+%     $\TT{n}_1^{(m_1, \dep_1')} \eq \TT{n}_2^{(m_2, \dep_2')}$. As $l =
+%     pc \sqcup m$, $\TT{n}_1^{(k_1, \dep_1')} \eq \TT{n}_2^{(k_2,
+%       \dep_2')}$. If $k_1 = k_2 \sqsubseteq \attacker$ and $\dep_1' =
+%     \dep_2'$ then $\dep_1 = \dep_2$. Else $k_1 \not\sqsubseteq
+%     \attacker$ and $k_2 \not\sqsubseteq \attacker$. Thus, $\TT{n}_1^{(k_1,
+%       \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$. Hence, $\sigma_1
+%     \eq \sigma_1'$. 
+%     If $\trace \not\eq \trace'$ and because $|\trace\proj| =
+%     |\trace'\proj|$, $\trace\proj \not\subset \trace'\proj$ and
+%     $\trace'\proj \not\subset \trace\proj$ 
+
+%   \item\refrule{lir:cmd:s} IH1: If 
+%     $\langle \sigma, \iota, \comm_1 \rangle \lirsem \langle
+%     \sigma_1, \iota_1, \trace_1 \rangle$ and $\langle 
+%     \sigma', \iota', \comm_1 \rangle \lirsem \langle
+%     \sigma_1', \iota_1', \trace_1' \rangle$ and 
+%     $\sigma \eq \sigma'$ and $\iota \eq \iota'$
+%     and\\
+%     if $\trace_1 \eq \trace_1'$ then $\iota_1 \eq
+%     \iota_1'$ and $\sigma_1 \eq    \sigma_1'$ (or)\\
+%     if $\trace_1 \not\eq \trace_1'$ then $\trace_1\proj
+%     \not\subset \trace_1'\proj$ and $\trace_1'\proj \not\subset
+%     \trace_1\proj$ \\ 
+%     IH2: If 
+%     $\langle \sigma_1, \iota_1, \comm_2 \rangle \lirsem \langle
+%     \sigma_2, \iota_2, \trace_2 \rangle$ and $\langle 
+%     \sigma_1', \iota_1', \comm_2 \rangle \lirsem \langle
+%     \sigma_2', \iota_2', \trace_2' \rangle$ and 
+%     $\sigma_1 \eq \sigma_1'$ and $\iota_1 \eq \iota_1'$ 
+%     and \\ 
+%     if $\trace_2 \eq \trace_2'$ then $\iota_2 \eq
+%     \iota_2'$ and $\sigma_2 \eq
+%     \sigma_2'$ (or)\\
+%     if $\trace_2 \not\eq \trace_2'$ then $\trace_2\proj
+%     \not\subset \trace_2'\proj$ and $\trace_2'\proj \not\subset
+%     \trace_2\proj$ 
+%     \begin{itemize}
+%       \item $\trace \eq \trace'$: As $\trace_1::\trace_2
+%         \eq \trace_1'::\trace_2'$, 
+%         $\trace_1\proj::\trace_2\proj =
+%         \trace_1'\proj::\trace_2'\proj$. 
+%         Thus, either: \\
+%         $\trace_1\proj = \trace_1'\proj$ and $\trace_2\proj =
+%         \trace_2'\proj$ \\
+%         Thus, from IH1 $\iota_1 \eq
+%         \iota_1'$ and $\sigma_1 \eq \sigma_1'$ and from
+%         IH2 $\iota_2 \eq
+%         \iota_2'$ and $\sigma_2 \eq \sigma_2'$. (or) \\
+%         $\trace_1 \not\eq \trace_1'$
+%         and $\trace_2 \not\eq \trace_2'$ and
+%         w.l.o.g $\trace_1\proj \subset
+%         \trace_1'\proj$ and $\trace_2'\proj \subset \trace_2\proj$: If
+%         $\trace_1 \not\eq \trace_1'$ then from IH1, $\trace_1\proj
+%         \not\subset \trace_1'\proj$ and $\trace_1'\proj \not\subset
+%         \trace_1\proj$. Contradiction.
+%       \item $\trace \not\eq \trace'$: As $\trace_1::\trace_2
+%         \not\eq \trace_1'::\trace_2'$, 
+%         $\trace_1\proj::\trace_2\proj \neq
+%         \trace_1'\proj::\trace_2'\proj$. Thus, either: \\
+%         $\trace_1\proj \neq \trace_1'\proj$. Hence, $\trace_1
+%         \not\eq \trace_1'$ and, $\trace_1\proj 
+%         \not\subset \trace_1'\proj$ and $\trace_1'\proj \not\subset
+%         \trace_1\proj$. Thus, $\trace\proj 
+%         \not\subset \trace'\proj$ and $\trace'\proj \not\subset
+%         \trace\proj$  (or) \\
+%         $\trace_1\proj = \trace_1'\proj$ and $\trace_2\proj \neq
+%         \trace_2'\proj$. Hence, $\trace_2
+%         \not\eq \trace_2'$ and, $\trace_2\proj 
+%         \not\subset \trace_2'\proj$ and $\trace_2'\proj \not\subset
+%         \trace_2\proj$. Thus, $\trace\proj 
+%         \not\subset \trace'\proj$ and $\trace'\proj \not\subset
+%         \trace\proj$.
+%       \end{itemize}
+
+%     \item\refrule{lir:cmd:ie} From Lemma~\ref{lem:app:lir:expbtl}, $\iota_1 \eq
+%     \iota_1'$ and $|\trace_1\proj| =  |\trace_1'\proj|$. \\
+%     IH: If 
+%     $\langle \sigma, \iota_1, \comm_i \rangle \lirsemup \langle
+%     \sigma_1, \iota_2, \trace_2 \rangle$ and $\langle 
+%     \sigma', \iota_1', \comm_i \rangle \lirsemup \langle
+%     \sigma_1', \iota_2', \trace_2' \rangle$ and $\pc \sqcup l
+%     \sqsubseteq \attacker$ and  
+%     $\sigma \eq \sigma'$ and $\iota_1 \eq \iota_1'$ 
+%     and \\ 
+%     if $\trace_2 \eq \trace_2'$ then $\iota_2 \eq
+%     \iota_2'$ and $\sigma_1 \eq
+%     \sigma_1'$ (or)\\
+%     if $\trace_2 \not\eq \trace_2'$ then $\trace_2\proj
+%     \not\subset \trace_2'\proj$ and $\trace_2'\proj \not\subset
+%     \trace_2\proj$ 
+%     \begin{itemize}
+%       \item $\trace \eq \trace'$: As $\trace_1::\trace_2
+%         \eq \trace_1'::\trace_2'$, 
+%         $\trace_1\proj::\trace_2\proj =
+%         \trace_1'\proj::\trace_2'\proj$.  
+%         Thus, $\trace_2\proj = \trace_2'\proj$. \\
+%         Also from Lemma~\ref{lem:app:lir:explir}, $\TT{n}_1^{(k_1, \dep_1)} \eq
+%         \TT{n}_2^{(k_2, \dep_2)}$. Thus, either $\TT{n}_1 = \TT{n}_2 \wedge k_1 =
+%         k_2 \wedge \dep_1 = \dep_2$ (or) $\Gamma(v_1) \not\sqsubseteq
+%         \attacker \wedge \Gamma(v_2) \not\sqsubseteq \attacker \wedge
+%         k_1 = k_2 \sqsubseteq \attacker \wedge \dep_1 = \dep_2$ (or)
+%         $k_1 \not\sqsubseteq \attacker$ and 
+%         $k_2\not\sqsubseteq \attacker$. \\
+%         If $\TT{n}_1 = \TT{n}_2 \wedge (k_1 = k_2) = l_t \sqsubseteq \attacker
+%         \wedge \dep_1 = \dep_2$, then $l = k_1 \bigsqcup\limits_{x \in
+%           \dep_1} \ilabel(\TT{x}) = k_2 \bigsqcup\limits_{y \in \dep_2}
+%         \ilabel(\TT{y})$, the same $c_i$ is run  
+%         and $\pc \sqcup l \sqsubseteq \attacker$ and  as
+%         $\trace_2\proj = \trace_2'\proj$, $\iota_2 \eq
+%         \iota_2'$ and $\sigma_1 \eq
+%         \sigma_1'$.\\
+%         Else if $\Gamma(v_1) \not\sqsubseteq \attacker$ and
+%         $\Gamma(v_2) \not\sqsubseteq \attacker$, then from confinement
+%         (Lemma~\ref{lem:app:lir:conf}) 
+%         $\trace_2\proj = \trace_2'\proj = \emptyTrace$ and $\sigma
+%         \eq \sigma_1$ and $\sigma' \eq
+%         \sigma_1'$, and $\iota_1 \eq \iota_2$ and $\iota_1'
+%         \eq \iota_2'$. Thus, $\sigma_1 \eq
+%         \sigma_1'$ and $\iota_2 \eq \iota_2'$.
+
+%       \item $\trace \not\eq \trace'$: As $\trace_1::\trace_2
+%         \not\eq \trace_1'::\trace_2'$, 
+%         $\trace_1\proj::\trace_2\proj \neq
+%         \trace_1'\proj::\trace_2'\proj$. As $|\trace_1\proj| =
+%         |\trace_1'\proj|$, either $\trace_1\proj =
+%         \trace_1'\proj$. Then, $\trace_2\proj \neq \trace_2'\proj$ and 
+%         $\trace_2\proj \not\subset \trace_2'\proj$ and $\trace_2'\proj
+%         \not\subset \trace_2\proj$. Thus, $\trace\proj \not\subset
+%         \trace'\proj$ and $\trace'\proj \not\subset \trace\proj$, else
+%         if $\trace_1\proj \neq \trace_1'\proj$. Thus, $\trace\proj
+%         \not\subset \trace'\proj$ and $\trace'\proj \not\subset
+%         \trace\proj$.
+%       \end{itemize}
+      
+%     \item[w-t/w-f:] Similar to if
+%     \end{itemize}
+% \end{proof}
+
+% \begin{myLemma}
+% \label{lem:app:lir:exptrl}
+% If $\langle \sigma, \iota, \expr \rangle \lirsem \TT{n}^{(l, \dep)},
+% \iota', \trace$, then \\ 
+% $|\trace\proj| \leq \iota\proj - \iota'\proj$. 
+% \end{myLemma}
+% \begin{proof}
+%   Induction on the derivation for expressions and case analysis on the
+%   last rule. 
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:exp:c}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+%   \item\refrule{lir:exp:v}: $\iota = \iota'$ and $|\trace\proj| = 0$. 
+%   \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop} IH1: If $\langle \sigma, \iota, \expr_1 \rangle \lirsem  
+%     \TT{n}_1^{(k_1, \dep_1)}, \iota_1, \trace_1$, then 
+%     $|\trace_1\proj| \leq \iota\proj - \iota_1\proj$. \\
+%     IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle \lirsem  
+%     \TT{n}_2^{(k_2, \dep_2)}, \iota', \trace_2$, then  
+%     $|\trace_2\proj| \leq \iota_1\proj - \iota'\proj$. \\
+%     From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| = \iota\proj -
+%     \iota'\proj$. Thus, $|(\trace_1::\trace_2)\proj| = \iota\proj -
+%     \iota'\proj$.
+%   \item\refrule{lir:exp:dr}: Similar to aop, $|(\trace_1::\trace_2)\proj| = \iota\proj -
+%     \iota_2\proj$. Either:
+%     \begin{itemize}
+%       \item $k_o \sqsubseteq \attacker \wedge \forall \TT{x} \in
+%         \dep_o. \ilabel(\TT{x}) \sqsubseteq \attacker$: If $\dep \neq
+%         \emptyset$ then $\exists x. \iota_2(\TT{x}) > 0$ and $\iota_2(\TT{x})
+%         -\iota'(\TT{x}) =1$. For more than one $x$, $\iota_2\proj -
+%         \iota'\proj \geq 1$. Also, $\trace = \trace_1 :: \trace_2 ::
+%         \TT{n}^l$. $|\trace\proj| = |\trace_1\proj| + |\trace_2\proj| +
+%         1$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$ 
+%       \item $k_o \sqsubseteq \attacker \wedge \exists \TT{x} \in
+%         \dep_o. \ilabel(\TT{x}) \sqsubseteq \attacker$: If $\exists \TT{x} \in
+%         \dep. (\blabel(\TT{x}) \not\sqsubseteq \attacker) \implies l
+%         \not\sqsubseteq \attacker$. Thus, $|\trace\proj| =
+%         |\trace_1\proj| + |\trace_2\proj|$. As $\iota_2$ only
+%         decreases, $|\trace\proj| \leq \iota\proj - \iota'\proj$. \\ If
+%         $\forall \TT{x} \in \dep. (\blabel(\TT{x}) \sqsubseteq \attacker)
+%         \implies l \sqsubseteq \attacker$ and $\iota'(\TT{x}) = \iota_2(\TT{x})
+%         - 1$. $\trace = \trace_1 :: \trace_2 :: \TT{n}^l$. $|\trace\proj| =
+%         |\trace_1\proj| + |\trace_2\proj| + 1$. Thus, $|\trace\proj|
+%         \leq \iota\proj - \iota'\proj$. \\ If $\dep = \emptyset$ then
+%         $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+%         \iota_2$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$ 
+%       \item $k_o \not\sqsubseteq \attacker$: $l \not\sqsubseteq
+%         \attacker$. Thus, $|\trace\proj| =
+%         |\trace_1\proj| + |\trace_2\proj|$. As $\iota_2$ only
+%         decreases, $|\trace\proj| \leq \iota\proj - \iota'\proj$. If
+%         $\dep = \emptyset$ then 
+%         $\trace\proj = \trace_1\proj ::\trace_2\proj$ and $\iota' =
+%         \iota_2$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$
+%     \end{itemize}
+%   \item\refrule{lir:exp:dn}: Similar to aop, $|(\trace_1::\trace_2)\proj| = \iota\proj -
+%     \iota_2\proj$. Thus, $|\trace\proj| \leq \iota\proj - \iota'\proj$
+%   \end{itemize}
+% \end{proof}
+
+% \begin{myThm}
+% \label{thm:app:lir:cmdtrl}
+% If $\langle \sigma, \iota, \comm \rangle \lirsem \langle
+%   \sigma', \iota', \trace \rangle$, then \\ 
+% $|\trace\proj| \leq \iota\proj - \iota'\proj$. 
+% \end{myThm}
+% \begin{proof}
+%   Induction on the derivation for commands and case analysis on the
+%   last rule.  
+%   \begin{itemize}[leftmargin=.5in]
+%     \item\refrule{lir:cmd:sk} $\iota = \iota'$ and $|\trace\proj| = 0$. 
+%     \item\refrule{lir:cmd:an} From Lemma~\ref{lem:app:lir:exptrl}.
+%     \item\refrule{lir:cmd:s} IH1: If $\langle \sigma, \iota, \comm_1 \rangle
+%       \lirsem \langle \sigma', \iota', \trace_1 \rangle$, then 
+%       $|\trace_1\proj| \leq \iota\proj - \iota'\proj$. \\
+%       IH2: If $\langle \sigma', \iota', \comm_2 \rangle
+%       \lirsem \langle \sigma'', \iota'', \trace_2 \rangle$, then 
+%       $|\trace_2\proj| \leq \iota'\proj - \iota''\proj$. \\
+%       From IH1 and IH2, $|\trace_1\proj| + |\trace_2\proj| \leq
+%       \iota\proj - \iota''\proj$. Thus, $|\trace\proj| \leq \iota\proj
+%       - \iota''\proj$. 
+%     \item\refrule{lir:cmd:ie} From Lemma~\ref{lem:app:lir:exptrl}, $|\trace_1\proj| \leq
+%       \iota\proj - \iota'\proj$. \\
+%       IH: If $\langle \sigma, \iota', \comm_i \rangle
+%       \lirsemup \langle \sigma', \iota'', \trace_2 \rangle$, then 
+%       $|\trace_2\proj| \leq \iota'\proj - \iota''\proj$. \\
+%       From IH and Lemma~\ref{lem:app:lir:exptrl}, $|\trace\proj| \leq
+%       \iota\proj - \iota''\proj$. 
+%     \item\refrule{lir:cmd:wt} Similar to if
+%     \item\refrule{lir:cmd:wf} From Lemma~\ref{lem:app:lir:exptrl}.
+%   \end{itemize}
+% \end{proof}
+
+% \begin{myCor}[Limited Information Release]
+%   If \\
+%   $\langle \sigma_1, \iota_1, \comm \rangle \lirsem \langle
+%   \sigma_1', \iota_1', \trace_1 \rangle$ then 
+%   \begin{enumerate}
+%     \item $|\trace\proj| \leq \iota_1\proj - \iota_1'\proj$ and 
+%     \item $\forall \sigma_2.~ \sigma_1 \eq \sigma_2$, 
+%       $\langle \sigma_2, \iota_2, \comm \rangle \lirsem \langle
+%       \sigma_2', \iota_2', \trace_2 \rangle$ and \\  
+%       $\pc \sqsubseteq \attacker$ and 
+%       $\iota_1 \eq \iota_2$ and  
+%       $\trace_1 \eq \trace_2$, then \\
+%       $\sigma_1' \eq \sigma_2'$
+%   \end{enumerate}
+% \end{myCor}
+% \begin{proof}
+% Immediately from the above theorems
+% \end{proof}
+
+% \begin{myLemma}
+% \label{lem:app:lir:expni}
+% If $\langle \sigma, \iota_1, \expr \rangle \lirsem 
+% \TT{n}_1^{(k_1, \dep_1)}, \iota', \trace'$ and \\
+% $\langle \sigma', \iota_2, \expr \rangle \lirsem 
+% \TT{n}_2^{(k_2, \dep_2)}, \iota'', \trace''$ and $\pc \sqsubseteq
+% \attacker$ and \\
+% $\sigma' \eq \sigma$ and $\iota_1\proj = \iota_2\proj = 0$, then \\ 
+% $\TT{n}_1^{(k_1, \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$ and $\trace'\proj =
+% \trace''\proj = \emptyTrace$ and $\iota'\proj = \iota''\proj = 0$. 
+% \end{myLemma}
+% \begin{proof}
+%   Induction on the derivation and case analysis on the last rule. 
+  
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:exp:c}: $\TT{n}_1 = \TT{n}_2$, $k_1 = k_2 = \bot$ and $\dep_1 = \dep_2 =
+%     \{\}$. $\trace = \trace' = \emptyTrace$. $\iota'\proj = \iota_1\proj
+%     = \iota_2\proj = \iota''\proj =0$
+    
+%   \item\refrule{lir:exp:v}: As $\sigma \eq \sigma'$, $\sigma(\TT{x})
+%     \eq \sigma'(\TT{x})$ and $\TT{n}_1^{(m_1, \dep_1')}
+%     \eq \TT{n}_2^{(m_2, \dep_2')}$. Thus, either $\TT{n}_1 = \TT{n}_2
+%     \wedge m_1 = m_2 \wedge \dep_1' =\dep_2'$ or $m_1 = m_2 \wedge
+%     \dep_1'=\dep_2'$ or $m_1 \not\sqsubseteq \attacker \wedge m_2
+%     \not\sqsubseteq \attacker$. As $\iota_1\proj = \iota_2\proj = 0$, in the
+%     first case, $\TT{n}_1 = \TT{n}_2 \wedge k_1 = k_2 \sqsubseteq \attacker
+%     $. Else $k_1 \not\sqsubseteq \attacker \wedge k_2\not\sqsubseteq
+%     \attacker$ or $k_1 = k_2 \wedge \dep_1 = \dep_2 \wedge \exists x
+%     \in \dep_1. \ilabel(\TT{x}) \not\sqsubseteq \attacker$.
+%     Thus, $\TT{n}_1^{(k_1, \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$.
+%     $\trace = \trace' = \emptyTrace$. $\iota'\proj = \iota_1\proj
+%     = \iota_2\proj = \iota''\proj =0$
+
+%   \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop} 
+%     IH1: If $\langle \sigma, \iota', \expr_1 \rangle \lirsem 
+%     n_{a_1}^{(l_{a_1}, \dep_{a_1})}, \iota_1', \trace_1'$ and $\langle 
+%     \sigma', \iota'', \expr_1 \rangle \lirsem 
+%     n_{b_1}^{(l_{b_1}, \dep_{b_1})}, \iota_1'', \trace_1'' $ and $\sigma'
+%     \eq \sigma$ and $\iota'\proj = \iota''\proj = 0$ \\ then 
+%     $\trace_1'\proj = \trace_1''\proj = \emptyTrace$  and 
+%     $n_{a_1}^{(l_{a_1}, \dep_{a_1})} \eq n_{b_1}^{(l_{b_1},
+%       \dep_{b_1})}$ and $\iota_1'\proj = \iota_1''\proj =0$ \\ 
+%     IH2: If $\langle \sigma, \iota_1', \expr_2 \rangle \lirsem 
+%     n_{a_2}^{(l_{a_2}, \dep_{a_2})}, \iota_2', \trace_2'$ and $\langle 
+%     \sigma', \iota_1'', \expr_2 \rangle \lirsem 
+%     n_{b_2}^{(l_{b_2}, \dep_{b_2})}, \iota_2'', \trace_2'' $ and $\sigma'
+%     \eq \sigma$ and $\iota_1'\proj = \iota_1''\proj = 0$, then\\
+%     $\trace_2'\proj = \trace_2''\proj = \emptyTrace$ and
+%     $n_{a_2}^{(l_{a_2}, \dep_{a_2})} \eq n_{b_2}^{(l_{b_2},
+%       \dep_{b_2})}$ and $\iota_2'\proj = \iota_2''\proj =0$\\
+%      $\TT{n}_1 = n_{a_1} \aop n_{a_2}$ and $\TT{n}_2 = n_{b_1} \aop n_{b_2}$. \\
+%      $k_1 = l_{a_1} \sqcup l_{a_2}$ and $k_2 = l_{b_1} \sqcup l_{b_2}$. \\
+%      $\dep_1 = \dep_{a_1} \cup \dep_{a_2}$ and $\dep_2 = \dep_{b_1}
+%      \cup \dep_{b_2}$. \\ 
+%      From IH1 and IH2, $n_{1}^{(l_{1}, \dep_1)} \eq  
+%      n_{2}^{(l_{2}, \dep_{2})}$ and $\trace'\proj = \trace''\proj =
+%      \emptyTrace$ and $\iota_2'\proj = \iota_2''\proj =0$
+     
+%    \item\refrule{lir:exp:dr}: IH1 and IH2 are similar as above. $n_{o_1}^{(l_{o_1},
+%        \dep_{o_1})} \eq  n_{o_2}^{(l_{o_2}, \dep_{o_2})}$
+%      and $\trace_t'\proj = \trace_t''\proj = \emptyTrace$ and
+%      $\iota_2'\proj = \iota_2''\proj =0$\\  
+%      Either $\TT{n}_1 = \TT{n}_2 = n \wedge (k_1 = k_2 = l \sqsubseteq \attacker) \wedge \dep_1
+%      = \dep_2$ and hence if $\dep \neq \emptyset$ then $\forall \TT{x} \in
+%      \dep. \blabel(\TT{x}) \not\sqsubseteq \attacker$ and final $l
+%      \not\sqsubseteq \attacker$, and $\trace\proj = \trace_t'\proj$ and
+%      $\trace'\proj =\trace_t''\proj$; else $\trace\proj = \trace_t'\proj$ and
+%      $\trace'\proj =\trace_t''\proj$. Thus, $\TT{n}_1^{k_1} \eq \TT{n}_2^{k_2}$
+%      and as $\iota_2$ doesn't change, $\iota'\proj = \iota''\proj = 0$ (or)\\
+%      $\Gamma(v_1) \not\sqsubseteq \attacker \wedge \Gamma(v_2)
+%      \not\sqsubseteq \attacker$ and $(k_1 = k_2 \sqsubseteq \attacker)
+%      \wedge \dep_1 = \dep_2$ (or) $k_1 \not\sqsubseteq \attacker \wedge k_2
+%      \not\sqsubseteq \attacker$. \\
+%      $\exists \TT{x} \in \dep_1. (\ilabel(\TT{x}) \not\sqsubseteq
+%      \attacker) \vee (\blabel(\TT{x}) \not\sqsubseteq \attacker)$. Thus,
+%      final $k_1 \not\sqsubseteq \attacker \wedge k_2 \not\sqsubseteq
+%      \attacker$. In both cases, $\trace\proj = \trace_t'\proj$ and
+%      $\trace'\proj =\trace_t''\proj$ and as $\iota_2\proj$ doesn't
+%      change because $\forall x. \iota_2\proj(\TT{x}) = 0$, $\iota'\proj =
+%      \iota''\proj = 0$. Also, $\TT{n}_1^{k_1} \eq \TT{n}_2^{k_2}$ 
+ 
+%    \item\refrule{lir:exp:dn}: Similar as aop. 
+
+%   \end{itemize}
+% \end{proof}
+
+% \begin{myprop}[Non-interference]
+% If \\
+%   $\langle \sigma_1, \iota_1, \comm \rangle \lirsem \langle
+%   \sigma_1', \iota_1', \trace_1 \rangle$ and $\langle 
+%   \sigma_2, \iota_2, \comm \rangle \lirsem \langle
+%   \sigma_2', \iota_2', \trace_2 \rangle$, $\pc \sqsubseteq \attacker$ and \\
+%   $\sigma_1 \eq \sigma_2$ and $\iota_1\proj = \iota_2\proj = 0$, then \\
+%   $\sigma_1' \eq \sigma_2'$ and  $\trace_1\proj =
+%   \trace_2\proj = \emptyTrace$ and $\iota_1'\proj = \iota_2'\proj = 0$
+% \end{myprop}
+% \begin{proof}
+%   Proof by induction on command derviation and case analysis on the
+%   last rule.
+
+%   \begin{itemize}[leftmargin=.5in]
+%   \item\refrule{lir:cmd:sk} $\iota_1'\proj = \iota_1\proj = \iota_2\proj =
+%     \iota_2'\proj = 0$ and
+%     $\trace_1 = \trace_2 = \emptyTrace$.\\
+%     $\sigma_1 = \sigma \eq \sigma' = \sigma_1'$.
+
+%   \item\refrule{lir:cmd:an} From Lemma~\ref{lem:app:lir:expni},
+%     $\iota_1'\proj=\iota_2'\proj = 0$ and $\trace_1\proj =
+%     \trace_2\proj = \emptyTrace$ and 
+%     $\TT{n}_1^{(m_1, \dep_1')} \eq \TT{n}_2^{(m_2, \dep_2')}$. As $l =
+%     pc \sqcup m$, $\TT{n}_1^{(k_1, \dep_1')} \eq \TT{n}_2^{(k_2,
+%       \dep_2')}$. If $k_1 = k_2 \sqsubseteq \attacker$ and $\dep_1' =
+%     \dep_2'$ then $\dep_1 = \dep_2$. Else $k_1 \not\sqsubseteq
+%     \attacker$ and $k_2 \not\sqsubseteq \attacker$. Thus, $\TT{n}_1^{(k_1,
+%       \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$. Hence, $\sigma_1
+%     \eq \sigma_1'$. 
+
+%   \item\refrule{lir:cmd:s} IH1: If 
+%     $\langle \sigma_1, \iota_1, \comm_1 \rangle \lirsem \langle
+%     \sigma_1', \iota_1', \trace_1 \rangle$ and $\langle 
+%     \sigma_2, \iota_2, \comm_1 \rangle \lirsem \langle
+%     \sigma_2', \iota_2', \trace_2 \rangle$ and $\pc \sqsubseteq \attacker$ and 
+%     $\sigma_1 \eq \sigma_2$ and $\iota_1\proj= \iota_2\proj = 0$
+%     then \\
+%     $\trace_1\proj = \trace_2\proj = \emptyTrace$ and 
+%     $\iota_1'\proj = \iota_2'\proj = 0$ and $\sigma_1' \eq \sigma_2'$\\
+%     IH2: If 
+%     $\langle \sigma_1', \iota_1', \comm_2 \rangle \lirsem \langle
+%     \sigma_2', \iota_2', \trace_1' \rangle$ and $\langle 
+%     \sigma_1'', \iota_1'', \comm_2 \rangle \lirsem \langle
+%     \sigma_2'', \iota_2'', \trace_2' \rangle$ and $\pc \sqsubseteq \attacker$ and 
+%     $\sigma_1' \eq \sigma_1''$ and $\iota_1'\proj=
+%     \iota_1''\proj = 0$ 
+%     then \\ 
+%     $\trace_1'\proj = \trace_2'\proj =\emptyTrace$ and $\iota_2'\proj = 
+%     \iota_2''\proj =0$ and $\sigma_2' \eq
+%     \sigma_2''$. From IH1 and IH2.  
+
+%   \item\refrule{lir:cmd:ie} From Lemma~\ref{lem:app:lir:expni},
+%     $\iota_1'\proj=\iota_2'\proj = 0$ and $\trace_1\proj =
+%     \trace_2\proj = \emptyTrace$ and 
+%     $\TT{n}_1^{(k_1, \dep_1)} \eq \TT{n}_2^{(k_2, \dep_2)}$.\\
+%     IH: If 
+%     $\langle \sigma_1, \iota_1', \comm_1 \rangle \lirsemup \langle
+%     \sigma_1', \iota_1'', \trace_1' \rangle$ and $\langle 
+%     \sigma_2, \iota_2', \comm_1 \rangle \lirsemup \langle
+%     \sigma_2', \iota_2'', \trace_2' \rangle$ and $\pc \sqcup k_1 \sqsubseteq \attacker$ and 
+%     $\sigma_1 \eq \sigma_2$ and $\iota_1'\proj= \iota_2'\proj = 0$
+%     then \\
+%     $\trace_1'\proj = \trace_2'\proj = \emptyTrace$ and 
+%     $\iota_1''\proj = \iota_2''\proj = 0$ and $\sigma_1' \eq \sigma_2'$\\
+%     As, $\TT{n}_1^{(k_1, \dep_1)} \eq
+%     \TT{n}_2^{(k_2, \dep_2)}$. Thus, either $\TT{n}_1 = \TT{n}_2 \wedge k_1 =
+%     k_2 = l \wedge \dep_1 = \dep_2$ or $\Gamma(v_1) \not\sqsubseteq \attacker$ and
+%     $\Gamma(v_2)\not\sqsubseteq \attacker$. \\
+%     If $\TT{n}_1 = \TT{n}_2$, then $(\pc \sqcup k_1 = \pc \sqcup k_2)
+%     \sqsubseteq\attacker$. 
+%     From IH, $\trace_1'\proj = \trace_2'\proj = \emptyTrace$ and 
+%     $\iota_1''\proj = \iota_2''\proj = 0$ and $\sigma_1' \eq \sigma_2'$.\\
+%     Else if $\Gamma(v_1) \not\sqsubseteq \attacker$ and
+%     $\Gamma(v_2) \not\sqsubseteq \attacker$, then from confinement
+%     (Lemma~\ref{lem:app:lir:conf}) 
+%     $\trace_2\proj = \trace_2'\proj = \emptyTrace$ and $\sigma
+%     \eq \sigma_1$ and $\sigma' \eq
+%     \sigma_1'$, and $\iota_1 \eq \iota_2$ and $\iota_1'
+%     \eq \iota_2'$. Thus, $\trace_1'\proj = \trace_2'\proj =
+%     \emptyTrace$ and $\iota_1''\proj = \iota_2''\proj = 0$ and
+%     $\sigma_1' \eq \sigma_2'$
+  
+%   \item[w-t/w-f:] Similar to if
+%   \end{itemize}
+% \end{proof}
+
+
+% \section*{Appendix B}
+% \label{sec:appendixB}
+
+% \begin{myLemma}[Trace Reduction]
+% \label{lem:app:lir:tr1}
+% If $ \langle \sigma, \iota, \expr, \trace \rangle \simsem v,
+% \iota', \trace'$, then $\trace'$ is a suffix of $\trace$ 
+% \end{myLemma}
+% \begin{proof}
+% \begin{itemize}
+% \item[s-const, s-var: ] $\trace = \trace'$, thus $\trace'$ is a suffix of
+%   $\trace$.
+% \item[s-aop: ] IH1: $\trace_1$ is a suffix of $\trace$.\\
+% IH2: $\trace_2$ is a suffix of $\trace_1$.\\
+% From IH1 and IH2, $\trace_2$ is a suffix of $\trace$.
+% \end{itemize}
+% \end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:tr}
+If $ \langle \sigma, \iota, \expr, \trace \rangle \simsem \emph{\TT{v}},
+\iota', \trace'$, then $ \langle \sigma, \iota, \expr,
+\trace::\trace^r \rangle \simsem \emph{\TT{v}}, \iota', \trace'::\trace^r$ 
+\end{myLemma}
+\begin{proof}
+  Proof by induction on the derivation for expressions and case analysis on
+  the last rule.
+  \begin{itemize}
+  \item \refrule{lir:exp:sc} and \refrule{lir:exp:sv}:  $\trace = \trace'=\emptyTrace$, thus $\trace::\trace^r =
+    \trace'::\trace^r$. 
+  \item \refrule{lir:exp:saop} and \refrule{lir:exp:scop}:  \\
+    IH1: If $ \langle \sigma, \iota, \expr_1, \trace
+    \rangle \simsem \TT{v}, \iota_1, \trace'$, then $
+    \langle \sigma, \iota, \expr_1, 
+    \trace::\trace^r \rangle \simsem \TT{v}, \iota_1,
+    \trace'::\trace^r$ \\
+    IH2: If $ \langle \sigma, \iota, \expr_2, \trace' \rangle \simsem \TT{v},
+    \iota_1, \trace''$, then $ \langle \sigma, \iota, \expr,
+    \trace'::\trace^r \rangle \simsem \TT{v}, \iota', \trace''::\trace^r$\\ 
+    T.S. If $ \langle \sigma, \iota, \expr, \trace \rangle \simsem \TT{v},
+    \iota', \trace''$, then $ \langle \sigma, \iota, \expr,
+    \trace::\trace^r \rangle \simsem \TT{v}, \iota',
+    \trace''::\trace^r$. From IH1 and IH2.
+  \item \refrule{lir:exp:sdr}: As above, if $ \langle \sigma, \iota, \expr, \trace
+    \rangle \simsem \TT{v}, 
+    \iota', \trace''$, then $ \langle \sigma, \iota, \expr,
+    \trace::\trace^r \rangle \simsem \TT{v}, \iota',
+    \trace''::\trace^r$. As $\TT{v}$ is the same, $\trace'' = \TT{n}^l :: \trace_1$
+    and $\trace'' :: \trace^r = \TT{n}^l::\trace_1::\trace^r$. \\
+    Thus, if $
+    \langle \sigma, \iota, \expr, \trace \rangle \simsem \TT{v}, 
+    \iota', \trace_f$, then $ \langle \sigma, \iota, \expr,
+    \trace::\trace^r \rangle \simsem \TT{v}, \iota',
+    \trace_f::\trace^r$
+  \item \refrule{lir:exp:sdn}: Similar to above case
+\end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:trc}
+If $ \langle \sigma, \iota, \comm, \trace \rangle \simsem \sigma',
+\iota', \trace'$, then $ \langle \sigma, \iota, \comm,
+\trace::\trace^r \rangle \simsem \sigma', \iota', \trace'::\trace^r$ 
+\end{myLemma}
+\begin{proof}
+  Proof by induction on the derivation for commands and case analysis
+  on the last rule.
+  \begin{itemize}
+  \item \refrule{lir:cmd:ssk}:  $\trace = \trace'$, thus $\trace::\trace^r =
+    \trace'::\trace^r$. 
+  \item \refrule{lir:cmd:sa}: From Lemma~\ref{lem:app:lir:tr}.
+  \item \refrule{lir:cmd:ss}: IH1: If $ \langle \sigma, \iota, \comm, \trace \rangle \simsem \sigma',
+    \iota', \trace_1$, then $ \langle \sigma, \iota, \comm,
+    \trace::\trace^r \rangle \simsem \sigma', \iota',
+    \trace_1::\trace^r$\\
+    IH2: If $ \langle \sigma, \iota, \comm, \trace_1 \rangle \simsem \sigma',
+    \iota', \trace'$, then $ \langle \sigma, \iota, \comm,
+    \trace_1::\trace^r \rangle \simsem \sigma', \iota',
+    \trace'::\trace^r$. \\ From IH1 and IH2.
+  \item \refrule{lir:cmd:sien} and \refrule{lir:cmd:swt}: Similar to above case
+  \item \refrule{lir:cmd:sies} and \refrule{lir:cmd:swfs}: From Lemma~\ref{lem:app:lir:tr}.
+\end{itemize}
+\end{proof}
+
+\begin{mycor}[Trace Reduction]
+\label{cor:app:lir:tred}
+If $ \langle \sigma, \iota, \comm, \trace \rangle \simsem \sigma',
+\iota', \emptyTrace$, then $ \langle \sigma, \iota, \comm,
+\trace::\trace^r \rangle \simsem \sigma', \iota', \trace^r$ 
+\end{mycor}
+\begin{proof}
+From Lemma~\ref{lem:app:lir:trc}
+\end{proof}
+
+\begin{myLemma}[Equivalence]
+\label{lem:app:lir:equiv}
+If $\sigma \eq \sigma'$ and $\sigma \sigeq
+\sigma''$, then $\sigma' \sigeq \sigma''$
+\end{myLemma}
+\begin{proof}
+Consider $\TT{x} = \TT{n}_1^{(l, \dep)}$ in $\sigma$ and $\TT{x} = \TT{n}_2^{(l', \dep')}$
+in $\sigma$ and $\TT{x} = \TT{v}_s$ such that $\sigma(\TT{x}) \eq 
+\sigma'(\TT{x})$. Thus, either:
+\begin{itemize}
+\item $\TT{n}_1 = \TT{n}_2 \wedge l = l' \wedge \dep = \dep'$: As $\sigma
+  \sigeq \sigma''$, $\TT{v}_s = \TT{n}_s^{(l_s, \dep_s)}$ and $\TT{n}_1 =
+  \TT{n}_s \wedge l = l_s \wedge \dep =\dep_s$. Thus, $\TT{n}_2 =
+  \TT{n}_s \wedge l' = l_s \wedge \dep' =\dep_s$. Hence, $\sigma'
+  \sigeq \sigma''$ from Definition~\ref{def:lir:eq-1}
+\item $l = l' \wedge \dep = \dep' \wedge \exists \TT{y}^m \in \dep. m
+  \not\sqsubseteq \attacker$: As $\sigma
+  \sigeq \sigma''$, $\TT{v}_s = \star^{(l_s, \dep_s)}$ and $l
+  \sqsubseteq \attacker$ and $l_s = \top$ and $\exists \TT{y}^m \in
+  \dep. \blabel(\TT{x}) \not\sqsubseteq \attacker$. Thus, $l'
+  \sqsubseteq \attacker$ and $l_s = \top$ and $\exists \TT{y}^m \in
+  \dep'. \blabel(\TT{x}) \not\sqsubseteq \attacker$. 
+  Else, $l=l_s \wedge \dep=\dep_s$. Thus, $l'=l_s \wedge
+  \dep'=\dep_s$. Hence, $\sigma'
+  \sigeq \sigma''$ from
+  Definition~\ref{def:lir:eq-2b},~\ref{def:lir:eq-2c} 
+\item $l \not\sqsubseteq \attacker \wedge l' \not\sqsubseteq
+  \attacker$: As $\sigma
+  \sigeq \sigma''$, $\TT{v}_s = \star^{(l_s, \dep_s)}$ and $l_s
+  =\top$. Hence, $\sigma' \sigeq \sigma''$ from
+  Definition~\ref{def:lir:eq-2a}.
+\end{itemize}
+\end{proof}
+
+\begin{myLemma}[Expression Simulation]
+\label{lem:app:lir:simExp}
+If 
+$\langle \sigma, \iota, \expr \rangle
+\lirsem \emph{\TT{v}}, \iota', \trace $, then\\
+% $\exists \sigma'. \sigma \sigeq \sigma'\proj \wedge \langle
+% \sigma'\proj,
+$\langle \sigma\proj, \iota\proj, \expr, \trace\proj \rangle \simsem 
+v', \iota'', \trace' $ such that 
+% $\TT{v} = \TT{n}^{(l, \dep)}$ and $\TT{v}' = \TT{n}_s^{\dep'}$, 
+$\emph{TT{v}} \sigeq \emph{\TT{v}}'$, $\iota'\proj = \iota''$, and $\trace' = \emptyTrace$
+\end{myLemma}
+\begin{proof}
+  Assume $\sigma^s = \sigma\proj$. 
+  Proof by induction on the derivation for expressions and case
+  analysis on the last rule.
+  \begin{itemize}[leftmargin=.5in]
+  \item\refrule{lir:exp:c}: $\TT{n}^{\bot} = \TT{n}^{\bot}$ and $\dep = \dep' = \{\}$. Thus,
+    $\TT{v} \sigeq \TT{v}'$. $\iota = \iota'$ and $\iota\proj =
+    \iota''$, thus, $\iota'\proj = \iota''$. $\trace = \emptyTrace$,
+    thus, $\trace\proj = \trace' = \emptyTrace$. 
+
+  \item\refrule{lir:exp:v}: As $\sigma \sigeq \sigma^s$, $\sigma(\TT{x})
+    \sigeq \sigma^s(\TT{x})$, thus $\TT{v} \sigeq \TT{v}'$. $\iota
+    = \iota'$ and $\iota\proj = \iota''$, thus, $\iota'\proj =
+    \iota''$. $\trace = \emptyTrace$, thus, $\trace\proj = \trace' =
+    \emptyTrace$.   
+
+  \item\refrule{lir:exp:aop} and \refrule{lir:exp:cop}:\\
+    IH1: If $\langle \sigma, \iota, \expr_1 \rangle
+    \lirsem \TT{v}_1, \iota_1, \trace_1 $ and $\sigma 
+    \sigeq \sigma^s$, then $\langle \sigma^s, \iota\proj,
+    \expr_1, \trace_1\proj \rangle \simsem \TT{v}_1',
+    \iota_1', \trace_1' $ such that $\TT{v}_1 \sigeq \TT{v}_1'$,
+    $\iota_1\proj = \iota_1'$ and $\trace_1' = \emptyTrace$. \\
+    IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle
+    \lirsem \TT{v}_2, \iota_2, \trace_2 $ and $\sigma
+    \sigeq \sigma^s$, then $\langle \sigma^s, \iota_1\proj,
+    \expr_2, \trace_2\proj \rangle \simsem \TT{v}_2', 
+    \iota_2', \trace_2' $ such that $\TT{v}_2 \sigeq \TT{v}_2'$,
+    $\iota_2\proj = \iota_2'$ and $\trace_2' = \emptyTrace$. \\
+    As $\sigma \sigeq \sigma^s$, from IH1 and IH2 $\TT{v}_1
+    \sigeq \TT{v}_1'$ and $\TT{v}_2 \sigeq \TT{v}_2'$, where $\TT{v}_1 =
+    \TT{n}_1^{(k_1, \dep_1)}$, $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_1' =
+    (\TT{n}_{s_1}^{(k_1',\dep_1')} \vee \star^{(k_1', \dep_1')})$, $\TT{v}_2' =
+    (\TT{n}_{s_2}^{(k_2',\dep_2')} \vee \star^{(k_2', \dep_2')})$. \\ $\iota' =
+    \iota_2$ and $\iota'' = \iota_2'$, thus from IH1 and IH2, $\iota'\proj =
+    \iota''$. \\ 
+    T.S: $\TT{v} \sigeq \TT{v}'$, i.e, $\TT{v}_1 \aop \TT{v}_2 \sigeq
+    \TT{v}_1' \aop \TT{v}_2'$.\\
+    As $\TT{v}_1 \sigeq \TT{v}_1'$, either:
+
+    \begin{enumerate}
+    \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$, $\TT{v}_1' =
+      \TT{n}_{s_1}^{(k_1',\dep_1')}$, $\TT{n}_1 =\TT{n}_{s_1}$ and 
+      $k_1 = k_1' \sqsubseteq \attacker$ and $\dep_1 = \dep_1'$: \\ 
+      As $\TT{v}_2 \sigeq \TT{v}_2'$, either: 
+      
+      \begin{enumerate}
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' = \TT{n}_{s_2}^{(k_2',\dep_2')}$,
+        $\TT{n}_2 = \TT{n}_{s_2}$ and $k_2 = k_2' \sqsubseteq \attacker$ and
+        $\dep_2 = \dep_2'$:\\ 
+        $\TT{n}_1 \aop \TT{n}_2 = \TT{n}_{s_1} \aop \TT{n}_{s_2}$ and 
+        $(k_1 \sqcup k_2 = k_1' \sqcup k_2') \sqsubseteq \attacker$ and
+        $\dep_1 \cup \dep_2 = \dep_1' \cup \dep_2'$. From
+        Definition~\ref{def:lir:eq-1}, $\TT{v} \sigeq \TT{v}'$.
+        
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$ and $\Gamma(\TT{v}_2) \not\sqsubseteq
+        \attacker$ and  $\TT{v}_2' = \star^{(k_2',\dep_2')}$:
+        
+        \begin{itemize}
+        \item $k_2' = \top$ and $k_2 \not\sqsubseteq \attacker$: \\
+          $(l = k_1 \sqcup k_2) \not\sqsubseteq \attacker$, thus
+          $\Gamma(\TT{v}) \not\sqsubseteq \attacker$, $\TT{n}_{s_1} \aop \star =
+          \star$ and $l' = k_1' \sqcup \top = \top$. From
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} \sigeq \TT{v}'$. 
+          
+        \item $k_2' = \top$, $k_2\sqsubseteq \attacker$ and $\exists \TT{x}
+          \in \dep_2. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$: \\
+          $(l = k_1 \sqcup k_2) \sqsubseteq \attacker$, 
+          $(\Gamma(\TT{v}) = \Gamma(\TT{v}_1) \sqcup \Gamma(\TT{v}_2) ) 
+          \not\sqsubseteq \attacker$ and $l' = \top$. $(\TT{n}_{s_1} \aop
+          \star = \star)$. $\dep = \dep_1 \cup \dep_2$, thus
+          $\TT{x} \in \dep_2 \implies \TT{x} \in \dep$, i.e., $\exists \TT{x} \in
+          \dep.(\blabel(\TT{x}) \not\sqsubseteq \attacker)$. From
+          Definition~\ref{def:lir:eq-2b}, $\TT{v} \sigeq \TT{v}'$. 
+          
+        \item $(k_2 = k_2') \sqsubseteq \attacker ~\wedge~
+          \dep_2 = \dep_2'$: \\
+          $(l = k_1 \sqcup k_2) \sqsubseteq \attacker$ and $(\Gamma(\TT{v}) =
+          \Gamma(\TT{v}_1) \sqcup \Gamma(\TT{v}_2) )  \not\sqsubseteq \attacker$. As
+          $\dep_1 = \dep_1'$, $\dep = \dep_1 \cup
+          \dep_2$, and $\dep' = \dep_1' \cup \dep_2'$. $
+          \dep = \dep'$. $k_1 = k_1'$ and $k_2 = k_2'$, so, $l =
+          l'$. From Definition~\ref{def:lir:eq-2c}, $\TT{v} \sigeq  \TT{v}'$ 
+        \end{itemize}
+      \end{enumerate}
+
+    \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$, $\Gamma(\TT{v}_1) \not\sqsubseteq
+      \attacker$, $\TT{v}_1' = \star^{(k_1',\dep_1')}$:  \\
+      As $\TT{v}_2 \sigeq \TT{v}_2'$, either: 
+      
+      \begin{itemize}
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' = \TT{n}_{s_2}^{(k_2', \dep_2')}$,
+        $\TT{n}_2 = \TT{n}_{s_2}$, $k_2 = k_2' \sqsubseteq  \attacker$ and $\dep_2
+        = \dep_2'$: \\ Similar to the case (1.b) above 
+        
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\Gamma(\TT{v}_2) \not\sqsubseteq
+        \attacker$ and  $\TT{v}_2' = \star^{(k_2',\dep_2')}$: 
+        
+        \begin{itemize}
+        \item $k_1' = \top$ and $k_1 \not\sqsubseteq \attacker$: \\
+          $l' = k_1' \sqcup k_2' = \top$ and $(l = k_1 \sqcup
+          k_2) \not\sqsubseteq \attacker$. From
+          Definition~\ref{def:lir:eq-2a} $\TT{v} \sigeq \TT{v}'$ 
+
+        \item  $\TT{v}_1' = \star^{(k_1',\dep_1')}$, $k_1' = \top$, $k_1
+          \sqsubseteq \attacker$, and $\exists \TT{x} \in
+          \dep_1. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$: \\
+          $\dep = \dep_1 \cup \dep_2$ and $l' = k_1' \sqcup
+          k_2' = \top$. As $l' = \top$ either: \\ 
+          $(l = k_1 \sqcup k_2) \sqsubseteq \attacker$. As $\TT{x} \in
+          \dep_1 \implies \TT{x} \in \dep$. Thus, $\exists \TT{x} \in
+          \dep. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$. From 
+          Definition~\ref{def:lir:eq-2b}, $\TT{v} \sigeq \TT{v}'$ (or) \\
+          $ k_2 \not\sqsubseteq \attacker$ and $(l = k_1 \sqcup
+          k_2) \not\sqsubseteq \attacker$. From
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} \sigeq \TT{v}'$ 
+          
+        \item $(k_1 = k_1') \sqsubseteq \attacker$ and $
+          \dep_1 = \dep_1'$: \\
+          As $\TT{v}_2 \sigeq \TT{v}_2'$, either: \\
+          $k_2' = \top$ and $k_2 \not\sqsubseteq \attacker$. $l = k_1
+          \sqcup k_2$ and $l' = k_1' \sqcup k_2'$. From 
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} \sigeq \TT{v}'$. (or)\\
+          $k_2 \sqsubseteq \attacker$, $k_2' = \top$ and $\exists \TT{x} \in
+          \dep_2. (\blabel(\TT{x})\not\sqsubseteq \attacker)$. $k_1 \sqcup
+          k_2 \sqsubseteq \attacker$, $k_1' \sqcup k_2' = \top$, $\dep
+          = \dep_1 \cup \dep_2$ and $\exists \TT{x} \in
+          \dep. (\blabel(\TT{x})\not\sqsubseteq \attacker)$. From  
+          Definition~\ref{def:lir:eq-2b}, $\TT{v} \sigeq \TT{v}'$ (or) \\
+          $(k_2 = k_2') \sqsubseteq \attacker$, $
+          \dep_2 = \dep_2'$: $l = k_1\sqcup k_2$ and $l' = k_1'
+          \sqcup k_2'$, so $l = l'$. $\dep = \dep_1 \cup \dep_2$ and
+          $\dep' = \dep_1' \cup \dep_2'$. Thus, $\dep = \dep'$.  From 
+          Definition~\ref{def:lir:eq-2c}, $\TT{v} \sigeq \TT{v}'$.
+        \end{itemize}
+      \end{itemize}  
+    \end{enumerate}
+    
+    T.S.: If $\langle \sigma, \iota, \expr \rangle
+    \lirsem \TT{n}^{(l, \dep)}, \iota', \trace $, and  
+    $\langle \sigma^s, \iota, \expr, \trace\proj \rangle
+    \simsem n', 
+    \dep', \iota'', \trace'$, and $\sigma \sigeq \sigma^s$, then
+    $\trace' = \emptyTrace$. $\trace = \trace_1::\trace_2$.\\
+    $\trace\proj = \trace_1\proj :: \trace_2\proj$. From
+    \refrule{lir:exp:aop}, \refrule{lir:exp:cop} and
+    IH1, $\langle \sigma^s, \iota, \expr_1, \trace_1\proj ::
+    \trace_2\proj \rangle \simsem \TT{n}_1',  
+    \dep_1', \iota_1', \trace_2\proj $ because $\trace_1' = \emptyTrace$.
+    From \refrule{lir:exp:aop}, \refrule{lir:exp:cop} and IH2, $\trace' = \emptyTrace$ 
+
+  \item\refrule{lir:exp:dr}:
+    IH1: If $\langle \sigma, \iota, \expr_1 \rangle
+    \lirsem \TT{v}_1, \iota_1, \trace_1 $ and $\sigma
+    \sigeq \sigma^s$, then 
+    $\langle \sigma^s, \iota\proj, \expr_1, \trace_1\proj \rangle \simsem \TT{v}_1',
+    \iota_1', \trace_1' $ such that 
+    $\TT{v}_1 \sigeq \TT{v}_1'$, $\iota_1\proj = \iota_1'$ and $\trace_1' = \emptyTrace$. \\
+    IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle
+    \lirsem \TT{v}_2, \iota_2, \trace_2 $ and $\sigma
+    \sigeq \sigma^s$, then 
+    $\langle \sigma^s, \iota_1\proj, \expr_2, \trace_2\proj \rangle \simsem \TT{v}_2',
+    \iota_2', \trace_2' $ such that $\TT{v}_2 \sigeq \TT{v}_2'$,
+    $\iota_2\proj = \iota_2'$
+    and $\trace_2' = \emptyTrace$. \\  
+    As $\sigma \sigeq \sigma^s$, from IH1 and IH2 $\TT{v}_1
+    \sigeq \TT{v}_1'$, $\TT{v}_2 \sigeq \TT{v}_2'$ and $\trace_1'
+    = \trace_2' = \emptyTrace$. \\ Also from IH1 and IH2, $\iota_2\proj =
+    \iota_2'$. \\
+    T.S: $\TT{v} \sigeq \TT{v}'$, $\iota'\proj = \iota''$ and $\trace' = \emptyTrace$. \\
+    $\TT{v} = \TT{v}_1 ~\op~ \TT{v}_2$ and $\TT{v}' = \TT{v}_1'~\op~v_2'$. \\
+    As $\TT{v}_1 \sigeq \TT{v}_1'$, either:
+
+    \begin{enumerate}
+    \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$, $\TT{v}_1' =
+      \TT{n}_{s_1}^{(k_1',\dep_1')}$, $\TT{n}_1 = \TT{n}_{s_1}$, $k_1 = k_1'
+      \sqsubseteq \attacker$ and $\dep_1 = \dep_{1}'$: \\ 
+      As $\TT{v}_2 \sigeq \TT{v}_2'$, either: 
+
+      \begin{enumerate}
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' =
+        \TT{n}_{s_2}^{(k_2',\dep_2')}$, $\TT{n}_2 = \TT{n}_{s_2}$, $k_2 = k_2'
+        \sqsubseteq \attacker$ and $\dep_2 = \dep_{2}'$: \\
+        Assume $\dep_i = \dep_1 \cup \dep_2$ and $\dep_i' = \dep_1'
+        \cup \dep_2'$, thus, $\dep_i = \dep_i'$.  As $(l = k_1 \sqcup
+        k_2 = k_1' \sqcup k_2' = l')$, $\dep_i = \dep_i'$ and $\iota_2\proj
+        = \iota_2'$, $\dVars_i = \dVars_i'$. Either:
+
+        \begin{itemize}
+        \item $\dVars_i = \dVars_i' = \emptyset$ : $n = \TT{n}_1~\op~\TT{n}_2 =
+          \TT{n}_{s_1}~\op~\TT{n}_{s_2} = \TT{n}_s$ and $(l = k_1 \sqcup k_2 = k_1'
+          \sqcup k_2' = l') \sqsubseteq \attacker$, thus, $\TT{v}
+          \sigeq \TT{v}'$. \\ Also, $\iota' = \iota_2$  and $\iota''
+          = \iota_2'$. Thus, $\iota'\proj = \iota''$. \\    
+          $\trace = \trace_1 :: \trace_2$. From \refrule{lir:exp:sdr} and IH1,
+          $\langle \sigma^s, \iota\proj, \expr_1, \trace_1\proj ::
+          \trace_2\proj \rangle \simsem \TT{v}_1', \iota_1',
+          \trace_2\proj $ because $\trace_1' = \emptyTrace$. From
+          \refrule{lir:exp:sdr} and IH2, $\trace' = \trace_2' = \emptyTrace$. 
+
+        \item $(\dVars_i = \dVars_i') \neq \emptyset$ : $\trace =
+          \trace_1 :: \trace_2 :: \TT{n}^l$. From \refrule{lir:exp:sdr} and IH1, $\langle
+          \sigma^s,  \iota\proj, \expr_1, \trace_1 :: \trace_2 :: n \rangle
+          \simsem \TT{v}_1',  \iota_1', \trace_2 :: n$
+          because $\trace_1' = \emptyTrace$. From \refrule{lir:exp:sdr} and IH2,
+          $\langle \sigma^s, \iota_1\proj, \expr_2, \trace_2 
+          :: n \rangle \simsem \TT{v}_2',
+          \iota_2', n$ because $\trace_2' = \emptyTrace$. From
+          \refrule{lir:exp:sdr}, $\trace' = \emptyTrace$ and $\trace_2 = \TT{n}^l$. Thus,
+          $\TT{v} \sigeq \TT{v}'$. As $\dVars_i = \dVars_i'$ and
+          $\iota_2\proj = \iota_2'$, $\iota'\proj = \iota''$.
+        \end{itemize}
+
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\Gamma(\TT{v}_2) \not\sqsubseteq
+        \attacker$, $\TT{v}_2' = \star^{(k_2',\dep_2')}$ and either: 
+        
+        \begin{itemize}
+        \item $k_2 \not\sqsubseteq \attacker$ and $k_2' = \top$: $(k_o
+          = k_1 \sqcup k_2) \not\sqsubseteq \attacker$, thus,
+          $l \not\sqsubseteq \attacker$. As $l' = \top$ from \refrule{lir:exp:sdr},
+          $\dep_i' = \emptyset$ and $\TT{v}' = \star^{(\top, \{\})}$. From
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} 
+          \sigeq \TT{v}'$. From \refrule{lir:exp:sdr}, IH1, and IH2,
+          $\iota_2\proj = \iota_2'$ and $\trace_2' =
+          \emptyTrace$. Thus, $\iota'\proj = \iota''$ and 
+          $\trace' = \emptyTrace$.
+
+        \item $k_2' = \top$ and $k_2 \sqsubseteq \attacker$ and
+          $\exists \TT{x} \in \dep_2. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$: \\
+          $\TT{v}' = \star^{(\top, \dep')}$. $(k_o = k_1 \sqcup k_2) \sqsubseteq
+          \attacker$ and $\dep = \dep_1 \cup \dep_2$. As $\exists
+          \TT{x} \in \dep.(\blabel(\TT{x}) \not\sqsubseteq \attacker)$, $l
+          \not\sqsubseteq \attacker$. If
+          $\iota_2(\TT{x}) =0$, then $l \sqsupseteq k_o \sqcup m$, else $l
+          \sqsupseteq k_o \sqcup \blabel(\TT{x})$. In either case, $l
+          \not\sqsubseteq \attacker$. Also, $l = k_1' \sqcup k_2' =
+          \top$ so $\dep_i' = \emptyset$. From
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} \sigeq \TT{v}'$. From 
+          \refrule{lir:exp:sdr}, IH1, and IH2, $\iota_2\proj = \iota_2'$ and
+          $\trace_2' = \emptyTrace$. Thus, $\iota'\proj = \iota''$ and
+          $\trace' = \emptyTrace$.
+
+        \item $k_2 = k_2' \sqsubseteq \attacker$ and $
+          \dep_2 = \dep_2'$: \\
+          $\dep = \dep_1 \cup \dep_2$ and $\dep' = \dep_1' \cup \dep_2'$. 
+          As $\dep_1 = \dep_1'$, $ \dep = \dep'$. From
+          IH1, and IH2, $\iota_2\proj = \iota_2'$ and
+          $\trace_2' = \emptyTrace$. If $\exists x. \iota_2\proj(\TT{x}) =
+          \iota_2(\TT{x}) = 0 ~\wedge~\ilabel(\TT{x}) \not\sqsubseteq \attacker$, then
+          $l \not\sqsubseteq \attacker$ and $l' = \top$. Else $l = l'
+          \sqsubseteq \attacker$. Thus, $\dVars_i = \dVars_i'$. Thus,
+          if $\dVars_i = \dVars_i' = \emptyset$, $l' = \top$ and $l
+          \not\sqsubseteq \attacker$, $\iota' = \iota_2\proj =
+          \iota_2' = \iota''$ and $\trace' = \trace_2' =
+          \emptyTrace$. Else, $\trace = 
+          \trace_1::\trace_2::\TT{n}^l$ and $\trace_2\proj = \TT{n}^l::\trace'$
+          and $\TT{v}' = \TT{n}^l$. Hence, $\TT{v} \sigeq \TT{v}'$ and $\trace'
+          = \emptyTrace$. As $\dep = \dep'$ and
+          $\iota_2\proj = \iota_2'$, $\iota'\proj = \iota''$
+        \end{itemize}
+      \end{enumerate}
+
+    \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$ and $\Gamma(\TT{v}_1) \not\sqsubseteq
+      \attacker$ and  $\TT{v}_1' = \star^{(k_1',\dep_1')}$ : \\
+      As $\TT{v}_2 \sigeq \TT{v}_2'$, either: 
+
+      \begin{enumerate}
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' = \TT{n}_{s_2}^{(k_2',
+          \dep_2')}$, $\TT{n}_2 = \TT{n}_{s_2}$, $k_2 = k_2' \sqsubseteq
+        \attacker$ and $\dep_2 = \dep_2'$: Similar to case (1.b) 
+
+      \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$ and $\Gamma(\TT{v}_2) \not\sqsubseteq
+        \attacker$ and  $\TT{n}_2' = \star^{(k_2',\dep_2')}$:\\
+        Different cases of Definition~\ref{def:lir:eq-2}:
+
+        \begin{itemize}
+        \item $k_1' = \top$ and $k_1 \not\sqsubseteq \attacker$:
+          From \refrule{lir:exp:dr}, $l \not\sqsubseteq \attacker$ and from \refrule{lir:exp:sdr}
+          $l' =\top$. $\forall \TT{x} \in \dVars. \ilabel(\TT{x}) \not\sqsubseteq
+          \attacker$, so $\iota_2\proj = \iota'\proj$ and $\trace\proj
+          = \trace_1\proj :: \trace_2\proj$. As $\dep =
+          \emptyset$, $\iota_2' = \iota''$ and $\trace' = \trace_2' =
+          \emptyTrace$. Thus, $\iota'' = \iota'\proj$ and from 
+          Definition~\ref{def:lir:eq-2a}, $\TT{v} \sigeq \TT{v}'$.
+
+        \item $k_1 \sqsubseteq \attacker$ and $\exists \TT{x} \in
+          \dep_1. (\blabel(\TT{x}) \not\sqsubseteq 
+          \attacker)$ and $k_1' = \top$: $\exists \TT{x} \in
+          \dep. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$ as $\dep =
+          \dep_1 \cup \dep_2$. From \refrule{lir:exp:dr}, $l \not\sqsubseteq
+          \attacker$ and $l' =\top$. Similar to above case.
+
+        \item $k_1 \sqsubseteq \attacker$ and $
+          \dep_1 = \dep_1'$: \\
+          If $k_2' = \top$ and either $k_2
+          \not\sqsubseteq \attacker$ or $k_2 \sqsubseteq \attacker$
+          and $\exists \TT{x} \in \dep_2. (\blabel(\TT{x}) \not\sqsubseteq 
+          \attacker)$ - similar to above two cases.\\
+          If $k_2 \sqsubseteq \attacker$ and $\dep_2 = \dep_2'$:  
+          $\dep = \dep_1 \cup \dep_2$ and $\dep' =
+          \dep_1' \cup \dep_2'$ - similar to last case of 1.b
+        \end{itemize}
+      \end{enumerate}
+    \end{enumerate}
+    
+  \item\refrule{lir:exp:dn}:  Similar to \refrule{lir:exp:aop}, \refrule{lir:exp:cop}.
+    % As $\pc \not\sqsubseteq l$, $l \neq \top$. Thus, $l
+    % \sqsubseteq \attacker$. Either $\pc \sqsubseteq \attacker$ or $\pc
+    % \not\sqsubseteq \attacker$. \\
+    % IH1: If $\langle \sigma, \iota, \expr_1 \rangle
+    % \lirsem \TT{v}_1, \iota_1, \trace_1 $ and $\sigma
+    % \sigeq \sigma^s$, then 
+    % $\langle \sigma^s, \iota\proj, \expr_1, \trace_1\proj \rangle \simsem \TT{v}_1',
+    % \iota_1', \trace_1' $ such that 
+    % $\TT{v}_1 \sigeq \TT{v}_1'$, $\iota_1\proj = \iota_1'$ and $\trace_1' = \emptyTrace$. \\
+    % IH2: If $\langle \sigma, \iota_1, \expr_2 \rangle
+    % \lirsem \TT{v}_2, \iota_2, \trace_2 $ and $\sigma
+    % \sigeq \sigma^s$, then 
+    % $\langle \sigma^s, \iota_1\proj, \expr_2, \trace_2\proj \rangle \simsem \TT{v}_2',
+    % \iota_2', \trace_2' $ such that $\TT{v}_2 \sigeq \TT{v}_2'$,
+    % $\iota_2\proj = \iota_2'$
+    % and $\trace_2' = \emptyTrace$. \\  
+    % As $\sigma \sigeq \sigma^s$, from IH1 and IH2 $\TT{v}_1
+    % \sigeq \TT{v}_1'$, $\TT{v}_2 \sigeq \TT{v}_2'$ and $\trace_1'
+    % = \trace_2' = \emptyTrace$. \\ Also from IH1 and IH2, $\iota_2\proj =
+    % \iota_2'$. \\
+    % Thus from IH1 and IH2, $\iota'\proj = \iota''$ and $\trace'
+    % =\emptyTrace$. \\
+    % T.S: $\TT{v} \sigeq \TT{v}'$. \\
+    % $\TT{v} = \TT{v}_1 ~\op~ \TT{v}_2$ and $\TT{v}' = \TT{v}_1'~\op~v_2'$. \\
+    % As $\TT{v}_1 \sigeq \TT{v}_1'$, either:
+
+    % \begin{enumerate}
+    % \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$, $\TT{v}_1' =
+    %   \TT{n}_{s_1}^{(k_1',\dep_1')}$, $\TT{n}_1 = \TT{n}_{s_1}$, $k_1 = k_1'
+    %   \sqsubseteq \attacker$ and $\dep_1 = \dep_{1}'$: \\ 
+    %   As $\TT{v}_2 \sigeq \TT{v}_2'$, either: 
+
+    %   \begin{enumerate}
+    %   \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' =
+    %     \TT{n}_{s_2}^{(k_2',\dep_2')}$, $\TT{n}_2 = \TT{n}_{s_2}$, $k_2 = k_2'
+    %     \sqsubseteq \attacker$ and $\dep_2 = \dep_{2}'$: \\
+    %     $\TT{n}_o = \TT{n}_1 \cop \TT{n}_2 = \TT{n}_{s_1} \cop \TT{n}_{s_2} = \TT{n}_o'$, $l = k_1
+    %     \sqcup k_2 = k_1' \sqcup k_2' = l'$ ,and  $\dep =
+    %     \dep_1 \cup \dep_2 = \dep_1' \cup \dep_2' = \dep'$. Thus,
+    %     final $\dep=dep'$ and $l=l'$. If $\exists \TT{x} \in \dep. \ilabel(\TT{x})
+    %     \not\sqsubseteq \attacker$, then $l \not\sqsubseteq \attacker$
+    %     and $l' = \top$. Else, $l=l' \sqsubseteq \attacker$. Thus, $\TT{v}
+    %     \sigeq \TT{v}'$. 
+
+    %   \item $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\Gamma(\TT{v}_2) \not\sqsubseteq
+    %     \attacker$, $\TT{v}_2' = \star^{(k_2',\dep_2')}$ and either: 
+        
+    %     \begin{itemize}
+    %     \item $k_2 \not\sqsubseteq \attacker$ and $k_2' = \top$: \\
+    %       As $k_2' =\top$, $l' = \top$. Case does not apply as $l'
+    %       \neq \top$.
+
+    %     \item $k_2' = \top$ and $k_2 \sqsubseteq \attacker$ and
+    %       $\exists \TT{x} \in \dep_2. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$: \\
+    %       As $k_2' =\top$, $l' = \top$. Case does not apply as $l'
+    %       \neq \top$.
+
+    %     \item $k_2 = k_2' \sqsubseteq \attacker$ and $\forall \TT{x} \in
+    %       \dep_2.(x \in \dep_2')$: \\
+    %       $\dep = \dep_1 \cup \dep_2$ and $\dep' = \dep_1' \cup
+    %       \dep_2'$. As $\dep_1 = \dep_1'$, $\forall \TT{x} \in \dep.(x
+    %       \in \dep')$. Thus $l_t = l_t'$ and $\pc \not\sqsubseteq l_t$
+    %       and $\pc \not\sqsubseteq l_t'$. Hence, final $l
+    %       \not\sqsubseteq \attacker$ and $l' = \top$
+    %       Hence, $\TT{v} \sigeq \TT{v}'$
+    %     \end{itemize}
+    %   \end{enumerate}
+      
+    % \item $\TT{v}_1 = \TT{n}_1^{(k_1, \dep_1)}$, $\Gamma(\TT{v}_1) \not\sqsubseteq
+    %   \attacker$, $\TT{v}_1' = \star^{(k_1',\dep_1')}$ and either: 
+      
+    %   \begin{itemize}
+    %   \item $k_1 \not\sqsubseteq \attacker$ and $k_1' = \top$: \\
+    %     As $k_1' =\top$, $l' = \top$. Case does not apply as $l'
+    %     \neq \top$.
+        
+    %   \item $k_1' = \top$ and $k_1 \sqsubseteq \attacker$ and
+    %     $\exists \TT{x} \in \dep_1. (\blabel(\TT{x}) \not\sqsubseteq \attacker)$: \\
+    %     As $k_1' =\top$, $l' = \top$. Case does not apply as $l'
+    %     \neq \top$.
+        
+    %   \item $k_1 = k_1' \sqsubseteq \attacker$ and $\forall \TT{x} \in
+    %     \dep_1.(x \in \dep_1')$: \\
+    %     Either $\TT{v}_2 = \TT{n}_2^{(k_2, \dep_2)}$, $\TT{v}_2' =
+    %     \TT{n}_{s_2}^{(k_2',\dep_2')}$, $\TT{n}_2 = \TT{n}_{s_2}$, $k_2 = k_2'
+    %     \sqsubseteq \attacker$ and $\dep_2 = \dep_{2}'$: \\
+    %     $\dep = \dep_1 \cup \dep_2$ and $\dep' = \dep_1' \cup
+    %     \dep_2'$. As $\dep_2 = \dep_2'$, $\forall \TT{x} \in \dep.(x
+    %     \in \dep')$. Thus $l_t = l_t'$ and $\pc \not\sqsubseteq l_t$
+    %     and $\pc \not\sqsubseteq l_t'$. Hence, final $l
+    %     \not\sqsubseteq \attacker$ and $l' = \top$
+    %     Hence, $\TT{v} \sigeq \TT{v}'$.  (or)\\
+    %     $k_2 = k_2' \sqsubseteq \attacker$ and $\forall \TT{x} \in
+    %     \dep_2.(x \in \dep_2')$:\\
+    %     $\dep = \dep_1 \cup \dep_2$ and $\dep' = \dep_1' \cup
+    %     \dep_2'$. $\forall \TT{x} \in \dep.(x
+    %     \in \dep')$. Thus $l_t = l_t'$ and $\pc \not\sqsubseteq l_t$
+    %     and $\pc \not\sqsubseteq l_t'$. Hence, final $l
+    %     \not\sqsubseteq \attacker$ and $l' = \top$
+    %     Hence, $\TT{v} \sigeq \TT{v}'$.
+    %   \end{itemize}  
+    % \end{enumerate}
+
+    % \item[cop: ] Similar to aop
+  \end{itemize}
+\end{proof}
+
+\begin{myThm}[Simulation Theorem]
+\label{thm:app:lir:sim}
+If $\langle \sigma, \iota, \comm \rangle
+\lirsem \langle \sigma', \iota', \trace \rangle$,
+then\\ 
+$\langle \sigma\proj, \iota\proj, \comm, \trace\proj
+\rangle  \simsem \langle \sigma'',\iota'',
+\trace'' \rangle$ such that 
+$\sigma' \sigeq \sigma''$,
+$\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$ 
+\end{myThm}
+\begin{proof}
+  Assume $\sigma\proj = \sigma^s$. Thus, $\sigma \sigeq
+  \sigma^s$. As $\attacker$ simulates the run, initial $\pc \sqsubseteq
+  \attacker$. 
+  Proof by induction on the derivation for commands and case analysis on
+  the last rule.
+
+  \begin{itemize}[leftmargin=.5in]
+  \item \refrule{lir:cmd:sk}: $\sigma'=\sigma \sigeq \sigma^s =
+    \sigma''$. $\trace =\emptyTrace$. Thus $\trace\proj = \trace'' = 
+    \emptyTrace$.  $\iota = \iota'$ and $\iota\proj=\iota''$. So,
+    $\iota'\proj = \iota''$
+
+  \item \refrule{lir:cmd:an}: As $\sigma \sigeq \sigma^s$, $\sigma(\TT{x})
+    \sigeq \sigma^s(\TT{x})$. Thus, either $(\Gamma_f(\sigma(\TT{x})) =
+    \Gamma_f(\sigma^s(\TT{x})))$ (or) $\Gamma_f(\sigma(\TT{x})) \not\sqsubseteq
+    \attacker$ and $\Gamma_f(\sigma^s(\TT{x})) = \top$. In either case, $\pc
+    \sqsubseteq \Gamma_f(\sigma(\TT{x}))$ and $\pc
+    \sqsubseteq \Gamma_f(\sigma^s(\TT{x}))$. From Lemma~\ref{lem:app:lir:simExp}, 
+    $\TT{n}^{(m, \dep')} \sigeq \TT{n}_s^{(m', \dep'')}$, $\iota'\proj =
+    \iota''$ and $\trace'' = \emptyTrace$. From
+    Definition~\ref{def:lir:eq}, $\TT{n}^{(l, \dep)} \sigeq \TT{n}_s^{(l_s,
+      \dep_s)}$. Thus, $\sigma' \sigeq \sigma''$, $\iota'\proj =
+    \iota''$ and $\trace'' = \emptyTrace$. 
+    
+  \item \refrule{lir:cmd:s}: IH1: If $\langle \sigma, \iota, \comm_1 \rangle
+    \lirsem \langle \sigma_1, \iota_1, \trace_1 \rangle$,
+    then $\langle \sigma\proj, \iota\proj, \comm_1, \trace_1\proj
+    \rangle  \simsem \langle \sigma_1',\iota_1',
+    \trace_1' \rangle$ such that $\sigma_1 \sigeq \sigma_1'$,
+    $\iota_1\proj = \iota_1'$ and $\trace_1' = \emptyTrace$ \\
+    IH2: If $\langle \sigma_1, \iota_1, \comm_2 \rangle
+    \lirsem \langle \sigma', \iota', \trace_2 \rangle$,
+    then $\langle \sigma_1\proj, \iota_1\proj, \comm_2, \trace_2\proj 
+    \rangle  \simsem \langle \sigma'',\iota'',
+    \trace'' \rangle$ such that $\sigma' \sigeq \sigma''$,
+    $\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$.\\
+    T.S : If $\langle \sigma, \iota, \comm_1;\comm_2 \rangle
+    \lirsem \langle \sigma', \iota', \trace_1::\trace_2 \rangle$,
+    then \\ $\langle \sigma\proj, \iota\proj, \comm_1;\comm_2,
+    \trace_1\proj::\trace_2\proj 
+    \rangle  \simsem \langle \sigma'',\iota'',
+    \trace'' \rangle$ such that $\sigma' \sigeq \sigma''$,
+    $\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$. \\
+    From IH1, $\sigma_1' = \sigma_1\proj$ and $\iota_1\proj = \iota_1'$,
+    thus, from IH2 $\sigma' \sigeq \sigma''$ and $\iota'\proj =
+    \iota''$. \\
+    From IH1 $\trace_1' = \emptyTrace$, and Corollary~\ref{cor:app:lir:tred},
+    $\langle 
+    \sigma\proj, \iota\proj, \comm_1, \trace_1\proj::\trace_2\proj 
+    \rangle  \simsem \langle \sigma'',\iota'',
+    \trace_2\proj \rangle$. From IH2, $\trace'' = \emptyTrace$.
+
+  \item \refrule{lir:cmd:ie}: From Lemma~\ref{lem:app:lir:simExp},
+    $\TT{v} \sigeq \TT{v}'$, 
+    $\iota_1\proj = \iota_1'$, and $\trace_1' = \emptyTrace$. \\
+    IH1: If $\langle \sigma, \iota_1, \comm_i \rangle
+    \lirsemup \langle \sigma', \iota', \trace_2 \rangle$,
+    then $\langle \sigma\proj, \iota_1\proj, \comm_i, \trace_2\proj
+    \rangle  \simsemup \langle \sigma'',\iota'',
+    \trace'' \rangle$ such that $\sigma' \sigeq \sigma''$,
+    $\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$. \\
+    If $\TT{v}' = \TT{n}_s^{(l', \dep')}$, then from IH1 $\sigma'
+    \sigeq \sigma''$, 
+    $\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$. \\ 
+    Else from confinement lemma~\ref{lem:app:lir:conf} and
+    Lemma~\ref{lem:app:lir:equiv}, $\sigma' 
+    \sigeq \sigma''$, 
+    $\iota'\proj = \iota''$ and $\trace'' = \emptyTrace$.
+
+  \item \refrule{lir:cmd:wt} and \refrule{lir:cmd:wf}: Similar to if and seq above
+  \end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:sigequ}
+If $\sigma_1 \eq \sigma_2$ then $\sigma_1\proj = \sigma_2\proj$
+\end{myLemma}
+\begin{proof}
+From Definition~\ref{def:lir:seq}, $\sigma_1 \eq \sigma_2 \implies \forall
+\TT{x}. \sigma_1(\TT{x}) \eq \sigma_2(\TT{x})$. Assume $\sigma_1(\TT{x}) = \TT{n}_1^{(k_1,
+  \dep_1)}$ and $\sigma_2(\TT{x}) = \TT{n}_2^{(k_2, \dep_2)}$. 
+From Definition~\ref{def:lir:veq}, either:
+\begin{itemize}
+\item $\TT{n}_1 = \TT{n}_2$, $k_1 = k_2 \sqsubseteq \attacker$ and $\dep_1
+  = \dep_2$: By definition of $\sigma\proj$, $\sigma_1\proj(\TT{x}) =
+  \TT{n}_1^{(k_1, \dep_1)}$ and $\sigma_2\proj(\TT{x}) = \TT{n}_2^{(k_2,
+    \dep_2)}$. Hence, $\sigma_1\proj(\TT{x}) = \sigma_2\proj(\TT{x})$
+\item $\Gamma(\TT{v}_1) \not\sqsubseteq  \attacker$ and $\Gamma(\TT{v}_2)
+  \not\sqsubseteq \attacker$ such that $k_1 = k_2 \sqsubseteq
+  \attacker$ and $\dep_1 = \dep_2$: By definition of $\sigma\proj$,
+  $\sigma_1\proj(\TT{x}) = \star^{(k_1, \dep_1)}$ and $\sigma_2\proj(\TT{x}) =
+  \star^{(k_2, \dep_2)}$. Hence, $\sigma_1\proj(\TT{x}) = \sigma_2\proj(\TT{x})$
+\item $\Gamma(\TT{v}_1) \not\sqsubseteq  \attacker$ and $\Gamma(\TT{v}_2)
+  \not\sqsubseteq \attacker$ such that $k_1 \not\sqsubseteq
+  \attacker$ and $k_2 \not\sqsubseteq \attacker$: By definition of
+  $\sigma\proj$, $\sigma_1\proj(\TT{x}) = \star^{(\top, \{\})}$ and
+  $\sigma_2\proj(\TT{x}) = \star^{(\top, \{\})}$. Hence, $\sigma_1\proj(\TT{x})
+  = \sigma_2\proj(\TT{x})$ 
+\end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:beq}
+If $\iota_1 \eq \iota_2$ then $\iota_1\proj = \iota_2\proj$  
+\end{myLemma}
+\begin{proof}
+From Definition~\ref{def:lir:beq}, $\iota_1 \eq \iota_2 \implies \forall
+\TT{x}. \blabel(\TT{x}) \sqsubseteq \attacker \implies \iota_1(\TT{x}) =
+\iota_2(\TT{x})$. By definition of $\iota\proj$, if $(\blabel(\TT{x})
+\not\sqsubseteq \attacker$ then $\iota_1\proj(\TT{x}) = 0$ else
+$\iota_1\proj(\TT{x}) = \iota_1(\TT{x}))$
+and if $(\blabel(\TT{x}) \not\sqsubseteq \attacker)$ then
+$\iota_2\proj(\TT{x}) = 0$ else  $\iota_2\proj(\TT{x}) = \iota_2(\TT{x}))$.
+Thus, if $\blabel(\TT{x}) \sqsubseteq \attacker$, then $\iota_1\proj(\TT{x}) =
+\iota_2\proj(\TT{x})$ else $\iota_1\proj(\TT{x}) = \iota_2\proj(\TT{x}) = 0$. 
+Thus, $\iota_1\proj = \iota_2\proj$.
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:sigeqproj}
+If $\sigma_1 \sigeq \sigma'$ and $\sigma_2 \sigeq \sigma'$, then
+$\sigma_1 \eq \sigma_2$ 
+\end{myLemma}
+\begin{proof}
+From Definition~\ref{def:lir:simseq}, $\sigma_1 \sigeq \sigma' \implies \forall
+\TT{x}. \sigma_1(\TT{x}) \sigeq \sigma'(\TT{x})$ and $\sigma_2 \sigeq \sigma' \implies \forall
+\TT{x}. \sigma_2(\TT{x}) \sigeq \sigma'(\TT{x})$. Assume $\sigma_1(\TT{x}) = \TT{n}_1^{(k_1,
+  \dep_1)}$, $\sigma_2(\TT{x}) = \TT{n}_2^{(k_2,
+  \dep_2)}$ and $\sigma'(\TT{x}) = \TT{v}^{(l', \dep')}$. \\
+T.S.: $\forall \TT{x}. \sigma_1(\TT{x}) \eq \sigma_2(\TT{x})$ 
+From Definition~\ref{def:lir:eq} for $\sigma_1(\TT{x}) \sigeq \sigma'(\TT{x})$, either:
+\begin{itemize}
+\item $\TT{v} = \TT{n}_s$ and $\TT{n}_1 = \TT{n}_s$ and
+  $(k_1 = l') \sqsubseteq \attacker$ and $\dep_1 = \dep'$: As
+  $\sigma_2(\TT{x}) \sigeq \sigma'(\TT{x})$, by Definition~\ref{def:lir:eq-1} $\TT{n}_2 =
+  \TT{n}_s$ and $(k_1, \dep_1) = (l', \dep')$. Thus, $\sigma_1(\TT{x}) =
+  \sigma_2(\TT{x})$. 
+\item $\Gamma(\sigma_1(\TT{x})) \not\sqsubseteq \attacker$,  $\TT{v} = \star$
+  and either:
+  \begin{enumerate}
+    \item $k_1 \not\sqsubseteq \attacker ~\wedge ~l' = \top$: Either
+      $k_2 \not\sqsubseteq \attacker$ or $k_2 \sqsubseteq
+      \attacker~\wedge~\exists \TT{y} \in \dep. (\blabel(\TT{y}) \not\sqsubseteq
+      \attacker$: From Definition~\ref{def:lir:veq}.
+    \item $k_1 \sqsubseteq \attacker~\wedge~\exists \TT{y}
+      \in \dep. (\blabel(\TT{y}) \not\sqsubseteq \attacker) ~\wedge ~l' =
+      \top$: Similar to above case
+    \item $(k_1 = l') \sqsubseteq \attacker~ \wedge
+      ~\dep_1 = \dep'$: As $l' \sqsubseteq
+      \attacker$, $k_2 \sqsubseteq \attacker~ \wedge
+      ~\dep_2 = \dep'$. From Definition~\ref{def:lir:veq}.(2).
+    \end{enumerate}
+  \end{itemize}
+\end{proof}
+
+\begin{myLemma}
+\label{lem:app:lir:slir}
+If $\langle \sigma_1, \iota_1, \comm \rangle
+\lirsem \langle \sigma_1', \iota_1', \trace_1 \rangle$, 
+$\langle \sigma_2, \iota_2, \comm \rangle
+\lirsem \langle \sigma_2', \iota_2', \trace_2 \rangle$, 
+$\sigma_1 \eq \sigma_2$, $\iota_1 \eq \iota_2$, and $\trace_1
+\eq \trace_2$, then $\sigma_1' \eq \sigma_2'$.
+\end{myLemma}
+\begin{proof}
+From Theorem~\ref{thm:app:lir:sim},  if $\langle \sigma_1, \iota_1, \comm
+\rangle \lirsem \langle \sigma_1', \iota_1', \trace_1 \rangle$,\\ then
+$\langle  \sigma_1\proj, \iota_1\proj, \comm, \trace_1\proj 
+\rangle  \simsem \langle \sigma_1'',\iota_1'',
+\trace_1'' \rangle$ such that $\sigma_1' \sigeq \sigma_1''$,
+$\iota_1'\proj = \iota_1''$ and $\trace_1'' = \emptyTrace$ and \\
+if $\langle \sigma_2, \iota_2, \comm \rangle \lirsem \langle
+\sigma_2', \iota_2', \trace_2 \rangle$, then \\ $\langle  
+\sigma_2\proj, \iota_2\proj, \comm, \trace_2\proj 
+\rangle  \simsem \langle \sigma_2'',\iota_2'',
+\trace_2'' \rangle$ such that $\sigma_2' \sigeq \sigma_2''$,
+$\iota_2'\proj = \iota_2''$ and $\trace_2'' = \emptyTrace$.\\
+$\sigma_1 \eq \sigma_2 \implies \sigma_1\proj = \sigma_2\proj$. 
+$\iota_1 \eq \iota_2 \implies \iota_1\proj = \iota_2\proj$. \\
+As $\trace_1 \eq \trace_2$, from Definition~\ref{def:lir:teq}
+$\trace_1\proj = \trace_2\proj$. \\ 
+Thus, $\sigma_1'' = \sigma_2''$, $\iota_1'' = \iota_2''$ and
+$\trace_1'' = \trace_2''$. \\
+$\sigma_1' \sigeq \sigma_1''$, and $\sigma_2' \sigeq
+\sigma_2''$, i.e., $\sigma_2' \sigeq \sigma_1''$. 
+From Lemma~\ref{lem:app:lir:sigeqproj}.
+\end{proof}
+
+\begin{mycor}[Non-interference]
+\label{cor:app:lir:ni}
+If $\langle \sigma_1, \iota_1, \comm \rangle
+\lirsem \langle \sigma_1', \iota_1', \trace_1 \rangle$, 
+ $\langle \sigma_2, \iota_2, \comm \rangle
+\lirsem \langle \sigma_2', \iota_2', \trace_2 \rangle$, 
+ $\sigma_1 \eq \sigma_2$, and $\iota_1\proj = \iota_2\proj = 0$, 
+then $\sigma_1' \eq \sigma_2'$.
+\end{mycor}
+\begin{proof}
+From Theorem~\ref{thm:app:lir:cmdtrl} and Lemma~\ref{lem:app:lir:slir}
+\end{proof}
+

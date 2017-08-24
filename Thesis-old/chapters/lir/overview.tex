@@ -1,0 +1,88 @@
+\section{Quantifying Information Leaks}
+\label{sec:bgqif}
+
+The information released, or the \emph{mutual information}, is
+generally quantified as the difference in the entropy, which is a
+measure of the adversary's uncertainty, of the sensitive information 
+before and after the information is released, i.e.,  
+$$\text{mutual information = initial uncertainty - final
+  uncertainty}$$ 
+Roughly speaking, this amounts to the gain in knowledge of the
+adversary about a sensitive value. The adversary computes a probable
+initial set of values for the sensitive value. By observing the
+information released, the adversary can refine his/her knowledge set
+by removing the improbable values.
+Various information-theoretic measures have been proposed~\cite{shannon, guessing, 
+  smith2009, clarkson2009, csf12GLeakage} for quantifying information
+leaks. Many of these measures determine an average worst-case bound on 
+the amount of information that a program can leak. 
+
+Clark et al.~\cite{clark} propose an approach to statically 
+quantify the amount of information leaked in an imperative language.
+An important result that they prove in their work is that the information 
+released by a program in a deterministic system is equal to the Shannon 
+entropy of the outputs given the public inputs. Thus, for computing the 
+information released by a program about a secret, it is enough to compute
+the Shannon entropy of the public outputs given the public inputs. 
+Another important result is the Shannon's source coding 
+theorem~\cite{shannon} that intuitively states that 
+if one can associate variable-sized bit-codes with different outputs 
+of a program such that the codes are uniquely-decodable, 
+then the average of the code-lengths of these codes has been shown 
+to be bounded by the Shannon entropy of the outputs of the program. 
+The soundness of our approach builds on top of these two results. 
+We associate bit-codes with the outputs of the program being analyzed 
+and show that these codes are uniquely-decodable. In other words, 
+the information release as computed by our approach averaged over 
+all executions is bounded by the actual information released by the program.
+
+% Various measures~\cite{shannon,guessing,smith2009,clarkson2009,
+%   csf12GLeakage} 
+% % like Shannon
+% % entropy~\cite{}, min-entropy~\cite{}, guessing entropy~\cite{},
+% % g-vulnerability~\cite{}, belief-tracking~\cite{} etc. 
+% have been proposed for quantifying information leaks. 
+% Many of these measures determine an average worst-case bound on
+% the amount of information that a program can leak. These
+% measures are based on associating variable-sized bit-codes to
+% different outputs. Other measures consider the vulnerability of a 
+% secret, which is directly proportional to its probability distribution.
+% The entropy of the program outputs is the expected value of a random
+% variable formed by the probability distribution of the different
+% outputs or the most probable output. 
+
+% Intuitively, the measures computes the average number of bits
+% required by an adversary to uniquely encode the different outputs of
+% the program related to the sensitive value. Thus, even a single bit
+% can encode a 32-bit or 64-bit value.   
+% Imagine that a sensitive value can take the following
+% values: ``N'', ``S'', ``E'', and ``W''. To accurately determine the
+% value, comparisons done twice would suffice. Assuming that only the
+% results of the comparison operations are visible, 2 bits can be used
+% to reveal any of the four values: ``N'' as \{\TT{true}, \TT{true}\},
+% ``S'' as \{\TT{false}, \TT{true}\}, ``E'' as \{\TT{true}, \TT{false}\}
+% and ``W'' as \{\TT{false}, \TT{false}\}. In all the four cases, the
+% two bits reveal all the 32 or 64 bits contained in the value. However,
+% all the entropy-based measures would compute a maximum of 2-bit
+% leakage (depending on the probabilities the computed leakage can be
+% less than 2 bits). 
+
+% Thus, it is more intuitive to view the measure of mutual information
+% as being bounded by the 
+% amount of information leaked \emph{about} the value rather
+% than viewing it as the number of bits of the value leaked. This
+% generally amounts to the
+% number of operations (guesses) allowed to reveal information about the
+% secret. Its average over different executions is shown to be bounded
+% by the Shannon entropy of the different outputs in this chapter using
+% the Shannon source-coding theorem~\cite{shannon}.  
+
+% The approach by~\cite{clarkson2009} reasons
+% about an adversary's belief with respect to the secret
+% values. The adversary associates a probability distribution with
+% the secret value, which differs from the actual probability
+% distribution of the secret. Based on the different outcomes of the
+% program, the adversary alters her belief about the secret value. The
+% information leak is based on the change in the adversary's
+% belief. Most of these measures rely on the availability of a
+% probability distribution for the output values.     

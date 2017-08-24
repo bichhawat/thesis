@@ -1,0 +1,235 @@
+\section{Improved Permissive-Upgrade Strategy}
+\label{sec:ipus}
+
+% As described in the previous chapter, the NSU check is restrictive
+% and halts many programs that do not leak information. 
+% To improve
+% permissiveness, the permissive-upgrade strategy was proposed as a
+% replacement for NSU by Austin and Flanagan~\cite{plas10}. 
+% To allow a dynamic IFC to accept safe executions of programs with
+% variable upgrades due to high $\pc$, Austin and Flanagan proposed a
+% less restrictive strategy called
+% \emph{permissive-upgrade}~\cite{plas10}. Whereas NSU stops a program 
+% when a variable's label is upgraded due to assignment in a high $pc$,
+% permissive-upgrade allows the assignment, but labels the variable
+% \emph{partially-leaked} or $P$. The taint $P$ roughly means that the
+% variable's content in this execution is $H$, but it may be $L$ in
+% other executions. The program must be stopped later if it tries to use
+% or case-analyze the variable (in particular, branching on a
+% partially-leaked Boolean variable is stopped). Permissive-upgrade also
+% ensures termination-insensitive non-interference, but is strictly more
+% permissive than NSU. For example, permissive-upgrade stops the leaky
+% program of Listing~\ref{lst1} at line~\ref{linerefcond} when \TT{z}
+% contains $\texttt{false}^H$, but it allows the program of
+% Listing~\ref{lst1.1} to execute to completion when \TT{y} contains
+% $\texttt{true}^L$. Please note that in this section, the lattice has
+% only two levels: $L$ (public) and $H$ (confidential). 
+
+% \subsection{Improved Permissive-Upgrade on a Two-Point Lattice}
+% This section presents an enhancement of the original
+% permissive-upgrade strategy with improved permissiveness. 
+
+% Austin and Flanagan~\cite{plas10} introduce a new label $P$ for
+% ``partially-leaked''. The intuition behind the partially-leaked label
+% $P$ is the following: 
+
+% \begin{framed}
+% \noindent
+%   A variable with a value labeled $P$ may have been implicitly
+%   influenced by $H$-labeled values in this execution, but in other
+%   executions (obtainable by changing $H$-labeled values in the
+%   initial store), this implicit influence may not exist and, hence,
+%   the variable may be labeled $L$.
+% \end{framed}
+
+% Thus, assignments under high $\pc$ succeed under the
+% permissive-upgrade check but branching or case-analyzing a
+% partially-leaked value is not permitted as that can also leak
+% information. For illustration, consider the different executions of
+% example in Listing~\ref{lst1} taken from~\cite{plas10} as shown in
+% Table~\ref{tbl:nsu}. The assignment 
+% on line~\ref{lineref} is not permitted by the NSU check. However, the
+% permissive-upgrade check updates \TT{y} to \texttt{false} with a
+% partially-leaked label. Further case analysis on \TT{y} is prohibited (if
+% not, the branch on line~\ref{linerefcond} would not be taken as \TT{y} is
+% \texttt{false} and \TT{z} would return $\texttt{true}^{L}$, thus leaking
+% the value of \TT{x}).
+
+% \begin{table*}
+% \centering
+% \begin{tabular} {|l||@{\,}c@{\,}||@{\,}c@{\,}|@{\,}c@{\,}|}
+% \hline
+% &
+% $\TT{x} = \texttt{false}^{H}$
+% &
+% \multicolumn{2}{c|}{$\TT{x} = \texttt{true}^{H}$}
+% \\
+% \cline{2-4}
+% &
+% \textit{All strategies}
+% &
+% \textit{NSU}
+% &
+% \textit{Permissive-upgrade}
+% \\
+% \hline
+% \TT{y} = \texttt{true} &$\TT{y} = \texttt{true}^{L}$&$\TT{y} =
+%                                               \texttt{true}^{L}$&$\TT{y} =
+%                                                                   \texttt{true}^{L}$\\
+% \TT{z} = \texttt{true} &$\TT{z} = \texttt{true}^{L}$&$\TT{z} =
+%                                               \texttt{true}^{L}$&$\TT{z} =
+%                                                                   \texttt{true}^{L}$\\
+% \texttt{if} (\TT{x})&branch not taken&$\pc = H$&$\pc = H$\\
+% \quad\TT{y} = \texttt{false}&$\TT{y} = \texttt{true}^{L}$&execution halted&$\TT{y} = \texttt{false}^{P}$\\
+% \texttt{if} (\TT{y})&$\pc = L$&&execution halted\\
+% \quad$\TT{z} = \texttt{false}$&$\TT{z} = \texttt{false}^{L}$&&\\
+% \texttt{return} \TT{z}&$\texttt{false}^{L}$&&\\
+% \hline
+% Result & $\TT{z} = \texttt{false}^{L}$ & no leak & no leak\\
+% \hline
+% \end{tabular}
+% \caption{Execution steps in two runs of the program from
+%   Listing~\ref{lst1}, with NSU and the permissive-upgrade check}
+% \label{tbl:nsu}
+% \end{table*}
+
+The original permissive-upgrade strategy, however, lacks 
+permissiveness; it rejects secure programs like the one shown in
+Listing~\ref{lst2}. Consider that \TT{x} is labeled $H$
+and \TT{w}, \TT{y} are labeled $L$. With the original permissive-upgrade
+strategy, the label of \TT{z} on
+line~\ref{lineref2} would remain $P$ and the execution would be
+terminated when branching on \TT{z} on line~\ref{lineref3}. With the 
+improvement $$H \sqcup P = H$$ the analysis can accept such programs
+while remaining sound. With the improvement, \TT{z} would be labeled
+$H$ on line~\ref{lineref2}, which would allow the execution to branch
+on line~\ref{lineref3}, thus, 
+taking the execution to completion. 
+The idea behind the improvement is that an $H$-labeled value is
+never observable at $L$-level. Similarly, the result of any operation
+involving an $H$-labeled value is also never observable at
+$L$-level. Thus, any operation involving a partially-leaked value and
+a $H$-labeled value does not reveal any information to an adversary at
+level $L$ about the partially leaked value. 
+
+\begin{lstlisting}[float,label=lst2,caption=Example showing the
+  impermissiveness of the original permissive-upgrade strategy][escapechar=@]
+y = false
+if (not(x))
+  y = true@\label{lineref1}@
+z = y || x@\label{lineref2}@
+if (not(z))@\label{lineref3}@
+  w = true
+\end{lstlisting}
+
+% \begin{figure}[htbp]
+% \begin{align*}
+% \lab          :=~& L~\arrowvert~H\\
+% \pc          :=~& \lab\\
+% k,l,m :=~& \lab~\arrowvert~P\\ \\
+% k \sqcup k ~= ~& k\\
+% L \sqcup H ~=~ &H\\
+% L \sqcup P  ~=~&P \\
+% \color{blue}{H\sqcup P  ~=~}&\color{blue}{H} 
+% % \\
+% % \mathit{if} ~\pc = L ~\mathit{then}~ H\sqcup P  ~=~&H
+% \end{align*}
+% \caption{Syntax of labels including the partially-leaked label
+%   $P$}\label{pus:syntax}
+% \end{figure}
+
+% Labels $k,l,m$ on values are either elements of the lattice ($L, H$)
+% or $P$. The $\pc$ can only be one of $L, H$ because branching on
+% partially-leaked values is prohibited. This is summarized by the
+% revised syntax of labels in Figure~\ref{pus:syntax}. The figure also
+% lifts the join operation $\sqcup$ to labels including
+% $P$. In the original permissive-upgrade~\cite{plas10}, joining any
+% label with $P$ resulted in $P$. 
+
+The final label $k$ in the assignment rule \refrule{bs:cmd:ap} under
+the improved permissive-upgrade strategy becomes: 
+% \begin{mathpar}
+% \inferrule*[left=\mbox{\labelthis{bs:cmd:ap}{assn-pus}}]
+% {l := \Gamma(\sigma(\TT{x})) \qquad \langle
+%  \sigma, \expr \rangle \bsexp \TT{n}^m} {\langle \sigma, \TT{x} := \expr
+%     \rangle \bscmd \sigma[\TT{x} \mapsto \TT{n}^{k}]}
+% \end{mathpar}
+% where $k$ is defined as follows:
+$$ k = % \left\lbrace
+\begin{cases}
+m & \mbox{ if } \pc = L \\
+H  & \mbox{ if } \pc = H \mbox{ and } l = H\\
+P  & \mbox{ otherwise}
+\end{cases} % \right.
+$$
+
+% The first two conditions in the definition of $k$ correspond to the
+% NSU rule (Figure~\ref{fig:assn-nsu}). The third condition applies, in
+% particular, when a variable whose initial label is $L$ is assigned to
+% under $\pc = H$. The NSU check would stop this assignment. With
+% permissive-upgrade, however, the updated variable is labeled $P$,
+% consistent with the intuitive meaning of $P$. This allows more
+% permissiveness by allowing the assignment to proceed in all 
+% cases. To compensate, any program (in particular, an adversarial
+% program) is disallowed from case analyzing any value labeled 
+% $P$. Consequently, in the rules for \texttt{if-then} and
+% \texttt{while} (Figure~\ref{fig:basic-semantics}), it is required that
+% the label of the branch condition be of form $\lab$, which does not
+% include $P$.
+
+The soundness results of the original permissive-upgrade strategy can
+be extended to show the soundness of the improved permissive-upgrade
+strategy. However, a significant difficulty in proving the theorem
+using the modified notation for the imperative language is that the
+definition of $\sim$ is not transitive. The same problem arises for
+the soundness proofs in~\cite{plas10}. There, the authors resolve the
+issue by defining a special relation called evolution. The need for
+evolution is averted here using the auxiliary lemmas listed
+below. Lemma~\ref{lem:evol} proves the required result substituting
+evolution.  
+
+\begin{myLemma}[Expression Evaluation]
+\label{lem:expeval}
+If $\langle \sigma_1, e \rangle \bsexp \emph{\TT{n}}_1^{k_1}$ and $\langle 
+\sigma_2, e \rangle \bsexp \emph{\TT{n}}_2^{k_2}$ and $\sigma_1 \sim_L
+\sigma_2$, then $\emph{\TT{n}}_1^{k_1} \sim_L \emph{\TT{n}}_2^{k_2}$.
+\end{myLemma}
+\begin{proof} By induction on $e$.
+\end{proof}
+
+\begin{myLemma}[Evolution]
+\label{lem:evol}
+  If $~\pc = H$ and $\langle \sigma, c \rangle \bscmd \sigma'$, then
+  \\ $\forall \emph{\TT{x}}.\Gamma(\sigma(\emph{\TT{x}})) = P
+  \implies \Gamma(\sigma'(\emph{\TT{x}})) = P$. 
+\end{myLemma}
+\begin{proof} By induction on the derivation rules and case
+  analysis on the last rule.
+\end{proof}
+
+\begin{myLemma}[Confinement for improved permissive-upgrade with a
+  two-point lattice]
+\label{lem:conf}
+  If $~\pc = H$ and $\langle \sigma, c \rangle
+  \bscmd \sigma' $, then $\sigma \sim_L \sigma'$.
+\end{myLemma}
+\begin{proof} By induction on the derivation rules.
+\end{proof}
+
+\begin{myThm}[TINI for improved permissive-upgrade with a two-point lattice]
+  With the assignment rule \refrule{bs:cmd:ap} and the modified syntax of
+  Figure~\ref{pus:syntax}, if 
+  $~\sigma_1 \sim_L \sigma_2$ and $\langle \sigma_1, c \rangle
+  \bscmd \sigma_1' $ and $\langle \sigma_2, c
+  \rangle\bscmd \sigma_2' $, then $\sigma_1' \sim_L
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} By induction on $c$ and case
+  analysis on the last step.
+\end{proof}
+
+The detailed proofs are provided in Appendix~\ref{app:ipu}. 
+Note that the definitions and proofs presented in this chapter are
+specific to the two-point lattice and with respect to an adversary at
+level $L$. 
+

@@ -1,0 +1,60 @@
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+Security and privacy have been of paramount importance since computer
+systems and applications have started handling private, sensitive and
+confidential information. The need of the hour is to carefully handle
+such data as it interacts with various untrusted third-party
+applications. Although helpful in many scenarios, static information
+flow analyses are mostly ineffective when working with dynamic
+languages like JavaScript, which is an indispensable part of the
+modern web. The dynamic nature of JavaScript makes sound static
+analysis difficult. Dynamic information flow control is a promising
+step forward, though the permissiveness of dynamic analyses presents a
+major challenge to the practicality of these techniques. This thesis
+focuses on improving the usability of dynamic information flow
+techniques by:  
+ 
+\begin{itemize}
+\item \textbf{Developing mechanisms that enhance the precision and 
+  permissiveness of the analyses:} To improve the precision of dynamic
+information flow analysis, this thesis develops a sound approach for  
+handling complex language features like unstructured control flow and
+exceptions. The existing approaches to handle these features are too
+conservative generating a lot of false-positives and often require
+additional annotations by the developer. In contrast, the methodology
+presented in this thesis performs a sound and precise dynamic
+information flow analysis using post-dominator analysis at runtime to
+handle these features without requiring any additional annotations
+from the developer. The approach is also shown to be the most precise 
+approach for handling such complex features dynamically. 
+
+To further improve the permissiveness of dynamic information flow
+analysis, this thesis presents the design of a sound improvement and
+enhancement of the permissive-upgrade strategy. The development
+improves the original strategy's permissiveness by relaxing the rules
+for handling partially-leaked data while retaining soundness. The
+original strategy's enforcement was limited to a two-point security
+lattice, and lacked generalization to an arbitrary lattice (as is
+required for real-world scenarios). To this end, this thesis presents
+a non-trivial approach to generalize the applicability of the approach
+to an arbitrary security lattice.  
+
+\item \textbf{Proposing a technique to bound the release of sensitive
+  information in realistic applications:} Although dynamic
+quantification has been studied earlier, bounding information leaks
+dynamically remains an open problem. To this end, this thesis 
+develops a sound approach to bound information leaks dynamically by 
+allowing information release in accordance to a pre-specified budget
+that specifies the amount of information that can be released about
+the secret. The thesis proposes the property of limited information
+release to capture this security condition and proves its enforcement
+sound, information-theoretically. 
+
+\item \textbf{Describing a comprehensive policy mechanism for easy
+  specification of security policies:} To complement the work on
+enforcement components in web browsers, the thesis also  explores a
+policy specification mechanism to specify flexible and useful
+information flow policies for web applications. 
+\end{itemize}
+

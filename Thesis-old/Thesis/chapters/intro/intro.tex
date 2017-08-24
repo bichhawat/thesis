@@ -1,0 +1,202 @@
+\chapter{Introduction}
+
+With the growth in the use of computers and the Internet for almost
+every application, the amount of sensitive information that 
+programs compute has also increased dramatically. For instance,
+e-commerce websites have access to the personal details of a user
+including her address, credit-card details etc. Similarly, a hospital
+database stores sensitive and private medical data of its
+patients. While the complexity  of such systems has increased
+manifold in the last few decades, the privacy and confidentiality
+guarantees still remain questionable~\citep{infoleaks}. Often leaks
+occur either due to buggy programs or due to malicious
+code. Cryptographic techniques protect data by encrypting it but many 
+programs need to operate on confidential data, which requires the data 
+to be available in plaintext form. % An adversary can then attempt to
+% infer the confidential data by observing such operations in the
+% system.
+To this end, \emph{access control} techniques are widely used
+for preventing leakage of confidential data. However, once the
+authorized users have access to data, there is no control on how the
+data can be used. The data might be input to a program that writes to
+publicly-observable locations or outputs data that is accessible to
+all users.  
+% For instance, a system
+% can restrict access of particular confidential files to a certain set
+% of authorized users.
+
+Consider the Web, for instance. Web applications rely extensively on
+third-party JavaScript to provide useful libraries, page analytics,
+advertisements and many other features~\cite{nick12CCS}. JavaScript
+works on a mashup model, wherein the hosting page and included scripts
+share the page’s state (called the DOM). Consequently, by design, all
+included third-party scripts run with the same access privileges as
+the hosting page. While some third-party scripts are developed by
+large, well-known, trustworthy vendors, many other scripts are
+developed by small, domain-specific vendors whose commercial motives
+do not always align with those of the 
+webpage providers and users. This leaves sensitive information such as
+passwords, credit card numbers, email addresses, click histories,
+cookies and location information vulnerable to inadvertent bugs and
+deliberate exfiltration by third-party scripts. In many cases,
+developers are fully aware that a third-party script accesses
+sensitive data to provide useful functionality, but they are unaware
+that the script also leaks that data on the side. In fact, this is a
+widespread problem~\cite{jang10CCS}. 
+%
+The traditional browser security
+model is based on restricting scripts’ access to data, not on tracking
+how scripts use data. Existing web security standards
+and web browsers address this problem unsatisfactorily, favoring
+functionality over privacy. The same-origin policy implemented
+in all major browsers restricts a webpage and third-party scripts
+included in it to communicating with web servers from the including
+webpage’s domain only. However, broad exceptions are allowed. For
+instance, there is no restriction on request parameters in urls that
+fetch images and, unsurprisingly, third-party scripts leak information
+by encoding it in image urls. The candidate web standard Content
+Security Policy~\cite{csp}, also implemented in most browsers,
+allows a page to white list scripts that may be included, but places
+no restriction on scripts that have been included, thus not helping
+with the problem above. 
+%
+Quite a few \emph{fine-grained} access control
+techniques have also been proposed~\cite{conscript, adjail,
+  zhouESORICS11, ccs13crypton, adsafe, fbjs, caja, webjail}. 
+% For example, Conscript~\cite{conscript} allows the specification of  
+% fine-grained access policies on individual scripts, limiting what
+% actions every script can perform. Similarly, AdJail~\cite{adjail}
+% limits the execution of third-party scripts to a shadow page and
+% restricts communication between the script and the host page. Zhou and
+% Evans~\cite{zhouESORICS11} take a dual approach, where fine-grained
+% access control rules are attached to DOM elements. The rules specify
+% which scripts can and cannot access individual elements. Along similar
+% lines, Dong et al.~\cite{ccs13crypton} present a technique to isolate
+% sensitive data using authenticated encryption. ADsafe~\cite{adsafe}
+% and FBJS~\cite{fbjs} restrict third-party code to subsets of
+% JavaScript, and use static analysis to check for illegitimate
+% access. Caja~\cite{caja} uses object capabilities to mediate all
+% access by third-party scripts. Webjail~\cite{webjail} supports least 
+% privilege integration of third-party scripts by restricting script
+% access based on high-level policies specified by the
+% developer.
+However, all these techniques enforce only access policies
+and cannot control what a script does with data it has been provided
+in good faith, i.e., if a third-party script was allowed access to
+some data only for local computations, the policy places no
+restriction on the script for sending it on the network while
+performing the computation. More broadly, no mechanism based only
+on access control can solve the problem of information leakage.  
+
+The academic community has proposed solutions based on
+\emph{information flow control} (IFC), also known as mandatory access
+control.
+% \emph{Information flow control} (IFC) is an
+% elegant solution for such problems.
+It ensures the security of
+confidential information even in the presence of untrusted and buggy
+code. The idea is to track the flow of information through the program
+and prevent any undesired flows based on a security policy. 
+Research has considered static methods such as type checking and
+program analysis, which verify the security policy at compile
+time~\cite{denning76, denning77, myersJFlow, volpano, pottier2003,
+  hunt2006:types, LBIFS, hammer09ijis}, 
+dynamic methods that track information flow through program execution
+at runtime~\cite{fenton, plas09, plas10, Askarov09, Sabelfeld10, SME,
+  csf12, austin12POPL, jeeves, plas14, cowl},    
+and hybrid approaches that combine both static and dynamic analyses to add
+precision to the analysis~\cite{Nentwich07, Gurvan06, Gurvan07,
+  russo10CSF, vogt07NDSS, post14, csf15Hedin} 
+for handling information leaks described above. 
+
+Dynamic analysis has the drawback of being less precise and
+introducing significant performance overheads at runtime, though it
+can be more permissive than static analysis methods in some
+cases~\cite{russo10CSF}. Although helpful in most 
+scenarios, static analyses are mostly ineffective when working with
+dynamic languages like JavaScript, which is an indispensable part of
+the modern Web. The dynamic nature of
+JavaScript~\cite{richards11ECOOP, oopsla13} with features like dynamic
+typing, \texttt{eval},  scope-chains, prototype chains etc. makes sound
+static analysis difficult. Thus, recent research has focussed on
+dynamic analysis for enforcing information flow control especially in
+languages like JavaScript. Even though research in dynamic information
+flow control has made significant inroads in the last decade, the
+applicability of these techniques still remains bleak, 
+\emph{permissiveness} being the major challenge to
+the practicality of dynamic information flow control. 
+
+In recent years, researchers have explored methods to quantify the
+amount of  sensitive information leaked by a program as an alternative
+to the qualitative notion of information flow control. The developer
+determines an ``acceptable'' upper-bound on the number of bits of
+sensitive information a program may leak. Programs that leak less than
+this ``acceptable'' amount of information are considered secure. The
+information released is generally quantified as the
+knowledge gained by an adversary about the sensitive data as a result
+of the information flow in the program. Specifically, the adversary
+has knowledge about the possible set of initial values that can be
+associated with the sensitive data. A flow in the program could reduce
+the number of possibilities, thereby increasing the knowledge of the
+adversary about the specific value associated with the sensitive data
+in that execution of the program. This change in knowledge can be
+measured as the number of bits of information of sensitive data
+released to the adversary~\cite{CoverQIF}. Statically quantifying the
+information leaked by a program has been well studied in the
+literature and various static quantitative information flow
+measures~\cite{shannon, guessing, smith2009, clarkson2009,
+  csf12GLeakage} and techniques~\cite{denning82, clark, clarkson2009,
+  smith2009, backes, kopf} have been proposed. However,
+quantifying information leaks in a purely dynamic setting is still
+largely an open problem (prior work is limited to~\cite{mccamant}) as
+dynamic analysis is generally limited to the current execution of the
+program in contrast to the static methods, which analyze the program
+as a whole.  
+
+% However, in highly dynamic scenarios like the web where the
+% third-party code is unknown upfront, it is difficult for the developer
+% to specify an appropriate policy with declassification specifications
+% that caters to all possible codes. 
+
+% \todo[inline]{Static quantification of information leaks}
+
+\section{Contributions of the Thesis}
+This thesis focuses on improving the usability of dynamic information
+flow techniques by presenting mechanisms that enhance the precision
+and permissiveness of the analyses. The main contributions are as
+follows: 
+\begin{itemize}
+\item \textbf{Generalized Permissive-Upgrade.} To improve the
+    permissiveness of dynamic information flow analysis, the thesis 
+    presents a sound improvement and enhancement of the
+    permissive-upgrade strategy (a strategy widely used to enforce
+    dynamic information flow control). The development improves the
+    original strategy's permissiveness and applicability by
+    generalizing the approach to an arbitrary security lattice, in
+    place of the two-point lattice considered in prior work. 
+\item \textbf{Precise Dynamic Information Flow Control.} Most of the
+  existing work in dynamic information flow control does not handle
+  complex features like unstructured control flow and exceptions. The
+  proposals that handle these features are too conservative and
+  require additional annotations in the program. This thesis presents a
+  sound and precise dynamic information flow analysis for handling
+  these features without requiring any additional annotations from the
+  programmer. 
+\item \textbf{Bounding Information Leaks Dynamically.} Although
+  non-interference is a desired property for enforcing information
+  flow control, there are program instances that  require legitimate
+  release of some parts of the secret data to provide the required
+  functionality. Towards this end, this thesis develops a sound
+  approach to quantify information leaks dynamically while allowing
+  information release in accordance with a pre-specified \emph{budget}. 
+\item \textbf{Application to a Web Browser.} The thesis concludes by
+  applying these techniques to an information flow control-enabled Web
+  browser. An information flow control system enforces security
+  policies that are a collection of rules for labeling private
+  information sources, generally specified by a policy component in
+  the system. To complement the work on enforcement components in Web
+  browsers, this thesis explores a policy specification mechanism
+  to specify flexible and useful information flow policies for Web applications. 
+\end{itemize}
+ 
+% % \Blindtext

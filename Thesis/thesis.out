@@ -1,0 +1,51 @@
+\BOOKMARK [-1][-]{part.1}{I Introduction and Background}{}% 1
+\BOOKMARK [0][-]{chapter.1}{Introduction}{part.1}% 2
+\BOOKMARK [1][-]{section.1.1}{Contributions of the Thesis}{chapter.1}% 3
+\BOOKMARK [0][-]{chapter.2}{Background and Overview}{part.1}% 4
+\BOOKMARK [1][-]{section.2.1}{Information Flow Control}{chapter.2}% 5
+\BOOKMARK [1][-]{section.2.2}{Information Release}{chapter.2}% 6
+\BOOKMARK [1][-]{section.2.3}{Dynamic Information Flow Control}{chapter.2}% 7
+\BOOKMARK [-1][-]{part.2}{II Generalized Permissive-Upgrade Strategy}{}% 8
+\BOOKMARK [0][-]{chapter.3}{Improved Permissive-Upgrade}{part.2}% 9
+\BOOKMARK [1][-]{section.3.1}{Overview}{chapter.3}% 10
+\BOOKMARK [1][-]{section.3.2}{Austin and Flanagan's Permissive-Upgrade Strategy}{chapter.3}% 11
+\BOOKMARK [1][-]{section.3.3}{Improved Permissive-Upgrade Strategy}{chapter.3}% 12
+\BOOKMARK [0][-]{chapter.4}{Generalized Permissive-Upgrade}{part.2}% 13
+\BOOKMARK [1][-]{section.4.1}{Generalization of the Improved Permissive-Upgrade Strategy}{chapter.4}% 14
+\BOOKMARK [1][-]{section.4.2}{Generalized Permissive-Upgrade on Arbitrary Lattices}{chapter.4}% 15
+\BOOKMARK [1][-]{section.4.3}{Comparison of the Generalization of Section 4.2 with the Generalization of Section 4.1}{chapter.4}% 16
+\BOOKMARK [-1][-]{part.3}{III Handling Unstructured Control Flow}{}% 17
+\BOOKMARK [0][-]{chapter.5}{Dynamic IFC with Unstructured Control Flow and Exceptions}{part.3}% 18
+\BOOKMARK [1][-]{section.5.1}{Control Flow Graphs and Post-dominator Analysis}{chapter.5}% 19
+\BOOKMARK [1][-]{section.5.2}{Exceptions and Synthetic Exit Nodes}{chapter.5}% 20
+\BOOKMARK [1][-]{section.5.3}{Formal Model}{chapter.5}% 21
+\BOOKMARK [-1][-]{part.4}{IV Limited Information Release}{}% 22
+\BOOKMARK [0][-]{chapter.6}{Bounding Information Leaks Dynamically}{part.4}% 23
+\BOOKMARK [1][-]{section.6.1}{Quantifying Information Leaks}{chapter.6}% 24
+\BOOKMARK [1][-]{section.6.2}{Limited Information Release}{chapter.6}% 25
+\BOOKMARK [1][-]{section.6.3}{LIR Enforcement}{chapter.6}% 26
+\BOOKMARK [1][-]{section.6.4}{Formalization of LIR}{chapter.6}% 27
+\BOOKMARK [1][-]{section.6.5}{Soundness and Decoding Semantics}{chapter.6}% 28
+\BOOKMARK [-1][-]{part.5}{V Application to an IFC-enabled Web Browser}{}% 29
+\BOOKMARK [0][-]{chapter.7}{Information Flow Policies for Web Browsers}{part.5}% 30
+\BOOKMARK [1][-]{section.7.1}{Policy Component for Web Browsers}{chapter.7}% 31
+\BOOKMARK [1][-]{section.7.2}{WebPol policy model}{chapter.7}% 32
+\BOOKMARK [1][-]{section.7.3}{Expressiveness of WebPol}{chapter.7}% 33
+\BOOKMARK [0][-]{chapter.8}{Policy Implementation and Evaluation in an IFC-enabled Browser}{part.5}% 34
+\BOOKMARK [1][-]{section.8.1}{Implementation and Evaluation of WebPol}{chapter.8}% 35
+\BOOKMARK [1][-]{section.8.2}{Implementation and Evaluation of LIR}{chapter.8}% 36
+\BOOKMARK [0][-]{chapter.9}{Related Work}{part.5}% 37
+\BOOKMARK [-1][-]{part.6}{VI Conclusion and Outlook}{}% 38
+\BOOKMARK [0][-]{chapter.10}{Conclusion}{part.6}% 39
+\BOOKMARK [0][-]{chapter.11}{Future Directions}{part.6}% 40
+\BOOKMARK [1][-]{section.11.1}{Evaluating Information Flow Policies on Real-World Websites}{chapter.11}% 41
+\BOOKMARK [1][-]{section.11.2}{Exploring Alternative Granularities for Enforcing Information Flow Control}{chapter.11}% 42
+\BOOKMARK [1][-]{section.11.3}{Handling Timing Leaks on the Web}{chapter.11}% 43
+\BOOKMARK [-1][-]{part*.43}{Appendix}{}% 44
+\BOOKMARK [0][-]{section.Alph0.1}{Proofs for Improved and Generalized Permissive Upgrade}{part*.43}% 45
+\BOOKMARK [1][-]{section.Alph0.2}{Proofs of Precision for Dynamic IFC with Unstructured Control Flow and Exceptions}{section.Alph0.1}% 46
+\BOOKMARK [1][-]{section.Alph0.3}{Proofs for IFC with Unstructured Control Flow}{section.Alph0.1}% 47
+\BOOKMARK [1][-]{section.Alph0.4}{Proofs for Limited Information Release}{section.Alph0.1}% 48
+\BOOKMARK [-1][-]{appendix*.45}{List of Figures}{}% 49
+\BOOKMARK [-1][-]{appendix*.46}{List of Tables}{}% 50
+\BOOKMARK [-1][-]{appendix*.47}{Bibliography}{}% 51

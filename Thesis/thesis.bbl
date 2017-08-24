@@ -1,0 +1,700 @@
+\begin{thebibliography}{107}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[caj()]{caja}
+{Google {C}aja - {A} source-to-source translator for securing
+  {J}ava{S}cript-based web content}.
+\newblock \url{https://developers.google.com/caja/}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[cor()]{cors}
+Cross-{O}rigin {R}esource {S}haring.
+\newblock \url{http://www.w3.org/TR/cors/}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[csp()]{csp}
+{Content {S}ecurity {P}olicy Level 3}.
+\newblock \url{https://www.w3.org/TR/CSP3/}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[fbj()]{fbjs}
+{Facebook. FBJS}.
+\newblock \url{https://developers.facebook.com/docs/javascript}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[inf(2017)]{infoleaks}
+{W}orld's {B}iggest {D}ata {B}reaches.
+\newblock
+  \url{http://www.informationisbeautiful.net/visualizations/worlds-biggest-data-breaches-hacks/},
+  2017.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[Agten et~al.(2012)Agten, Van~Acker, Brondsema, Phung, Desmet, and
+  Piessens]{jsand}
+P.~Agten, S.~Van~Acker, Y.~Brondsema, P.~H. Phung, L.~Desmet, and F.~Piessens.
+\newblock J{S}and: {C}omplete client-side sandboxing of third-party
+  {J}ava{S}cript without browser modifications.
+\newblock In \emph{Proc. Annual Computer Security Applications Conference},
+  pages 1--10, 2012.
+
+\bibitem[Alvim et~al.(2012)Alvim, Chatzikokolakis, Palamidessi, and
+  Smith]{csf12GLeakage}
+M.~S. Alvim, K.~Chatzikokolakis, C.~Palamidessi, and G.~Smith.
+\newblock Measuring information leakage using generalized gain functions.
+\newblock In \emph{Proc. 2012 IEEE 25th Computer Security Foundations
+  Symposium}, CSF '12, pages 265--279, 2012.
+
+\bibitem[Askarov and Sabelfeld(2007{\natexlab{a}})]{gradRelease}
+A.~Askarov and A.~Sabelfeld.
+\newblock Gradual release: Unifying declassification, encryption and key
+  release policies.
+\newblock In \emph{Proc. 2007 IEEE Symposium on Security and Privacy (SP '07)},
+  pages 207--221, 2007{\natexlab{a}}.
+
+\bibitem[Askarov and Sabelfeld(2007{\natexlab{b}})]{ldr}
+A.~Askarov and A.~Sabelfeld.
+\newblock Localized delimited release: Combining the what and where dimensions
+  of information release.
+\newblock In \emph{Proc. 2007 Workshop on Programming Languages and Analysis
+  for Security}, PLAS '07, pages 53--60, 2007{\natexlab{b}}.
+
+\bibitem[Askarov and Sabelfeld(2009{\natexlab{a}})]{Askarov09}
+A.~Askarov and A.~Sabelfeld.
+\newblock Tight enforcement of information-release policies for dynamic
+  languages.
+\newblock In \emph{Proc. IEEE Computer Security Foundations Symposium}, pages
+  43--59, 2009{\natexlab{a}}.
+
+\bibitem[Askarov and Sabelfeld(2009{\natexlab{b}})]{aslan_plas09}
+A.~Askarov and A.~Sabelfeld.
+\newblock Catch me if you can: permissive yet secure error handling.
+\newblock In \emph{Proc. ACM SIGPLAN Fourth Workshop on Programming Languages
+  and Analysis for Security}, pages 45--57, 2009{\natexlab{b}}.
+
+\bibitem[Askarov et~al.(2008)Askarov, Hunt, Sabelfeld, and Sands]{askarov}
+A.~Askarov, S.~Hunt, A.~Sabelfeld, and D.~Sands.
+\newblock Termination-insensitive noninterference leaks more than just a bit.
+\newblock In \emph{Proc. European Symposium on Research in Computer Security},
+  pages 333--348, 2008.
+
+\bibitem[Austin and Flanagan(2009)]{plas09}
+T.~H. Austin and C.~Flanagan.
+\newblock Efficient purely-dynamic information flow analysis.
+\newblock In \emph{Proc. ACM SIGPLAN Workshop on Programming Languages and
+  Analysis for Security}, pages 113--124, 2009.
+
+\bibitem[Austin and Flanagan(2010)]{plas10}
+T.~H. Austin and C.~Flanagan.
+\newblock Permissive dynamic information flow analysis.
+\newblock In \emph{Proc. ACM SIGPLAN Workshop on Programming Languages and
+  Analysis for Security}, pages 1--12, 2010.
+
+\bibitem[Austin and Flanagan(2012)]{austin12POPL}
+T.~H. Austin and C.~Flanagan.
+\newblock Multiple facets for dynamic information flow.
+\newblock In \emph{Proc. ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages}, pages 165--178, 2012.
+
+\bibitem[Backes et~al.(2009)Backes, Kopf, and Rybalchenko]{backes}
+M.~Backes, B.~Kopf, and A.~Rybalchenko.
+\newblock Automatic discovery and quantification of information leaks.
+\newblock In \emph{Proc. 2009 30th IEEE Symposium on Security and Privacy},
+  pages 141--153, 2009.
+
+\bibitem[Banerjee et~al.(2008)Banerjee, Naumann, and Rosenberg]{cgrSP}
+A.~Banerjee, D.~A. Naumann, and S.~Rosenberg.
+\newblock Expressive declassification policies and modular static enforcement.
+\newblock In \emph{Proc. 2008 IEEE Symposium on Security and Privacy}, SP '08,
+  pages 339--353, 2008.
+
+\bibitem[Bao et~al.(2010)Bao, Zheng, Lin, Zhang, and Xu]{scd}
+T.~Bao, Y.~Zheng, Z.~Lin, X.~Zhang, and D.~Xu.
+\newblock Strict control dependence and its effect on dynamic information flow
+  analyses.
+\newblock In \emph{Proc. 19th International Symposium on Software Testing and
+  Analysis}, ISSTA '10, pages 13--24, 2010.
+
+\bibitem[Barth()]{sop}
+A.~Barth.
+\newblock The web origin concept.
+\newblock \url{http://tools.ietf.org/html/rfc6454}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[Besson et~al.(2013)Besson, Bielova, and Jensen]{csf13}
+F.~Besson, N.~Bielova, and T.~Jensen.
+\newblock Hybrid information flow monitoring against web tracking.
+\newblock In \emph{Proc. IEEE 26th Computer Security Foundations Symposium (CSF
+  '13)}, pages 240--254, 2013.
+
+\bibitem[Bichhawat et~al.(2014{\natexlab{a}})Bichhawat, Rajani, Garg, and
+  Hammer]{plas14}
+A.~Bichhawat, V.~Rajani, D.~Garg, and C.~Hammer.
+\newblock Generalizing permissive-upgrade in dynamic information flow analysis.
+\newblock In \emph{Proc. 9th ACM SIGPLAN Workshop on Programming Languages and
+  Analysis for Security}, pages 15:15--15:24, 2014{\natexlab{a}}.
+
+\bibitem[Bichhawat et~al.(2014{\natexlab{b}})Bichhawat, Rajani, Garg, and
+  Hammer]{post14}
+A.~Bichhawat, V.~Rajani, D.~Garg, and C.~Hammer.
+\newblock Information flow control in {WebKit's} {JavaScript} bytecode.
+\newblock In \emph{Proc. Principles of Security and Trust}, pages 159--178.
+  Springer Berlin Heidelberg, 2014{\natexlab{b}}.
+
+\bibitem[Bichhawat et~al.(2014{\natexlab{c}})Bichhawat, Rajani, Garg, and
+  Hammer]{post14Extended}
+A.~Bichhawat, V.~Rajani, D.~Garg, and C.~Hammer.
+\newblock {Information Flow Control in WebKit's JavaScript Bytecode}.
+\newblock \emph{CoRR}, abs/1401.4339, 2014{\natexlab{c}}.
+\newblock URL \url{http://arxiv.org/abs/1401.4339}.
+
+\bibitem[Bichhawat et~al.(2017)Bichhawat, Rajani, Jain, Garg, and
+  Hammer]{webpol}
+A.~Bichhawat, V.~Rajani, J.~Jain, D.~Garg, and C.~Hammer.
+\newblock {WebPol: Fine-grained Information Flow Policies for Web Browsers}.
+\newblock In \emph{Proc. 22nd European Symposium on Research in Computer
+  Security (ESORICS '17)}, 2017.
+
+\bibitem[Bielova(2016)]{bielovaPLAS}
+N.~Bielova.
+\newblock Dynamic leakage - a need for a new quantitative information flow
+  measure.
+\newblock In \emph{Proc. 11th ACM SIGPLAN Workshop on Programming Languages and
+  Analysis for Security}, 2016.
+
+\bibitem[Bielova et~al.(2011)Bielova, Devriese, Massacci, and Piessens]{rnib}
+N.~Bielova, D.~Devriese, F.~Massacci, and F.~Piessens.
+\newblock Reactive non-interference for a browser model.
+\newblock In \emph{Proc. International Conference on Network and System
+  Security}, pages 97--104, 2011.
+
+\bibitem[Birgisson et~al.(2012)Birgisson, Hedin, and Sabelfeld]{esorics12}
+A.~Birgisson, D.~Hedin, and A.~Sabelfeld.
+\newblock Boosting the permissiveness of dynamic information-flow tracking by
+  testing.
+\newblock In \emph{Proc.\ European Symposium on Research in Computer Security
+  (ESORICS)}, pages 55--72, 2012.
+
+\bibitem[Buiras et~al.(2014)Buiras, Stefan, and Russo]{buiras14CSF}
+P.~Buiras, D.~Stefan, and A.~Russo.
+\newblock On dynamic flow-sensitive floating-label systems.
+\newblock In \emph{Proc. 2014 IEEE 27th Computer Security Foundations
+  Symposium}, CSF '14, pages 65--79. IEEE Computer Society, 2014.
+
+\bibitem[Chong(2010)]{rir}
+S.~Chong.
+\newblock Required information release.
+\newblock In \emph{Proc. 2010 23rd IEEE Computer Security Foundations
+  Symposium}, pages 215--227, July 2010.
+
+\bibitem[Chong and Myers(2004)]{chong2004}
+S.~Chong and A.~C. Myers.
+\newblock Security policies for downgrading.
+\newblock In \emph{Proc. 11th ACM Conference on Computer and Communications
+  Security}, CCS '04, pages 198--209, 2004.
+
+\bibitem[Chudnov and Naumann(2015)]{chudnov-ccs}
+A.~Chudnov and D.~A. Naumann.
+\newblock Inlined information flow monitoring for javascript.
+\newblock In \emph{Proc. 22nd ACM SIGSAC Conference on Computer and
+  Communications Security}, CCS '15, pages 629--643, 2015.
+
+\bibitem[Chugh et~al.(2009)Chugh, Meister, Jhala, and Lerner]{stagedIFC}
+R.~Chugh, J.~A. Meister, R.~Jhala, and S.~Lerner.
+\newblock Staged information flow for {J}ava{S}cript.
+\newblock In \emph{Proc. ACM SIGPLAN Conference on Programming Language Design
+  and Implementation}, pages 50--62, 2009.
+
+\bibitem[Clark et~al.(2007)Clark, Hunt, and Malacaria]{clark}
+D.~Clark, S.~Hunt, and P.~Malacaria.
+\newblock A static analysis for quantifying information flow in a simple
+  imperative language.
+\newblock \emph{J. Comput. Secur.}, 15\penalty0 (3):\penalty0 321--371, 2007.
+
+\bibitem[Clarkson et~al.(2009)Clarkson, Myers, and Schneider]{clarkson2009}
+M.~R. Clarkson, A.~C. Myers, and F.~B. Schneider.
+\newblock Quantifying information flow with beliefs.
+\newblock \emph{J. Comput. Secur.}, 17\penalty0 (5):\penalty0 655--701, Oct.
+  2009.
+
+\bibitem[Cohen(1977)]{cohen77}
+E.~Cohen.
+\newblock Information transmission in computational systems.
+\newblock In \emph{Proc. Sixth ACM Symposium on Operating Systems Principles},
+  SOSP '77, pages 133--139, 1977.
+
+\bibitem[Cohen(1978)]{cohen78}
+E.~Cohen.
+\newblock \emph{Information Transmission in Sequential Programs}.
+\newblock Foundations of Secure Computation. Academic Press, 1978.
+
+\bibitem[Cover and Thomas(2006)]{CoverQIF}
+T.~M. Cover and J.~A. Thomas.
+\newblock \emph{Elements of Information Theory (Wiley Series in
+  Telecommunications and Signal Processing)}.
+\newblock Wiley-Interscience, 2006.
+
+\bibitem[Crockford()]{adsafe}
+D.~Crockford.
+\newblock {A{D}safe}.
+\newblock \url{http://adsafe.org/}.
+\newblock [Online; accessed 25-Apr-2017].
+
+\bibitem[De~Groef et~al.(2012)De~Groef, Devriese, Nikiforakis, and
+  Piessens]{flowfox}
+W.~De~Groef, D.~Devriese, N.~Nikiforakis, and F.~Piessens.
+\newblock Flowfox: a web browser with flexible and precise information flow
+  control.
+\newblock In \emph{Proc. ACM Conference on Computer and Communications
+  Security}, pages 748--759, 2012.
+
+\bibitem[Denning(1976)]{denning76}
+D.~E. Denning.
+\newblock A lattice model of secure information flow.
+\newblock \emph{Commun. ACM}, 19\penalty0 (5):\penalty0 236--243, May 1976.
+
+\bibitem[Denning and Denning(1977)]{denning77}
+D.~E. Denning and P.~J. Denning.
+\newblock Certification of programs for secure information flow.
+\newblock \emph{Communications of the ACM}, 20\penalty0 (7):\penalty0 504--513,
+  July 1977.
+
+\bibitem[Denning(1982)]{denning82}
+D.~E.~R. Denning.
+\newblock \emph{Cryptography and Data Security}.
+\newblock Addison-Wesley Longman Publishing Co., Inc., 1982.
+
+\bibitem[Devriese and Piessens(2010)]{SME}
+D.~Devriese and F.~Piessens.
+\newblock Noninterference through secure multi-execution.
+\newblock In \emph{Proc. IEEE Symposium on Security and Privacy}, pages
+  109--124, 2010.
+
+\bibitem[Dhawan and Ganapathy(2009)]{acsac09}
+M.~Dhawan and V.~Ganapathy.
+\newblock Analyzing information flow in {J}ava{S}cript-based browser
+  extensions.
+\newblock In \emph{Proc. Annual Computer Security Applications Conference},
+  pages 382--391, 2009.
+
+\bibitem[Dong et~al.(2013)Dong, Chen, Siadati, Tople, Saxena, and
+  Liang]{ccs13crypton}
+X.~Dong, Z.~Chen, H.~Siadati, S.~Tople, P.~Saxena, and Z.~Liang.
+\newblock Protecting sensitive web content from client-side vulnerabilities
+  with cryptons.
+\newblock In \emph{Proc. 2013 ACM SIGSAC Conference on Computer and
+  Communications Security}, pages 1311--1324, 2013.
+
+\bibitem[Fenton(1974)]{fenton}
+J.~S. Fenton.
+\newblock Memoryless subsystems.
+\newblock \emph{The Computer Journal}, 17\penalty0 (2):\penalty0 143, 1974.
+
+\bibitem[Foundation(2013)]{leak}
+O.~Foundation.
+\newblock Information leakage.
+\newblock \url{https://www.owasp.org/index.php/Information_Leakage}, June 2013.
+
+\bibitem[Giacobazzi and Mastroeni(2004)]{ani}
+R.~Giacobazzi and I.~Mastroeni.
+\newblock Abstract non-interference: Parameterizing non-interference by
+  abstract interpretation.
+\newblock In \emph{Proc. 31st ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages}, POPL '04, pages 186--197, 2004.
+
+\bibitem[Goguen and Meseguer(1982)]{goguen}
+J.~A. Goguen and J.~Meseguer.
+\newblock Security policies and security models.
+\newblock In \emph{Proc. IEEE Symposium on Security and Privacy}, pages 11--20,
+  1982.
+
+\bibitem[Guarnieri et~al.(2011)Guarnieri, Pistoia, Tripp, Dolby, Teilhet, and
+  Berg]{guarnieri11ISSTA}
+S.~Guarnieri, M.~Pistoia, O.~Tripp, J.~Dolby, S.~Teilhet, and R.~Berg.
+\newblock Saving the world wide web from vulnerable javascript.
+\newblock In \emph{Proc. 2011 International Symposium on Software Testing and
+  Analysis}, pages 177--187, 2011.
+
+\bibitem[Guernic(2007)]{Gurvan07}
+G.~L. Guernic.
+\newblock Automaton-based confidentiality monitoring of concurrent programs.
+\newblock In \emph{Proc. IEEE Computer Security Foundations Symposium}, pages
+  218--232, 2007.
+
+\bibitem[Guernic et~al.(2006)Guernic, Banerjee, Jensen, and Schmidt]{Gurvan06}
+G.~L. Guernic, A.~Banerjee, T.~Jensen, and D.~A. Schmidt.
+\newblock Automata-based confidentiality monitoring.
+\newblock In \emph{Proc. Asian Computing Science Conference on Secure
+  Software}, pages 75--89, 2006.
+
+\bibitem[Hammer and Snelting(2009)]{hammer09ijis}
+C.~Hammer and G.~Snelting.
+\newblock Flow-sensitive, context-sensitive, and object-sensitive information
+  flow control based on program dependence graphs.
+\newblock \emph{International Journal of Information Security}, 8\penalty0
+  (6):\penalty0 399--422, Dec. 2009.
+
+\bibitem[Hedin and Sabelfeld(2012)]{csf12}
+D.~Hedin and A.~Sabelfeld.
+\newblock Information-flow security for a core of {J}ava{S}cript.
+\newblock In \emph{Proc. IEEE Computer Security Foundations Symposium}, pages
+  3--18, 2012.
+
+\bibitem[Hedin et~al.(2014{\natexlab{a}})Hedin, Birgisson, Bello, and
+  Sabelfeld]{jsflow}
+D.~Hedin, A.~Birgisson, L.~Bello, and A.~Sabelfeld.
+\newblock {J}{S}{F}low: Tracking information flow in {J}ava{S}cript and its
+  {A}{P}{I}s.
+\newblock In \emph{Proc. ACM Symposium on Applied Computing}, pages 1663--1671,
+  2014{\natexlab{a}}.
+
+\bibitem[Hedin et~al.(2014{\natexlab{b}})Hedin, Birgisson, Bello, and
+  Sabelfeld]{sac14}
+D.~Hedin, A.~Birgisson, L.~Bello, and A.~Sabelfeld.
+\newblock J{S}{F}low: Tracking information flow in {J}ava{S}cript and its
+  {A}{P}{I}s.
+\newblock In \emph{Proc. 29th ACM Symposium on Applied Computing},
+  2014{\natexlab{b}}.
+
+\bibitem[Hedin et~al.(2015)Hedin, Bello, and Sabelfeld]{csf15Hedin}
+D.~Hedin, L.~Bello, and A.~Sabelfeld.
+\newblock Value-sensitive hybrid information flow control for a javascript-like
+  language.
+\newblock In \emph{Proc. 2015 IEEE 28th Computer Security Foundations
+  Symposium}, CSF '15, pages 351--365, 2015.
+
+\bibitem[Hritcu et~al.(2013)Hritcu, Greenberg, Karel, Pierce, and
+  Morrisett]{Hritcu:ifc}
+C.~Hritcu, M.~Greenberg, B.~Karel, B.~C. Pierce, and G.~Morrisett.
+\newblock All your {IFCE}xception are belong to us.
+\newblock In \emph{Proc.\ IEEE Symposium on Security and Privacy (Oakland)},
+  pages 3--17, 2013.
+
+\bibitem[Hunt and Sands(2006)]{hunt2006:types}
+S.~Hunt and D.~Sands.
+\newblock On flow-sensitive security types.
+\newblock In \emph{Proc. ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages}, pages 79--90, 2006.
+
+\bibitem[Jang et~al.(2010)Jang, Jhala, Lerner, and Shacham]{jang10CCS}
+D.~Jang, R.~Jhala, S.~Lerner, and H.~Shacham.
+\newblock An empirical study of privacy-violating information flows in
+  {J}ava{S}cript web applications.
+\newblock In \emph{Proc. ACM Conference on Computer and Communications
+  Security}, pages 270--283, 2010.
+
+\bibitem[Just et~al.(2011)Just, Cleary, Shirley, and Hammer]{just11PLASTIC}
+S.~Just, A.~Cleary, B.~Shirley, and C.~Hammer.
+\newblock Information flow analysis for {J}ava{S}cript.
+\newblock In \emph{Proc. ACM SIGPLAN International Workshop on Programming
+  Language and Systems Technologies for Internet Clients}, pages 9--18, 2011.
+
+\bibitem[Kang et~al.(2011)Kang, McCamant, Poosankam, , and Song]{dta}
+M.~G. Kang, S.~McCamant, P.~Poosankam, , and D.~Song.
+\newblock Dta++: Dynamic taint analysis with targeted control-flow propagation.
+\newblock In \emph{Proc. 18th Network and Distributed System Security Symposium
+  (NDSS '11)}, 2011.
+
+\bibitem[Kerschbaumer et~al.(2013)Kerschbaumer, Hennigan, Larsen, Brunthaler,
+  and Franz]{crowdflow}
+C.~Kerschbaumer, E.~Hennigan, P.~Larsen, S.~Brunthaler, and M.~Franz.
+\newblock Towards precise and efficient information flow control in web
+  browsers.
+\newblock In \emph{Proc. Trust and Trustworthy Computing}, pages 187--195.
+  2013.
+
+\bibitem[King et~al.(2008)King, Hicks, Hicks, and Jaeger]{king08implicit}
+D.~King, B.~Hicks, M.~Hicks, and T.~Jaeger.
+\newblock Implicit flows: {C}an't live with 'em, can't live without 'em.
+\newblock In R.~Sekar and A.~K. Pujari, editors, \emph{Proc. International
+  Conference on Information Systems Security (ICISS)}, volume 5352 of
+  \emph{Lecture Notes in Computer Science}, pages 56--70. Springer, Dec. 2008.
+
+\bibitem[Kopf and Rybalchenko(2010)]{kopf}
+B.~Kopf and A.~Rybalchenko.
+\newblock Approximation and randomization for quantitative information-flow
+  analysis.
+\newblock In \emph{Computer Security Foundations Symposium (CSF), 2010 23rd
+  IEEE}, pages 3--14, July 2010.
+
+\bibitem[Lengauer and Tarjan(1979)]{Lengauer}
+T.~Lengauer and R.~E. Tarjan.
+\newblock A fast algorithm for finding dominators in a flowgraph.
+\newblock \emph{ACM Trans. Program. Lang. Syst.}, 1\penalty0 (1):\penalty0
+  121--141, Jan. 1979.
+
+\bibitem[Li and Zdancewic(2005)]{rel-ni}
+P.~Li and S.~Zdancewic.
+\newblock Downgrading policies and relaxed noninterference.
+\newblock In \emph{Proc. 32Nd ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages}, POPL '05, pages 158--170, 2005.
+
+\bibitem[Li et~al.(2010)Li, Zhang, and Wang]{mashif}
+Z.~Li, K.~Zhang, and X.~Wang.
+\newblock Mash-if: Practical information-flow control within client-side
+  mashups.
+\newblock In \emph{Proc. 2010 IEEE/IFIP International Conference on Dependable
+  Systems Networks (DSN)}, pages 251--260, June 2010.
+
+\bibitem[Louw et~al.(2010)Louw, Ganesh, and Venkatakrishnan]{adjail}
+M.~T. Louw, K.~T. Ganesh, and V.~N. Venkatakrishnan.
+\newblock Adjail: Practical enforcement of confidentiality and integrity
+  policies on web advertisements.
+\newblock In \emph{Proc. 19th USENIX Conference on Security}, pages 24--24,
+  2010.
+
+\bibitem[Lux and Mantel(2009)]{Lux}
+A.~Lux and H.~Mantel.
+\newblock Declassification with explicit reference points.
+\newblock In \emph{Proc. 14th European Conference on Research in Computer
+  Security}, ESORICS'09, pages 69--85, 2009.
+
+\bibitem[Masri and Podgurski(2009)]{Masri}
+W.~Masri and A.~Podgurski.
+\newblock Algorithms and tool support for dynamic information flow analysis.
+\newblock \emph{Information {\&} Software Technology}, 51\penalty0
+  (2):\penalty0 385--404, 2009.
+
+\bibitem[Massey(1994)]{guessing}
+J.~L. Massey.
+\newblock Guessing and entropy.
+\newblock In \emph{In Proc. 1994 IEEE International Symposium on Information
+  Theory}, page 204, 1994.
+
+\bibitem[McCamant and Ernst(2007)]{plas07}
+S.~McCamant and M.~D. Ernst.
+\newblock A simulation-based proof technique for dynamic information flow.
+\newblock In \emph{ACM SIGPLAN Workshop on Programming Languages and Analysis
+  for Security}, PLAS '07, pages 41--46, June 2007.
+
+\bibitem[McCamant and Ernst(2008)]{mccamant}
+S.~McCamant and M.~D. Ernst.
+\newblock Quantitative information flow as network flow capacity.
+\newblock In \emph{Proc. 29th ACM SIGPLAN Conference on Programming Language
+  Design and Implementation}, PLDI '08, pages 193--205, 2008.
+
+\bibitem[Meyerovich and Livshits(2010)]{conscript}
+L.~A. Meyerovich and B.~Livshits.
+\newblock Conscript: Specifying and enforcing fine-grained security policies
+  for javascript in the browser.
+\newblock In \emph{Proc. 2010 IEEE Symposium on Security and Privacy}, pages
+  481--496, 2010.
+
+\bibitem[Miller(2006)]{millerphd}
+M.~Miller.
+\newblock \emph{Robust composition: Towards a unified approach to access
+  control and concurrency control}.
+\newblock PhD thesis, Johns Hopkins University, 2006.
+
+\bibitem[Myers(1999)]{myersJFlow}
+A.~C. Myers.
+\newblock J{F}low: practical mostly-static information flow control.
+\newblock In \emph{Proc. 26th ACM SIGPLAN-SIGACT symposium on Principles of
+  programming languages}, POPL '99, pages 228--241, 1999.
+
+\bibitem[Nentwich et~al.(2007)Nentwich, Jovanovic, Kirda, Kruegel, and
+  Vigna]{Nentwich07}
+F.~Nentwich, N.~Jovanovic, E.~Kirda, C.~Kruegel, and G.~Vigna.
+\newblock Cross-site scripting prevention with dynamic data tainting and static
+  analysis.
+\newblock In \emph{Proc. Network and Distributed System Security Symposium},
+  2007.
+
+\bibitem[Nikiforakis et~al.(2012)Nikiforakis, Invernizzi, Kapravelos,
+  Van~Acker, Joosen, Kruegel, Piessens, and Vigna]{nick12CCS}
+N.~Nikiforakis, L.~Invernizzi, A.~Kapravelos, S.~Van~Acker, W.~Joosen,
+  C.~Kruegel, F.~Piessens, and G.~Vigna.
+\newblock You are what you include: Large-scale evaluation of remote javascript
+  inclusions.
+\newblock In \emph{Proc. 2012 ACM Conference on Computer and Communications
+  Security}, CCS '12, pages 736--747, 2012.
+
+\bibitem[Pottier and Simonet(2003)]{pottier2003}
+F.~Pottier and V.~Simonet.
+\newblock Information flow inference for ml.
+\newblock \emph{ACM Trans. Program. Lang. Syst.}, 25\penalty0 (1):\penalty0
+  117--158, Jan. 2003.
+
+\bibitem[Rafnsson and Sabelfeld(2013{\natexlab{a}})]{Rafnsson-csf13}
+W.~Rafnsson and A.~Sabelfeld.
+\newblock Secure multi-execution: Fine-grained, declassification-aware, and
+  transparent.
+\newblock In \emph{Proc. 2013 IEEE 26th Computer Security Foundations
+  Symposium}, pages 33--48, 2013{\natexlab{a}}.
+
+\bibitem[Rafnsson and Sabelfeld(2013{\natexlab{b}})]{fineSME}
+W.~Rafnsson and A.~Sabelfeld.
+\newblock Secure multi-execution: Fine-grained, declassification-aware, and
+  transparent.
+\newblock In \emph{Proc. 2013 IEEE 26th Computer Security Foundations
+  Symposium}, CSF '13, pages 33--48, 2013{\natexlab{b}}.
+
+\bibitem[Rajani et~al.(2015)Rajani, Bichhawat, Garg, and Hammer]{csf15}
+V.~Rajani, A.~Bichhawat, D.~Garg, and C.~Hammer.
+\newblock Information flow control for event handling and the {D}{O}{M} in web
+  browsers.
+\newblock In \emph{Proc. IEEE 28th Computer Security Foundations Symposium (CSF
+  '15)}, pages 366--379, 2015.
+
+\bibitem[Richards et~al.(2011)Richards, Hammer, Burg, and
+  Vitek]{richards11ECOOP}
+G.~Richards, C.~Hammer, B.~Burg, and J.~Vitek.
+\newblock The eval that men do -- a large-scale study of the use of eval in
+  {J}ava{S}cript applications.
+\newblock In \emph{Proc. European Conference on Object-Oriented Programming},
+  pages 52--78, 2011.
+
+\bibitem[Richards et~al.(2013)Richards, Hammer, Zappa~Nardelli, Jagannathan,
+  and Vitek]{oopsla13}
+G.~Richards, C.~Hammer, F.~Zappa~Nardelli, S.~Jagannathan, and J.~Vitek.
+\newblock Flexible access control for javascript.
+\newblock In \emph{Proc. 2013 ACM SIGPLAN International Conference on Object
+  Oriented Programming Systems Languages \& Applications}, OOPSLA '13, pages
+  305--322, 2013.
+
+\bibitem[Rocha et~al.(2010)Rocha, Bandhakavi, Hartog, Winsborough, and
+  Etalle]{rochaSP}
+B.~P.~S. Rocha, S.~Bandhakavi, J.~d. Hartog, W.~H. Winsborough, and S.~Etalle.
+\newblock Towards static flow-based declassification for legacy and untrusted
+  programs.
+\newblock In \emph{Proc. 2010 IEEE Symposium on Security and Privacy}, SP '10,
+  pages 93--108, 2010.
+
+\bibitem[Russo and Sabelfeld(2010)]{russo10CSF}
+A.~Russo and A.~Sabelfeld.
+\newblock Dynamic vs. static flow-sensitive security analysis.
+\newblock In \emph{Proc. 2010 IEEE 23rd Computer Security Foundations
+  Symposium}, pages 186--199, 2010.
+
+\bibitem[Russo et~al.(2009)Russo, Sabelfeld, and Li]{implicit}
+A.~Russo, A.~Sabelfeld, and K.~Li.
+\newblock Implicit flows in malicious and nonmalicious code.
+\newblock In \emph{Proc. 2009 Marktoberdorf Summer School}, 2009.
+
+\bibitem[Sabelfeld and Myers(2003)]{LBIFS}
+A.~Sabelfeld and A.~C. Myers.
+\newblock Language-based information-flow security.
+\newblock \emph{IEEE Journal on Selected Areas in Communications}, 21\penalty0
+  (1), Jan 2003.
+
+\bibitem[Sabelfeld and Myers(2004)]{delRelease}
+A.~Sabelfeld and A.~C. Myers.
+\newblock A model for delimited information release.
+\newblock In K.~Futatsugi, F.~Mizoguchi, and N.~Yonezaki, editors,
+  \emph{Software Security - Theories and Systems}, volume 3233 of \emph{LNCS},
+  pages 174--191. Springer Berlin Heidelberg, 2004.
+
+\bibitem[Sabelfeld and Russo(2010)]{Sabelfeld10}
+A.~Sabelfeld and A.~Russo.
+\newblock From dynamic to static and back: Riding the roller coaster of
+  information-flow control research.
+\newblock In \emph{Proc. Perspectives of Systems Informatics}, pages 352--365,
+  2010.
+
+\bibitem[Sabelfeld and Sands(2001)]{permodel}
+A.~Sabelfeld and D.~Sands.
+\newblock A per model of secure information flow in sequential programs.
+\newblock \emph{Higher-Order and Symbolic Computation}, 14\penalty0
+  (1):\penalty0 59--91, 2001.
+
+\bibitem[Sabelfeld and Sands(2009)]{dimDecl}
+A.~Sabelfeld and D.~Sands.
+\newblock Declassification: Dimensions and principles.
+\newblock \emph{J. Comput. Secur.}, 17\penalty0 (5):\penalty0 517--548, Oct.
+  2009.
+
+\bibitem[Shannon(2001)]{shannon}
+C.~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock \emph{SIGMOBILE Mob. Comput. Commun. Rev.}, 5\penalty0 (1):\penalty0
+  3--55, Jan. 2001.
+
+\bibitem[Smith(2009)]{smith2009}
+G.~Smith.
+\newblock \emph{Foundations of Software Science and Computational Structures:
+  12th International Conference, FOSSACS 2009}, chapter On the Foundations of
+  Quantitative Information Flow, pages 288--302.
+\newblock Springer, 2009.
+
+\bibitem[Stefan et~al.(2014)Stefan, Yang, Marchenko, Russo, Herman, Karp, and
+  Mazi{\`e}res]{cowl}
+D.~Stefan, E.~Z. Yang, P.~Marchenko, A.~Russo, D.~Herman, B.~Karp, and
+  D.~Mazi{\`e}res.
+\newblock Protecting users by confining {J}ava{S}cript with {C}{O}{W}{L}.
+\newblock In \emph{Proc. USENIX Symposium on Operating Systems Design and
+  Implementation}, pages 131--146, 2014.
+
+\bibitem[Van~Acker et~al.(2011)Van~Acker, De~Ryck, Desmet, Piessens, and
+  Joosen]{webjail}
+S.~Van~Acker, P.~De~Ryck, L.~Desmet, F.~Piessens, and W.~Joosen.
+\newblock Webjail: Least-privilege integration of third-party components in web
+  mashups.
+\newblock In \emph{Proc. 27th Annual Computer Security Applications
+  Conference}, pages 307--316, 2011.
+
+\bibitem[Van~Goethem et~al.(2015)Van~Goethem, Joosen, and Nikiforakis]{timing}
+T.~Van~Goethem, W.~Joosen, and N.~Nikiforakis.
+\newblock The clock is still ticking: Timing attacks in the modern web.
+\newblock In \emph{Proc. 22nd ACM SIGSAC Conference on Computer and
+  Communications Security}, CCS '15, pages 1382--1393, 2015.
+
+\bibitem[Vanhoef et~al.(2014)Vanhoef, De~Groef, Devriese, Piessens, and
+  Rezk]{csf14}
+M.~Vanhoef, W.~De~Groef, D.~Devriese, F.~Piessens, and T.~Rezk.
+\newblock Stateful declassification policies for event-driven programs.
+\newblock In \emph{Proc. 2014 IEEE 27th Computer Security Foundations
+  Symposium}, pages 293--307, 2014.
+
+\bibitem[Vogt et~al.(2007)Vogt, Nentwich, Jovanovic, Kirda, Krügel, and
+  Vigna]{vogt07NDSS}
+P.~Vogt, F.~Nentwich, N.~Jovanovic, E.~Kirda, C.~Krügel, and G.~Vigna.
+\newblock Cross site scripting prevention with dynamic data tainting and static
+  analysis.
+\newblock In \emph{Proc. Network and Distributed System Security Symposium},
+  2007.
+
+\bibitem[Volpano and Smith(2000)]{relSec}
+D.~Volpano and G.~Smith.
+\newblock Verifying secrets and relative secrecy.
+\newblock In \emph{Proc. 27th ACM SIGPLAN-SIGACT Symposium on Principles of
+  Programming Languages}, POPL '00, pages 268--276, 2000.
+
+\bibitem[Volpano et~al.(1996)Volpano, Irvine, and Smith]{volpano}
+D.~Volpano, C.~Irvine, and G.~Smith.
+\newblock A sound type system for secure flow analysis.
+\newblock \emph{Journal of Computer Security}, 4\penalty0 (2-3):\penalty0
+  167--187, Jan 1996.
+
+\bibitem[Xin and Zhang(2007)]{Xin}
+B.~Xin and X.~Zhang.
+\newblock Efficient online detection of dynamic control dependence.
+\newblock In \emph{Proc. 2007 International Symposium on Software Testing and
+  Analysis}, pages 185--195, 2007.
+
+\bibitem[Yang et~al.(2012)Yang, Yessenov, and Solar-Lezama]{jeeves}
+J.~Yang, K.~Yessenov, and A.~Solar-Lezama.
+\newblock A language for automatically enforcing privacy policies.
+\newblock In \emph{Proc. 39th Annual ACM SIGPLAN-SIGACT Symposium on Principles
+  of Programming Languages}, POPL '12, pages 85--96, 2012.
+
+\bibitem[Zdancewic and Myers(2001)]{robust}
+S.~Zdancewic and A.~C. Myers.
+\newblock Robust declassification.
+\newblock In \emph{Proc. 14th IEEE Workshop on Computer Security Foundations},
+  CSFW '01, pages 15--23, 2001.
+
+\bibitem[Zdancewic(2002)]{zdancewic02PhD}
+S.~A. Zdancewic.
+\newblock \emph{Programming Languages for Information Security}.
+\newblock PhD thesis, Cornell University, August 2002.
+
+\bibitem[Zhou and Evans(2011)]{zhouESORICS11}
+Y.~Zhou and D.~Evans.
+\newblock Protecting private web content from embedded scripts.
+\newblock In \emph{Proc. 16th European Conference on Research in Computer
+  Security}, pages 60--79, 2011.
+
+\end{thebibliography}

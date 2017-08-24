@@ -1,0 +1,131 @@
+\section{Limited Information Release}
+\label{sec:lir-desc}
+Limited information release (LIR) is an information release policy
+that declassifies some (limited) parts of sensitive information. 
+% \dg{``Fraction of information'' is not a well-defined
+%   phrase. Rephrase this sentence.}
+The motivation for LIR is that, in
+general, certain information flows leak only an insignificant part of
+a secret. As an example, the \emph{comparison} of a secret with a
+constant value is largely considered acceptable and its rejection by
+standard IFC analyses is too restrictive in
+practice~\cite{scd,dta}. Such information leaks are usually
+acceptable if one can guarantee that an adversary cannot widen the
+declassification to launder information. 
+%The need for such policies is motivated with a couple of examples below.
+
+In the real-world, such policies find a wide range of applications. For instance, 
+in the advertisement example from Listing~\ref{egLeak}, the third-party 
+ad service does not need to know the exact age of the viewer for determining 
+the preferred advertisement. It is sufficient to know whether the viewer is 
+a child or an adult (or a teenager). A similar example is that of a music 
+app that hosts advertisements for music shows and concerts in a town. Based
+on the age and the preferences of the user, the advertisements might differ 
+in each case. 
+
+\begin{lstlisting}[float,caption=Password Checker, label=egpc]
+dbPwd $=$ getActualPassword(user);
+uPwd $=$ readUserPassword();
+login $=$ (dbPwd $==$ uPwd);
+\end{lstlisting}
+
+Another common use-case of such policies is user authentication 
+based on a secret password or a PIN. The password checker in 
+Listing~\ref{egpc} compares the secret password to 
+the password entered by the user. The public variable \texttt{login}
+reflects whether these match, indicating whether the log-in was
+successful. Strict non-interference would normally prohibit 
+assignments to the low variable \texttt{login} as the value is 
+derived from the secret password. However, releasing the log-in 
+status to the user cannot be avoided. Normally, a user can log-in 
+in a single try but the probability of an adversary guessing the
+correct password in one (or even a few) tries can be
+assumed to be negligible when the password is strong and chosen 
+randomly~\cite{relSec}. 
+%In general, a brute-force attack on the secret would be 
+%required, and if the secret is from a large domain then such an 
+%attack is not a threat. 
+Thus, the assignment to the \texttt{login} variable may be permitted 
+for a few tries before the user's account gets locked.
+Generally in these applications, there is a trade-off between some 
+private information leak and better services.
+
+In practice, certain operations involving Boolean-valued expressions, 
+and implicit flows leak very 
+little information, which might be required for providing proper
+functionality. King \emph{et al.}~\cite{king08implicit} 
+investigate the occurrence of implicit flows in some standard 
+algorithms and discuss the pros and cons of handling implicit 
+flows. Russo \emph{et al.}~\cite{implicit} also observe
+that implicit flows cannot be exploited in non-malicious code to 
+leak secrets efficiently. The LIR policy is, thus, guided by two key tenets: 
+
+\begin{itemize}
+\item \textbf{Declassification of Boolean-valued expressions.}  As has been
+  observed previously~\cite{scd, dta} and is exemplified
+  above, comparison operations and other Boolean values often provide a
+  low bandwidth channel for information leak. For
+  instance, $h \neq l$ only reveals whether the two values in $h$ and
+  $l$ are equal or not. Similarly, $h < l$ and $h > l$ only reveal
+  that the value of $h$ is lesser and greater than the value of $l$,
+  respectively. With LIR, such comparison operations and Boolean-valued  
+  expressions are treated as potential points of information release. 
+  As all operations need not be declassified, 
+  information is released only for those 
+  operations that are explicitly annotated with \TT{declassify}.
+
+\begin{lstlisting}[float, caption=Laundering attack via implicit flows, label=lst:laundering]
+pub $=$ 0; i $=$ 1;
+while (i $\leq 2^{31}$) { @\label{imp:while}@
+if ((sec $\&$ i) $==$ i) @\label{imp:if}@
+pub $=$ pub $|$ i;
+i $=$ i $<<$ 1;
+}
+\end{lstlisting}
+
+\item \textbf{Bounding the information released.} 
+  Unfortunately, allowing information release when
+  only an insignificant amount of information is leaked can be widened
+  to leak the complete secret~\cite{relSec,delRelease}. 
+  The example in Listing~\ref{lst:laundering} is a classical example 
+  of a laundering attack. It implicitly leaks the secret value
+  in \texttt{sec} to the variable \texttt{pub} without any direct assignments.
+  Every time the check on line~\ref{imp:if} is performed, it leaks one
+  bit of \texttt{sec}. The whole secret gets implicitly laundered into
+  the variable \texttt{pub} as this comparison is performed in a loop of 
+  length equal to the size of the secret (in bits).
+  
+  To limit the amount of information that can be leaked through 
+  laundering attacks, LIR introduces a notion of \emph{budget} (a
+  natural number) associated with a sensitive value, which is an
+  upper bound on the amount of information that is allowed to leak about
+  the sensitive value. A budget is associated with every secret in the
+  program and defaults to $0$, if left unspecified. 
+\end{itemize}
+
+% \medskip
+Intuitively, a program is said to satisfy limited information release,
+if the information released about the initial value of each secret in
+the system is limited by its pre-specified budget. If no information 
+is released about any secret or if the budgets for all the secrets 
+reduce to $0$, LIR reduces to the standard
+non-interference policy. It is important to note that even when
+staying within the bounds of the budget one can leak the entire secret
+via comparison operations. For instance, if an equality comparison
+$h==l$ involving a secret value $h$ and a public value $l$ 
+returns \TT{true}, a public adversary knows that the value of $h$ is
+the same as the value in $l$. 
+
+Although declassification of only Boolean-valued expressions is 
+allowed by LIR, this can be extended to other expressions as well. 
+In such cases, where the expression being declassified has a 
+data type having $n$ possible values, the leak is 
+accounted for by assuming that $\log_{2}n$ bits are leaked. 
+As in this paper we consider only Boolean and integer data types, 
+we restrict the information release to only Boolean expressions.  
+Declassifying an integer value would effectively mean that all bits 
+of information about the secret value have been released and the 
+secret value could have been simply declassified.
+
+
+

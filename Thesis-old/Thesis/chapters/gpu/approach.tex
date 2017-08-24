@@ -1,0 +1,478 @@
+\section{Generalized Permissive-Upgrade on Arbitrary Lattices}
+\label{sec:gen:pus}
+
+\begin{figure}
+\begin{equation*}
+\begin{aligned}[c]
+\lab          =~& L~\arrowvert~M~\arrowvert~\ldots~\arrowvert~H\\
+\pc          =~& \lab \\
+k,l,m =~& \lab~\arrowvert~\lab\pl 
+\end{aligned}
+\qquad \qquad 
+\begin{aligned}[c]
+\lab_1 \sqcup \lab_2\pl  =~&(\lab_1 \sqcup \lab_2)\pl \\
+\lab_1\pl  \sqcup \lab_2\pl  =~&(\lab_1 \sqcup \lab_2)\pl
+\end{aligned}
+\end{equation*}
+\caption{Labels and label operations}\label{fig:labels}
+\end{figure}
+
+This section shows by construction the generalization of the
+permissive-upgrade strategy to arbitrary security lattices. For every
+element $\lab$ of the lattice, a new label $\lab\pl$ is introduced
+which means ``partially-leaked $\lab$'', with the following intuition: 
+\begin{framed}
+\noindent
+A variable labeled $\lab\pl$ may contain partially-leaked data, where
+$\lab$ is a \emph{lower-bound} on the $\star$-free labels the variable
+may have in alternate executions.
+\end{framed}
+
+The syntax of labels is listed in Figure~\ref{fig:labels}. Labels
+$k,l,m$ may be lattice elements $\lab$ or $\star$-ed lattice elements
+$\lab\pl$. In examples, suggestive lattice element names $L, M, H$
+(low, medium, high) are used. Labels of the form $\lab$ are called 
+$\star$-free or \emph{pure}. Figure~\ref{fig:labels} also defines the
+join operation $\sqcup$ on labels. This definition is based on the intuition
+above. When the two operands of $\odot$ are labeled $\lab_1$ and
+$\lab_2\pl$, $\lab_1 \sqcup \lab_2$ is a lower bound on the pure label
+of the resulting value in any execution (because $\lab_2$ is a lower
+bound on the pure label of $\lab_2\pl$ in any run). Hence, $\lab_1
+\sqcup \lab_2\pl = (\lab_1 \sqcup \lab_2)\pl$. The reason for the
+definition $\lab_1\pl \sqcup \lab_2\pl = (\lab_1 \sqcup \lab_2)\pl$ is
+similar.
+
+\begin{figure}
+\begin{mathparpagebreakable}
+\inferrule*[left=\mbox{\labelthis{bs:cmd:agn}{assn-n}}]
+{  \langle \sigma, \expr \rangle \bsexp \TT{n}^m \\ l =
+  \Gamma(\sigma(\TT{x})) \\ l = \lab_\TT{x} \vee l = \lab_\TT{x}\pl \\ \pc 
+  \sqsubseteq \lab_\TT{x} \\ k = \pc \sqcup m}
+{\langle \sigma , \TT{x} := \expr \rangle \bscmd \sigma[\TT{x}
+  \mapsto \TT{n}^{k}]}
+%%%    
+\and
+\inferrule*[left=\mbox{\labelthis{bs:cmd:ags}{assn-s}}]
+{\langle \sigma, \expr \rangle \bsexp \TT{n}^m \\ l =
+  \Gamma(\sigma(\TT{x})) \\ l = \lab_\TT{x} \vee  l = \lab_\TT{x}\pl \\ \pc
+  \not\sqsubseteq \lab_\TT{x} \\ k = ((\pc \sqcup m)\sqcap \lab_\TT{x} )\pl}
+{\langle \sigma , \TT{x} := \expr \rangle \bscmd \sigma[\TT{x} \mapsto
+  \TT{n}^{k}]}
+\end{mathparpagebreakable}
+\caption[Caption]{Assignment rules for the generalized
+  permissive-upgrade}\label{fig:assn-our}
+\end{figure}
+
+The rules for assignment are shown in Figure~\ref{fig:assn-our}. They
+strictly generalize the rule \refrule{bs:cmd:ap} for the two-point lattice,
+treating $P = L\pl$. Rule~\refrule{bs:cmd:agn} applies when the existing label of
+the variable being assigned to is $\lab_{\TT{x}}$ or $\lab_{\TT{x}}\pl$ and $\pc
+\sqsubseteq \lab_{\TT{x}}$. The key intuition behind the rule is the
+following: If $\pc \sqsubseteq \lab_{\TT{x}}$, then it is safe to overwrite
+the variable, because $\lab_{\TT{x}}$ is necessarily a lower bound on the
+(pure) label of $\TT{x}$ in this and any alternate execution (see the
+\framebox{framebox} above). Hence, overwriting the variable cannot
+cause an implicit flow. As expected, the label of the overwritten
+variable is $\pc \sqcup m$, where $m$ is the label of the value
+assigned to $\TT{x}$.
+
+Rule \refrule{bs:cmd:ags} applies in the remaining case --- when $\pc
+\not\sqsubseteq \lab_{\TT{x}}$. In this case, there may be an implicit flow,
+so the final label on $\TT{x}$ must have the form $\lab\pl$ for some
+$\lab$. The question is which $\lab$. Intuitively, it may seem that
+one could choose $\lab = \lab_{\TT{x}}$, the pure part of the original label
+of $\TT{x}$. The final label on $\TT{x}$ would be $\lab_{\TT{x}}\pl$ and this would
+satisfy the intuitive meaning of $\star$ written in the
+\framebox{framebox} above. Indeed, this intuition suffices for the
+two-point lattice of Section~\ref{sec:existing}
+and~\ref{sec:ipus}. However, for a more 
+general lattice, this intuition is unsound, as illustrated with an
+example below. The correct label is $((\pc \sqcup m) \sqcap
+\lab_{\TT{x}})\pl$. 
+% (Note that this correct label is independent of the label $m$ of the value
+% assigned to $\TT{x}$. This is sound because $\TT{x}$ is $\star$-ed and
+% cannot be case-analyzed later, so the label on the value in it is irrelevant.)
+
+\begin{figure}[ht]
+\begin{minipage}{0.65\linewidth}
+\centering
+\begin{lstlisting}[caption=Example explaining rule \refrule{bs:cmd:ags},label=list2]
+if ($\TT{x}'$)
+  $\TT{z} = \TT{y}_1$@\label{hm1}@
+else
+  $\TT{z} = \TT{y}_2$@\label{hm2}@
+if ($\TT{x}_1$)@\label{bl1}@
+  $\TT{z} = \TT{x}_1$@\label{hl1}@
+if ($\texttt{not}(\TT{x}_2)$)@\label{if2}@
+  $\TT{z} = \TT{x}_2$@\label{hl2}@
+if ($\TT{z}$)@\label{if3}@
+  $\TT{w} = \TT{z}$@\label{hl3}@
+\end{lstlisting}
+\end{minipage}
+\hspace{-1.5cm}
+\begin{minipage}{0.45\linewidth}
+\centering
+{\includegraphics{chapters/gpu/lattice.tikz}}
+\caption{Lattice explaining rule \refrule{bs:cmd:ags}}
+\label{fig:lattice}
+\end{minipage}
+\end{figure}
+
+\paragraph{Example} 
+The need for the label $k := ((\pc \sqcup m) \sqcap \lab_{\TT{x}})\pl$
+instead of $k := \lab_{\TT{x}}\pl$ in rule \refrule{bs:cmd:ags} is illustrated
+below. Consider the lattice of Figure~\ref{fig:lattice} and the
+program of Listing~\ref{list2}. Assume 
+that, initially, the variables $\TT{z}$, $\TT{w}$, $\TT{x}_1$,
+$\TT{x}'$, $\TT{x}_2$, $\TT{y}_1$ and $\TT{y}_2$ have labels $H$,
+$L_1$, $L_1$, $L'$, $L_2$, $M_1$ and $M_2$, 
+respectively. Fix the attacker at level $L_1$. Fix the value of $\TT{x}_1$
+at $\texttt{true}^{L_1}$, so that the branch on line~\ref{bl1} is
+always taken and line~\ref{hl1} is always executed. Set $\TT{y}_1 \mapsto
+\texttt{false}^{M_1}, \TT{y}_2 \mapsto \texttt{true}^{M_2}, \TT{w} \mapsto
+\TT{false}^{L_1}$ initially. The initial value of $\TT{z}$ is
+irrelevant. Consider two executions of the program starting from two
+stores $\sigma_1$ with $\TT{x}' \mapsto \texttt{true}^{L'}, \TT{x}_2 \mapsto
+\texttt{true}^{L_2}$ and $\sigma_2$ with $\TT{x}' \mapsto
+\texttt{false}^{L'}, \TT{x}_2 \mapsto \texttt{false}^{L_2}$. Note that
+as $L'$ and $L_2$ are incomparable to $L_1$ in the lattice,
+$\sigma_1$ and $\sigma_2$ are equivalent for $L_1$. 
+
+\begin{table*}
+\centering
+\begin{tabular} {|l||@{\,}c@{\,}||@{\,}c@{\,}|@{\,}c@{\,}|}
+\hline
+&
+\multicolumn{3}{c|}{$\TT{w} = \texttt{false}^{L_1},\ \TT{x}_1 =
+  \texttt{true}^{L_1},\ \TT{y}_1 = \texttt{false}^{M_1},\ \TT{y}_2 =
+  \texttt{true}^{M_2}$}
+\\
+\cline{2-4}
+&
+$\TT{x}' = \texttt{true}^{L'}$
+&
+\multicolumn{2}{c|}{$\TT{x}' = \texttt{false}^{L'}$}
+\\
+&
+$\TT{x}_2 = \texttt{true}^{L_2}$
+&
+\multicolumn{2}{c|}{$\TT{x}_2 = \texttt{false}^{L_2}$}
+\\
+\cline{3-4}
+&
+&
+$k:= \lab_{\TT{x}}\pl$
+&
+$k:= ((\pc \sqcup m) \sqcap \lab_{\TT{x}})\pl$
+\\
+\hline
+\texttt{if} ($\TT{x}'$)&$\pc = L'$&&\\
+\quad$\TT{z} = \TT{y}_1$&$\TT{z} = \texttt{false}^{M_1}$&&\\
+\texttt{else}&&$\pc = L'$&$\pc = L'$\\
+\quad$\TT{z} = \TT{y}_2$&&$\TT{z} = \texttt{true}^{M_2}$&$\TT{z} = \texttt{true}^{M_2}$\\
+\texttt{if} ($\TT{x}_1$)&$\pc = L_1$&$\pc = L_1$&$\pc = L_1$\\
+\quad$\TT{z} = \TT{x}_1$&$\TT{z} = \texttt{true}^{L_1}$&$\TT{z} = \texttt{true}^{M_2\pl}$&$\TT{z} = \texttt{true}^{L\pl}$\\
+\texttt{if} ($\texttt{not}(\TT{x}_2)$)&branch not taken&$\pc = L_2$&$\pc = L_2$\\
+\quad$\TT{z} = \TT{x}_2$& %$z = \texttt{true}^{L_1}$
+&$\TT{z} = \texttt{false}^{L_2}$&$\TT{z} = \texttt{false}^{L\pl}$\\
+\texttt{if} ($\TT{z}$)&$\pc = L_1$&branch not taken&execution halted\\
+\quad$\TT{w} = \TT{z}$&$\TT{w} = \texttt{true}^{L_1}$&&\\
+\hline
+Result & $\TT{w} = \texttt{true}^{L_1}$ & $\TT{w} =
+\texttt{false}^{L_1}$ (leak) & no leak\\
+\hline
+\end{tabular}
+\caption{Execution steps in two runs of the program from Listing~\ref{list2}, with two variants of the rule \refrule{bs:cmd:ags}}
+\label{tblassn}
+\end{table*}
+
+Requiring $k := \lab_{\TT{x}}\pl$ in rule \refrule{bs:cmd:ags} causes an
+implicit flow that is observable for $L_1$. The intermediate values
+and labels of the variables for executions starting from $\sigma_1$
+and $\sigma_2$ are shown in the second and third columns of
+Table~\ref{tblassn}. Starting with $\sigma_1$, line~\ref{hm1} is
+executed, but line~\ref{hm2} is not, so $\TT{z}$ ends with
+$\texttt{false}^{M_1}$ at line~\ref{bl1} (rule \refrule{bs:cmd:agn} applies at
+line~\ref{hm1}). At line~\ref{hl1}, $\TT{z}$ contains $\texttt{true}^{L_1}$
+(again by rule \refrule{bs:cmd:agn}) and line~\ref{hl2} is not executed. Thus, the
+branch on line~\ref{if3} is taken and $\TT{w}$ ends with
+$\texttt{true}^{L_1}$ at line~\ref{hl3}. Starting with $\sigma_2$,
+line~\ref{hm1} is not executed, but line~\ref{hm2} is, so $\TT{z}$ becomes
+$\texttt{true}^{M_2}$ at line~\ref{bl1} (rule \refrule{bs:cmd:agn} applies at
+line~\ref{hm2}). At line~\ref{hl1}, rule \refrule{bs:cmd:ags} applies, but because
+$k := \lab_{\TT{x}}\pl$ is assumed in that rule, $\TT{z}$ now contains the
+value $\texttt{true}^{M_2\pl}$. As the branch on line~\ref{if2} is
+taken, at line~\ref{hl2}, $\TT{z}$ becomes $\texttt{false}^{L_2}$ by rule
+\refrule{bs:cmd:agn} because $L_2 \sqsubseteq M_2$. Thus, the branch on
+line~\ref{if3} is not taken and $\TT{w}$ ends with $\texttt{false}^{L_1}$
+in this execution. Hence, $\TT{w}$ ends with $\texttt{true}^{L_1}$ and
+$\texttt{false}^{L_1}$ in the two executions, respectively. The
+attacker at level $L_1$ can distinguish these two results; hence, the
+program leaks the value of $\TT{x}'$ and $\TT{x}_2$ to $L_1$.
+
+With the correct \refrule{bs:cmd:ags} rule in place, this leak is avoided (last
+column of Table~\ref{tblassn}). In that case, after the assignment on
+line~\ref{hl1} in the second execution, $\TT{z}$ has label $((L_1 \sqcup L_1) \sqcap
+M_2)\pl = L\pl$. Subsequently, after line~\ref{hl2}, $\TT{z}$ gets the
+label $L\pl$. As case analysis on a $\star$-ed value is not allowed,
+the execution is halted on line~\ref{if3}. This guarantees
+termination-insensitive non-interference with respect to the attacker
+at level $L_1$.
+
+\subsection{Termination-Insensitive Non-interference}
+
+To prove non-interference for the generalized permissive-upgrade,
+equivalence of labeled values relative to an adversary at arbitrary
+lattice level $\lab$ needs to be defined. The definition is shown
+below (Definition~\ref{def:gpua:veq}). Note that clauses (3)--(5) here
+refine clause (3) of Definition~\ref{def:eq-existing} for the two-point
+lattice. The obvious generalization of clause (3) of
+Definition~\ref{def:eq-existing} --- $\TT{n}_1^k \sim_\lab \TT{n}_2^m$ whenever 
+either $k$ or $m$ is $\star$-ed --- is too coarse to prove
+non-interference inductively. For the degenerate case of the two-point
+lattice, this definition also degenerates to
+Definition~\ref{def:eq-existing} (there, $\lab$ is fixed at $L$, $P = 
+L\pl$ and only $L$ may be $\star$-ed).
+
+\begin{mydef}
+\label{def:gpua:veq}
+Two values $\emph{\TT{n}}_1^k$ and $\emph{\TT{n}}_2^m$ are
+$\lab$-equivalent, written $\emph{\TT{n}}_1^k \sim_\lab
+\emph{\TT{n}}_2^m$, iff either 
+\begin{enumerate}
+\item $k = m = \lab' \sqsubseteq \lab$ and $\emph{\TT{n}}_1 =
+  \emph{\TT{n}}_2$, or 
+\item $ k = \lab'
+  \not\sqsubseteq \lab$ and $m = \lab'' \not\sqsubseteq \lab$, or 
+\item $k = \lab_1\pl$ and $m = \lab_2\pl$, or
+\item $k = \lab_1\pl$ and $m = \lab_2$ and ($\lab_2 \not\sqsubseteq
+  \lab$ or $\lab_1 \sqsubseteq \lab_2 $), or
+\item $k = \lab_1$ and $m = \lab_2\pl$ and ($\lab_1 \not\sqsubseteq
+  \lab$ or $\lab_2 \sqsubseteq \lab_1$)
+\end{enumerate}
+\end{mydef}
+
+\begin{mydef}
+\label{def:gpua:seq}
+  Two stores $\sigma_1$ and $\sigma_2$ are $\lab$-equivalent,
+  written $\sigma_1 \sim_\lab \sigma_2$, iff for every variable \emph{\TT{x}},
+  $\sigma_1(\emph{\TT{x}}) \sim_\lab \sigma_2(\emph{\TT{x}})$.
+\end{mydef}
+
+This definition is obtained by constructing (through examples) an
+extensive transition graph of pairs of labels that may be assigned to
+a single variable at corresponding program points in two executions of
+the same program. The starting point is label-pairs of the form
+$(\lab, \lab)$. This characterization of equivalence is both
+sufficient and necessary. It is sufficient in the sense that it allows
+us to prove TINI inductively. It is necessary in the sense that
+example programs can be constructed that end in states exercising
+every possible clause of this definition. Appendix~\ref{app:egequi}
+lists these examples. 
+
+% \section{Termination-Insensitive Non-Interference}
+
+Using the above definition of equivalence of labeled values, TINI can
+be proven for the generalized permissive-upgrade strategy presented
+above. A significant difficulty in proving the theorem is that the
+definition of $\sim_\lab$ is not transitive unlike the previous definition
+of $\sim$. 
+% The same problem arises
+% for the two-point lattice as shown in the previous section and
+% in~\cite{plas10}. There, the authors resolve the 
+% issue by defining a special relation called evolution. 
+% Here, a more conventional approach based on the standard confinement 
+% lemma is taken. 
+% The need for evolution is averted using several auxiliary
+% lemmas that we list below.
+Detailed proofs of all the lemmas and the theorems
+are presented in Appendix~\ref{app:gpu}.
+
+\begin{myLemma}[Expression evaluation]
+\label{lem:gpua:exp}
+If $\langle \sigma_1, e \rangle \bsexp \emph{\TT{n}}_1^{k_1}$ and $\langle 
+\sigma_2, e \rangle \bsexp \emph{\TT{n}}_2^{k_2}$ and $\sigma_1 \sim_\lab \sigma_2$,
+then $\emph{\TT{n}}_1^{k_1} \sim_\lab \emph{\TT{n}}_2^{k_2}$.
+\end{myLemma}
+\begin{proof}
+By induction on $e$.
+\end{proof}
+
+%% Lemma~\ref{sup1} shows that a value labeled $\lab\pl$ remains
+%% $\star$-ed if an evaluation is done on it under a higher or unrelated
+%% context. Lemma~\ref{pcl} on the other hand shows that if a value gets
+%% a pure label after an evaluation, then either the value remained
+%% unchanged after the evaluation or the evaluation done was done in a
+%% lower context. We state two important corollaries,
+%% Corollary~\ref{cor1} and~\ref{cor2} derived from Lemma~\ref{sup1}
+%% and~\ref{pcl}, respectively, which are used in the proofs for
+%% confinement and non-interference.
+
+\begin{myLemma}[$\star$-preservation]
+\label{lem:gpua:sup1}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma(x)) = \lab\pl $ and $\pc \not\sqsubseteq \lab$, then
+$\Gamma(\sigma'(x)) = \lab'\pl$ and $\lab' \sqsubseteq \lab$.
+\end{myLemma}
+\begin{proof}
+By induction on the derivation rule.
+\end{proof}
+
+\begin{mycor}
+\label{cor:gpua:cor1}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma(\emph{\TT{x}})) = \lab\pl $ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab'$, then 
+$\pc \sqsubseteq \lab$.
+\end{mycor}
+\begin{proof}
+Immediate from Lemma~\ref{lem:gpua:sup1}.
+\end{proof}
+
+\begin{myLemma}[$\pc$-lemma]
+\label{lem:gpua:pcl}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab$, then $\sigma(\emph{\TT{x}}) =
+\sigma'(\emph{\TT{x}})$ or 
+$\pc \sqsubseteq \lab$.
+\end{myLemma}
+\begin{proof}
+By induction on the derivation rule.
+\end{proof}
+
+\begin{mycor}
+\label{cor:gpua:cor2}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma(\emph{\TT{x}})) = \lab\pl $ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab'$, then 
+$\pc \sqsubseteq \lab'$.
+\end{mycor}
+\begin{proof}
+Immediate from Lemma~\ref{lem:gpua:pcl}.
+\end{proof}
+
+Using these lemmas, the standard confinement lemma and non-interference
+can be proven. 
+
+\begin{myLemma}[Confinement Lemma]
+\label{lem:gpua:conf}
+If $\pc \not\sqsubseteq \lab$ and $\langle \sigma, c \rangle
+\bscmd \sigma'$, then $\sigma \sim_\lab \sigma'$.
+\end{myLemma}
+\begin{proof}
+By induction on the derivation rule.
+\end{proof}
+
+\begin{myThm}[TINI for generalized permissive-upgrade for arbitrary lattices]
+  If $~\sigma_1 \sim_\lab \sigma_2$ and $\langle \sigma_1, c \rangle
+  \bscmd \sigma_1' $ and $\langle \sigma_2, c
+  \rangle\bscmd \sigma_2' $, then $\sigma_1' \sim_\lab
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} By induction on $c$.
+\end{proof}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comparison of the Generalization of Section~\ref{sec:gen:pus}
+  with the Generalization of Section~\ref{sec:gen:ipus}}
+
+%\subsection{Permissiveness of the Approach in Section~\ref{sec:gen:pus}}
+
+Two distinct and sound generalizations of the permissive-upgrade
+strategy for the two-point lattice have now been described:
+The generalization of the improved permissive-upgrade to pointwise
+products of two-point lattices or, equivalently, to powerset lattices
+as described in Section~\ref{sec:gen:ipus}, and the generalization to
+arbitrary lattices described in Section~\ref{sec:gen:pus}. For brevity,
+these generalizations are called puP (Section~\ref{sec:gen:ipus}) and
+puA (Section~\ref{sec:gen:pus}), 
+respectively (P and A stand for \underline{p}owerset and
+\underline{a}rbitrary, respectively). Since both puP and puA apply to
+powerset lattices, an obvious question is whether one is more
+permissive than the other on such lattices. The generalization of puP
+presented in this chapter can be more permissive than puA on powerset 
+lattices in certain cases as shown by the example
+below. The reason for this permissiveness is that puP tracks finer
+taints, i.e., it tracks partial leaks for each principal separately. 
+
+% We show here that the
+% permissiveness of puP and puA on powerset lattices is
+% \emph{incomparable} --- there are examples on which each
+% generalization is more permissive than the other. We explain one
+% example in each direction below. Roughly, incomparability exists
+% because puP tracks finer taints (it tracks partial leaks for each
+% principal separately), but puA's rules for overwriting
+% partially-leaked variables are more permissive.
+
+\begin{figure}[ht]
+\begin{minipage}{0.65\linewidth}
+\centering
+\begin{lstlisting}[caption=Example where puP is more permissive than puA,label=list3]
+if (y) @\label{li32}@
+  x = z @\label{li33}@
+if (z) @\label{li34}@
+  x = z @\label{li35}@
+if (x)  @\label{li36}@
+  z = x
+\end{lstlisting}
+\end{minipage}
+\hspace{-1.5cm}
+\begin{minipage}{0.45\linewidth}
+\centering
+{\includegraphics{chapters/gpu/powerset.tikz}}
+\caption{A powerset/product lattice}\label{fig:lattice1}
+\end{minipage}
+\end{figure}
+
+\paragraph{Example}
+The powerset lattice of Figure~\ref{fig:lattice1} is used for
+illustration purpose. This lattice is the pointwise lifting of the order $L
+\sqsubset H$ to the set $S = \{L, H\} \times \{L, H\}$. For brevity,
+this lattice's elements are written as $LL$, $LH$, etc. When puP is
+applied to this lattice, labels are drawn from the set $\{L, H, P\}
+\times \{L, H, P\}$. These labels are concisely written as $LP$, $HL$,
+etc. For puA, labels are drawn from the set $S \cup S\pl$. These
+labels are written $LH$, $LH\pl$, etc. Note that $LH\pl$ parses as
+$(LH)\pl$, not $L(H\pl)$ (the latter is not a valid label in puA
+applied to this lattice).
+%
+Consider the program in Listing~\ref{list3}. Assume that $\TT{x}$,
+$\TT{y}$ and $\TT{z}$ have 
+initial labels $LL$, $HL$ and $LH$, respectively and that the initial
+store contains $\TT{y} \mapsto \texttt{true}^{HL}, \TT{z} \mapsto
+\texttt{true}^{LH}$, so the branches on lines~\ref{li32}
+and~\ref{li34} are both taken. The initial value in $\TT{x}$ is irrelevant
+but its label is important.
+Under puA, $\TT{x}$ obtains label $(((HL) \sqcup (LH)) \sqcap (LL))\pl = LL\pl$ at
+line~\ref{li33} by rule \refrule{bs:cmd:ags}. At line~\ref{li35}, the same rule
+applies but the label of $\TT{x}$ remains $LL\pl$. When the program tries
+to branch on $\TT{x}$ at line~\ref{li36}, it is stopped.
+In contrast, under puP, this program executes to completion. At
+line~\ref{li33}, the label of $\TT{x}$ changes to $PH$ by rule
+\refrule{bs:cmd:agp}. At line~\ref{li35}, the label changes to $LH$ because $pc$
+and the label of $\TT{z}$ are both $LH$. Since this new label has no $P$,
+line~\ref{li36} executes without halting.
+Hence, for this example, puP is more permissive than puA.
+
+% \section{Remarks}
+% On powerset lattices, the resulting IFC monitor is different
+% in the two cases and the generalization of improved permissive-upgrade
+% is more permissive than puA in certain cases. 
+% The approach presented in this section is, thus, more general
+% and applies to a broader set of lattices. 
+An example for which  puA is more permissive than puP in the case of
+poweset lattices was not found. But the generalization puA presented in
+Section~\ref{sec:gen:pus} is more general than the product
+construction puP (Section~\ref{sec:gen:ipus}) when applied to arbitrary
+lattices (and hence, applicable to a broader set of lattices) as it is
+unclear whether or how  the improved permissive 
+upgrade strategy generalises to arbitrary lattices. By developing this
+generalization, this work makes permissive-upgrade applicable to
+arbitrary security lattices like other IFC techniques.
+% and, hence,
+% constitutes a useful contribution to IFC literature.
+

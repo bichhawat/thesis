@@ -1,0 +1,189 @@
+\section{Formalization of LIR}
+\label{sec:lir-formal}
+
+The following section formalizes the property of LIR and prove it for
+the semantics presented above. 
+LIR is essentially a property stating
+that the total number of bits that can be leaked about a secret (by
+a program) is upper bounded by its pre-specified budget 
+(in an average sense). The trace
+generated in the LIR semantics captures the data about the declassified 
+value. An adversary at level $\attacker$ can view those values in a 
+memory store $\sigma$ that have a label less than or equal to $\attacker$ 
+($\forall x. \Gamma(\sigma(x)) \sqsubseteq \attacker$). The adversary can 
+also observe the projection of the trace generated as part of the 
+semantics, defined formally in Definition~\ref{def:lir:tp}. Similarly, 
+the adversary can view a projection of the budget-map as defined 
+in Definition~\ref{def:lir:bmp}.  
+
+\begin{mydef}[Trace projection]
+\label{def:lir:tp}
+Given a trace, $\trace$, the trace projection w.r.t. an adversary at
+level $\attacker$, written $\trace\proj$, is 
+% just a standard filter over a list 
+defined as: 
+  \begin{align*}
+  []\proj &=~[] \\
+  (\emph{\TT{n}}^m :: \trace)\proj &=
+  \begin{cases}
+   \emph{\TT{n}}^m :: \trace\proj~ & \mathit{if }~ m \sqsubseteq \attacker,\\
+   \trace\proj & \mathit{else}.
+  \end{cases}
+  \end{align*}
+\end{mydef}
+
+\begin{mydef}[Budget-map projection]
+\label{def:lir:bmp}
+The projection of a budget-map, $\iota$, w.r.t. an adversary at
+level $\attacker$, written $\iota\proj$, is defined as:
+\begin{align*}
+\iota\proj = \lambda \emph{\TT{x}}. 
+\begin{cases}
+\iota(\emph{\TT{x}}), &\text{if} ~ \big(\blabel(\emph{\TT{x}}) \sqsubseteq \attacker\big) \\
+0, &\text{otherwise}
+\end{cases}
+\end{align*}
+\end{mydef}
+% \begin{mydef}[Budget map projection]
+% \label{def:lir:bmp}
+% The projection of a budget map, $\iota$, w.r.t. an adversary at
+% level $\attacker$, written $\iota\proj$, is defined as:
+% $$\iota\proj = 
+% \left \{
+% (\emph{\TT{x}}, \emph{\TT{n}})~\middle|~\big((\emph{\TT{x}},
+% \emph{\TT{j}}) \in \iota\big) \bigwedge \left(\emph{\TT{n}} =
+% \left\{\begin{array}{ll}
+%         0, & \text{if} ~ (\blabel(x) \not\sqsubseteq \attacker) \\
+%         \emph{\TT{j}}, & \text{otherwise}
+%         \end{array}\right\} 
+% % \forall x \in \iota. \big(\iota\proj(x) := (\blabel(x)
+% % \not\sqsubseteq \attacker ~?~ 0 : \iota(x))
+% \right)\right\}
+% $$
+% \end{mydef}
+
+% \begin{mydef}
+% \label{def:lir:dbmp}
+% The difference between two budget maps, $\iota$ and $\iota'$, written
+% $\iota - \iota'$, is defined as:
+% $$\iota - \iota' = \sum\limits_{\emph{\TT{x}} \in \iota}
+% \big(\iota(\emph{\TT{x}}) - \iota'(\emph{\TT{x}})\big)$$ 
+% \end{mydef}
+
+The observational equivalence of various data structures used in the
+semantics with respect to an adversary needs to be defined for
+formally defining LIR. Definition~\ref{def:lir:veq}
+and~\ref{def:lir:seq} define the  observational equivalence of two
+values and two memory stores,  respectively, with respect to an
+adversary at level $\attacker$. Definition~\ref{def:lir:beq}
+and~\ref{def:lir:teq} define  the observational equivalence of the
+budget-maps and the generated traces. 
+
+\begin{mydef}
+	\label{def:lir:veq}
+	Two labeled values $v_1 = \emph{\TT{n}}_1^{(l_1,\dep_1)}$ and $v_2 =
+	\emph{\TT{n}}_2^{(l_2,\dep_2)}$ are observationally equivalent at level
+	$\attacker$, written $v_1\eq v_2$ iff either:
+	\begin{enumerate}
+		\item $\emph{\TT{n}}_1 = \emph{\TT{n}}_2$, % $\Gamma(v_1) = \Gamma(v_2) \sqsubseteq \attacker$,
+		$l_1 = l_2 \sqsubseteq \attacker$ and $\dep_1 = \dep_2$ (or)
+		\item $\Gamma(v_1) \not\sqsubseteq  \attacker$ and $\Gamma(v_2)
+		\not\sqsubseteq \attacker$ and $l_1 = l_2 \sqsubseteq
+		\attacker$ and $\dep_1 = \dep_2$
+		% $\exists x^m \in \dep_1.(m \not\sqsubseteq
+		% \attacker)$ and $\exists y^k \in \dep_2.(k \not\sqsubseteq \attacker)$
+		(or)
+		\item $\Gamma(v_1) \not\sqsubseteq  \attacker$ and $\Gamma(v_2)
+		\not\sqsubseteq \attacker$ and $l_1 \not\sqsubseteq
+		\attacker \vee \exists \emph{\TT{x}} \in
+		\dep_1. \blabel(\emph{\TT{x}}) \not\sqsubseteq 
+		\attacker$ and $l_2 \not\sqsubseteq \attacker \vee \exists
+		\emph{\TT{x}} \in   \dep_2. \blabel(\emph{\TT{x}}) \not\sqsubseteq
+		\attacker$ 
+	\end{enumerate}
+\end{mydef}
+% \dg{The two ``such that''s in the last two points should also be
+%   ``and''s.}
+
+\begin{mydef}
+	\label{def:lir:seq}
+	Two memory stores $\sigma_1$ and $\sigma_2$ are observationally equivalent
+	at level $\attacker$, written $\sigma_1 \eq \sigma_2$ iff
+	$\forall \emph{\TT{x}}. \; \sigma_1(\emph{\TT{x}}) \eq \sigma_2(\emph{\TT{x}})$.
+\end{mydef}
+
+\begin{mydef}
+	\label{def:lir:beq}
+	Two budget-maps $\iota$ and $\iota'$ are equivalent at level
+	$\attacker$, written $\iota \eq \iota'$, iff
+	$\forall \emph{\TT{x}}. \blabel(\emph{\TT{x}}) \sqsubseteq \attacker
+	\implies \iota(\emph{\TT{x}}) = \iota'(\emph{\TT{x}})$.
+\end{mydef}
+
+\begin{mydef}
+	\label{def:lir:teq}
+	Two traces $\trace$ and $\trace'$ are equivalent at level
+	$\attacker$, written $\trace \eq \trace'$, iff
+	$\trace\proj = \trace'\proj$.
+\end{mydef}
+
+As per LIR, the length of the projected trace is bounded by 
+the total budget deducted. The length of a trace $\trace$ is
+represented as $|\trace|$. This intuition of LIR is formalized in 
+Definition~\ref{def:lir:lir}. 
+
+\begin{mydef}[Limited information release]
+\label{def:lir:lir}
+A program $\comm$ is said to satisfy \emph{limited information release}
+w.r.t.\ an adversary at level $\attacker$ if for any given memory
+store $\sigma$, % containing \emph{a} secret input
+$\iota$, and $\pc$,
+$\langle \sigma, \iota, \comm \rangle \lirsem \langle
+\sigma', \iota', \trace \rangle$ then $|\trace\proj| \leq
+\iota\proj - \iota'\proj$ 
+% $$\iota\swarrow_\attacker = \mathop {\Large\Sigma}_{x \in \iota} \big(\blabel(x) \sqsubseteq
+% \attacker ~? ~\iota(x)~ :~ 0 \big) $$
+\end{mydef}
+
+Theorem~\ref{thm:lir} shows that the monitored semantics presented in 
+Section~\ref{sec:semantics} satisfy limited information release for every 
+secret in the memory. 
+Lemma~\ref{lem:lir:conf} proves that in a secret context with respect to
+an adversary at level $\attacker$, no declassification visible to the 
+adversary occurs. Theorem~\ref{thm:lir:cmdtrli} proves that in
+a store containing only one secret value with respect to 
+$\attacker$-level adversary (the other secrets can be assumed to be visible 
+to the adversary), the length of the trace is bounded by the budget 
+reduced, i.e., the number of bits declassified is bounded by the 
+deduction in budget of that secret value. Theorem~\ref{thm:lir} 
+generalizes this result to all secrets in the system. The proofs are
+detailed in Appendix~\ref{sec:app:lir}. 
+
+\begin{myLemma}[Confinement]
+  \label{lem:lir:conf}
+  If $\langle \sigma, \iota, \comm \rangle
+  \lirsem \langle \sigma', \iota', \trace \rangle$,
+  and $\Gamma(\pc) \not\sqsubseteq \attacker$, then 
+  $\sigma \eq \sigma'$, $\iota \eq \iota'$ and $\trace\proj =
+  \emptyTrace$ 
+\end{myLemma}
+
+\begin{myThm}[Limited information release for a single secret]
+\label{thm:lir:cmdtrli}
+If 
+$\langle \sigma, \iota, \comm \rangle \lirsem \langle
+  \sigma', \iota', \trace \rangle$, and 
+$\exists \emph{\TT{x}} \in \sigma. \Big(\Gamma(\sigma(\emph{\TT{x}}))
+\not\sqsubseteq \attacker \wedge \big(\forall \emph{\TT{y}} \in
+\sigma. \emph{\TT{y}} \neq \emph{\TT{x}} \wedge 
+\Gamma(\sigma(\emph{\TT{y}})) \sqsubseteq \attacker\big)\Big)$, 
+then  $|\trace\proj| \leq \iota\proj(\emph{\TT{x}}) - \iota'\proj(\emph{\TT{x}})$. 
+\end{myThm}
+
+\begin{myThm}[Limited information release]
+\label{thm:lir}
+For any memory store $\sigma$, budget store $\iota$ and program
+$\comm$ if $\langle \sigma, \iota, \comm \rangle \lirsem \langle \sigma',
+\iota', \trace \rangle$, then $\comm$ satisfies limited information release for
+$\sigma$ and $\iota$
+\end{myThm}

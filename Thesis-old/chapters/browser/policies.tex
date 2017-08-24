@@ -1,0 +1,49 @@
+\chapter{Information Flow Policies for Web Browsers}
+\label{ch:webpol}
+\blfootnote{The content of this chapter is based on the work published
+  as part of the paper,  ``WebPol: Fine-grained Information Flow
+  Policies for Web Browsers''~\cite{webpol}}  
+
+% Existing web security standards and web browsers address the problem
+% of information leaks unsatisfactorily, favoring functionality over
+% privacy. Most of these mechanisms are primarily access control
+% mechanisms describing whether or not a script can access certain data,
+% whereas the meaningful requirement is to allow untrusted scripts
+% access to confidential data that they need and to prevent the scripts
+% from leaking the data on the side. Recently, a number of solutions
+% based on information flow control (IFC) have been
+% proposed~\cite{flowfox,csf14,jsflow,post14,csf15,chudnov-ccs,cowl,jang10CCS}
+% to allow third-party scripts access to necessary sensitive data, but
+% restrict \emph{where} scripts can send the data (and its derivatives)
+% in accordance with a security policy. While this would balance
+% functionality and privacy perfectly, all existing IFC-based solutions
+% for web browsers fall short of this ideal goal.
+Many approaches~\cite{jsflow,post14,csf15,chudnov-ccs}, have been
+proposed for enforcing dynamic information flow control in web
+browsers, but currently lack adequate support for specifying policies
+conveniently. Flowfox~\cite{csf14} provides a rich policy framework
+but all websites are subject to the same policy, and the underlying IFC
+technique, secure multi-execution~\cite{SME}, does not handle shared
+state soundly. COWL~\cite{cowl} uses coarse-grained isolation,
+allowing scripts' access to either remote domains or the shared state,
+but not both. This requires significant code changes when both are
+needed simultaneously (see Chapter~\ref{ch:related} for more
+details).
+
+This chapter presents {\sys}, a policy framework that allows
+a webpage developer to release data selectively to third-party scripts
+(to obtain useful functionality), yet control what the scripts can do
+with the data. {\sys} policies label
+sensitive content (page elements and user-generated events) at source,
+and selectively declassify them by specifying where (to which domains)
+the content and its derivatives can flow. Host page developers specify
+{\sys} policies in JavaScript, a language already familiar to them. 
+{\sys} is integrated with the instrumentation of the dynamic IFC
+framework for WebKit presented thus far ({\sys} integrates with any
+taint-based IFC solution to overcome the shortcomings listed
+above). The expressiveness of {\sys} policies is demonstrated through
+examples and by applying {\sys} to two real websites. 
+
+\input{chapters/browser/webpol/overview}
+\input{chapters/browser/webpol/model}
+\input{chapters/browser/webpol/examples}

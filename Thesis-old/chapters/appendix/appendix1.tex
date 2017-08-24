@@ -1,0 +1,1398 @@
+\thispagestyle{empty}
+\setcounter{myThm}{0}
+\setcounter{myLemma}{0}
+\setcounter{mydef}{0}
+\setcounter{myaxiom}{0}
+\setcounter{mycor}{0}
+\setcounter{myprop}{0}
+
+\section{Proofs for Improved and Generalized Permissive Upgrade}
+\label{app:igpu}
+\subsection{Proofs for Improved Permissive Upgrade Strategy}
+\label{app:ipu}
+\begin{myLemma}[Expression Evaluation]
+\label{lem:app:gpu:expeval}
+If $\langle \sigma_1, e \rangle \Downarrow \emph{\TT{n}}_1^{k_1}$ and $\langle 
+\sigma_2, e \rangle \Downarrow \emph{\TT{n}}_2^{k_2}$ and $\sigma_1 \sim \sigma_2$,
+then $\emph{\TT{n}}_1^{k_1} \sim \emph{\TT{n}}_2^{k_2}$.
+\end{myLemma}
+\begin{proof}
+Induction on the derivation and case analysis on the last
+expression rule.
+\begin{enumerate}
+\item \refrule{bs:exp:c}: $\TT{n}_1 = \TT{n}_2 = \TT{n}$ and $k_1 = k_2 = \bot$. 
+
+\item \refrule{bs:exp:v}: As $\sigma_1 \sim \sigma_2$, $\forall \TT{x}.\sigma_1(\TT{x}) = \TT{n}_1^{k_1}
+  \sim \sigma_2(\TT{x}) = \TT{n}_2^{k_2}$. 
+
+\item \refrule{bs:exp:o}: IH1: If $\langle \sigma_1, e_1 \rangle \Downarrow
+  \TT{n}_1'^{k_1'}$, $\langle \sigma_2, e_1 \rangle \Downarrow
+  \TT{n}_2'^{k_2'}$, $\sigma_1 \sim \sigma_2$, then $\TT{n}_1'^{k_1'}
+  \sim \TT{n}_2'^{k_2'}$.\\
+IH2: If $\langle \sigma_1, e_2 \rangle \Downarrow
+  \TT{n}_1''^{k_1''}$, $\langle \sigma_2, e_2 \rangle \Downarrow
+  \TT{n}_2''^{k_2''}$, $\sigma_1 \sim \sigma_2$, then $\TT{n}_1''^{k_1''}
+  \sim \TT{n}_2''^{k_2''}$.\\
+T.S. $\TT{n}_1^{k_1} \sim \TT{n}_2^{k_2}$, where $\TT{n}_1 = \TT{n}_1' \odot \TT{n}_1''$, $\TT{n}_2 = \TT{n}_2' \odot \TT{n}_2''$ 
+and $k_1 = k_1' \sqcup k_1''$, $k_2 = k_2' \sqcup k_2''$.\\
+As $\sigma_1 \sim \sigma_2$, from IH1 and IH2, $\TT{n}_1'^{k_1'}
+  \sim \TT{n}_2'^{k_2'}$ and $\TT{n}_1''^{k_1''}  \sim \TT{n}_2''^{k_2''}$.\\
+Proof by case analysis on low-equivalence definition (Definition~\ref{def:pus}) for $\TT{n}_1'^{k_1'} 
+  \sim \TT{n}_2'^{k_2'}$ followed by case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  \sim \TT{n}_2''^{k_2''}$.
+\begin{itemize}
+\item $\TT{n}_1' = \TT{n}_2'$ and $k_1' = k_2' = L$:
+  \begin{itemize}
+    \item $\TT{n}_1'' = \TT{n}_2''$ and $k_1'' = k_2'' = L$: $\TT{n}_1 = \TT{n}_2$ and
+      $k_1 = k_2 = L$
+    \item $k_1'' = k_2'' = H$: $k_1 = k_2 = H$
+    \item $k_1'' = P$ or $k_2'' = P$: $k_1 = P$ or $k_2 = P$
+  \end{itemize}
+\item $k_1' = k_2' = H$:
+  \begin{itemize}
+    \item $\TT{n}_1'' = \TT{n}_2''$ and $k_1'' = k_2'' = L$: $k_1 = k_2 = H$
+    \item $k_1'' = k_2'' = H$: $k_1 = k_2 = H$
+    \item $k_1'' = P$ or $k_2'' = P$: $k_1 = H$ and $k_2 = H$
+  \end{itemize}
+\item $k_1' = P$ or $k_2' = P$:
+  \begin{itemize}
+    \item $\TT{n}_1'' = \TT{n}_2''$ and $k_1'' = k_2'' = L$: $k_1 = P$ or $k_2 =P$
+    \item $k_1'' = k_2'' = H$: $k_1 = k_2 = H$
+    \item $k_1'' = P$ or $k_2'' = P$: $k_1 = P$ and/or $k_2 = P$
+  \end{itemize}
+\end{itemize}
+\end{enumerate}
+\end{proof}
+
+\begin{myLemma}[Evolution]
+\label{lem:app:gpu:evol}
+  If $~\pc = H$ and $\langle \sigma, c \rangle \Downarrow_\pc \sigma'
+  $, then $\forall \emph{\TT{x}}.\Gamma(\sigma(\emph{\TT{x}})) = P
+  \implies \Gamma(\sigma'(\emph{\TT{x}})) = P$. 
+\end{myLemma}
+\begin{proof} Proof by induction on the derivation rules and case
+  analysis on the last rule.
+  \begin{itemize}
+    \item \refrule{bs:cmd:sk},\refrule{bs:cmd:wf}: $\sigma = \sigma'$
+    \item \refrule{bs:cmd:ap}: If $\pc =H$ and $l =
+      P$, then $k = P$. All other $\sigma(\TT{x})$ remain unchanged. 
+    \item \refrule{bs:cmd:s}: \\
+      IH1: If $~\pc = H$ and $\langle \sigma, c_1 \rangle
+      \Downarrow_\pc \sigma''$, then $\forall \TT{x}.\Gamma(\sigma(\TT{x})) = P
+      \implies \Gamma(\sigma''(\TT{x})) = P$.\\
+      IH2: If $~\pc = H$ and $\langle \sigma'', c_2 \rangle
+      \Downarrow_\pc \sigma'$, then $\forall \TT{x}. \Gamma(\sigma''(\TT{x})) = P
+      \implies \Gamma(\sigma'(\TT{x})) = P$.\\
+      From IH1 and IH2, if $~\pc = H$ and $\langle \sigma, c_1;c_2 \rangle
+      \Downarrow_\pc \sigma'$, then $\forall \TT{x}. \Gamma(\sigma(\TT{x})) = P
+      \implies \Gamma(\sigma'(\TT{x})) = P$.
+    \item \refrule{bs:cmd:ie}: \\
+      IH: If $~\pc = H$ and $\langle \sigma, c_i \rangle
+      \Downarrow_{\pc \sqcup \ell} \sigma'$, then $\forall \TT{x}. \Gamma(\sigma(\TT{x})) = P
+      \implies \Gamma(\sigma'(\TT{x})) = P$.\\ As $H \sqcup \ell = H$, from
+      IH.
+    \item \refrule{bs:cmd:wt}: Similar to \refrule{bs:cmd:s} and \refrule{bs:cmd:ie}
+  \end{itemize}
+\end{proof}
+
+
+\begin{myLemma}[Confinement for improved permissive-upgrade with a
+  two-point lattice]
+\label{lem:app:gpu:conf}
+  If $~\pc = H$ and $\langle \sigma, c \rangle
+  \Downarrow_\pc \sigma' $, then $\sigma \sim \sigma'$.
+\end{myLemma}
+\begin{proof} Proof by induction on the derivation rules and case
+  analysis on the last step.
+  \begin{itemize}
+    \item \refrule{bs:cmd:sk},\refrule{bs:cmd:wf}: $\sigma = \sigma'$
+    \item \refrule{bs:cmd:ap}: If $l = L$, then $k = P$ else if $l=H$, then
+      $k=H$, else if $l=P$, then $k=P$. Thus, $\sigma \sim \sigma'$
+    \item \refrule{bs:cmd:s}: IH1: If $~\pc = H$ and $\langle \sigma, c_1 \rangle
+      \Downarrow_\pc \sigma'' $, then $\sigma \sim \sigma''$ and \\
+      IH2: if $~\pc = H$ and $\langle \sigma'', c_2 \rangle
+      \Downarrow_\pc \sigma' $, then $\sigma'' \sim \sigma'$. \\
+      From Lemma~\ref{lem:app:gpu:evol}, $\forall \TT{x}. \Gamma(\sigma(\TT{x}))
+      = P \implies \Gamma(\sigma''(\TT{x})) = P$ and $\forall \TT{x}. \Gamma(\sigma''(\TT{x}))
+      = P \implies \Gamma(\sigma'(\TT{x})) = P$. \\
+      From definition, $\forall \TT{x}$ either: \\
+      $\sigma(\TT{x}) = \sigma''(\TT{x})$ and $\Gamma(\sigma(\TT{x})) =
+      \Gamma(\sigma''(\TT{x})) = L$: 
+      From IH2, either $\sigma''(\TT{x}) = \sigma'(\TT{x})$ and $\Gamma(\sigma''(\TT{x})) =
+      \Gamma(\sigma'(\TT{x})) = L$ or $\Gamma(\sigma'(\TT{x})) = P$ \\
+      or $\Gamma(\sigma(\TT{x})) = \Gamma(\sigma''(\TT{x})) = H$: From IH2,
+      $\Gamma(\sigma''(\TT{x})) = \Gamma(\sigma'(\TT{x})) = H$ \\
+      or either $\Gamma(\sigma(\TT{x})) = P$ or $\Gamma(\sigma''(\TT{x})) = P$:
+      If $\Gamma(\sigma(\TT{x}) = P$, then from Lemma~\ref{lem:app:gpu:evol},
+      $\Gamma(\sigma''(\TT{x}) = P$. Hence, $\Gamma(\sigma'(\TT{x})) = P$. 
+    \item \refrule{bs:cmd:ie}: IH: If $~\pc = H$ and $\langle \sigma, c_i \rangle
+      \Downarrow_{\pc \sqcup \ell} \sigma' $, then $\sigma \sim
+      \sigma'$. If $\pc = H$, then $H \sqcup \ell  = H$. Thus, from IH.
+    \item \refrule{bs:cmd:wt}: Similar to \refrule{bs:cmd:ie} and \refrule{bs:cmd:s}.
+  \end{itemize}
+\end{proof}
+
+\begin{myThm}[TINI for improved permissive-upgrade with a two-point lattice]
+  With the assignment rule \refrule{bs:cmd:ap} and the modified syntax of
+  Figure~\ref{pus:syntax}, if 
+  $~\sigma_1 \sim \sigma_2$ and $\langle \sigma_1, c \rangle
+  \Downarrow_\pc \sigma_1' $ and $\langle \sigma_2, c
+  \rangle\Downarrow_\pc \sigma_2' $, then $\sigma_1' \sim
+  \sigma_2'$.
+\end{myThm}
+\begin{proof} Proof by induction on the derivation rules and case
+  analysis on the last step.
+  \begin{itemize}
+    \item \refrule{bs:cmd:sk},\refrule{bs:cmd:wf}: $\sigma_1' = \sigma_1 \sim \sigma_2 = \sigma_2'$ 
+    \item \refrule{bs:cmd:ap}: From Lemma~\ref{lem:app:gpu:expeval}, $\TT{n}_1^{m_1} \sim
+      \TT{n}_2^{m_2}$. If $\pc = L$, then $k = m$. If $\pc = H$ and $l =
+      H$, then $k_1 = k_2 = H$. If $\pc = H$ and $l = L$, then $k_1 =
+      k_2 = P$. Hence, $\sigma_1' \sim \sigma_2'$.
+
+    \item \refrule{bs:cmd:s}: IH1: If $~\sigma_1 \sim \sigma_2$ and $\langle
+      \sigma_1, c_1 \rangle
+      \Downarrow_\pc \sigma_1' $, and $\langle \sigma_2, c_1
+      \rangle\Downarrow_\pc \sigma_2' $, then $\sigma_1' \sim
+      \sigma_2'$ and \\
+      IH2: If $~\sigma_1' \sim \sigma_2'$ and $\langle \sigma_1', c_2 \rangle
+      \Downarrow_\pc \sigma_1'' $, and $\langle \sigma_2', c_2
+      \rangle\Downarrow_\pc \sigma_2'' $, then $\sigma_1'' \sim
+      \sigma_2''$. \\
+      From IH1 and IH2, $\sigma_1'' \sim \sigma_2''$
+    \item \refrule{bs:cmd:ie}: IH: If $~\sigma_1 \sim \sigma_2$ and $\langle
+      \sigma_1, c_i \rangle
+      \Downarrow_{\pc \sqcup \ell_1} \sigma_1' $, and $\langle 
+      \sigma_2, c_j
+      \rangle\Downarrow_{\pc \sqcup \ell_2} \sigma_2' $, and $\ell_1 =
+      \ell_2$, and $c_i = c_j$ then $\sigma_1' \sim
+      \sigma_2'$. From Lemma~\ref{lem:app:gpu:expeval}, $\TT{n}_1^{l_1} \sim
+      \TT{n}_2^{l_2}$. Thus, either $\ell_1 = \ell_2 = L$ or $\ell_1
+      =\ell_2 = H$. If $\ell_1 = \ell_2 = L$, then $\TT{n}_1 = \TT{n}_2$. Thus,
+       $c_i = c_j$ and hence, from IH $\sigma_1' \sim \sigma_2'$.\\
+       If $\ell_1 = \ell_2 = H$, then $\pc \sqcup H = H$. From
+       Lemma~\ref{lem:app:gpu:conf}, $\sigma_1 \sim \sigma_1'$ and $\sigma_2
+       \sim \sigma_2'$, and $\sigma_1 \sim \sigma_2$. \\
+       T.S. $\sigma_1' \sim \sigma_2'$, i.e., $\forall \TT{x}. \sigma_1'(\TT{x})
+       \sim \sigma_2'(\TT{x})$. \\
+       Let $\sigma_1(\TT{x}) = \TT{n}_1^{k_1}$ and $\sigma_2(\TT{x}) = \TT{n}_2^{k_2}$ and
+       $\sigma_1'(\TT{x}) = {\TT{n}_1'}^{k_1'}$ and $\sigma_2'(\TT{x}) = {\TT{n}_2'}^{k_2'}$.
+       Case analysis on the definition of equivalence:
+       \begin{itemize}
+         \item $\TT{n}_1 = \TT{n}_2$ and $k_1 = k_2 = L$: Either $\TT{n}_1' = \TT{n}_1$
+           and $k_1' = k_1 = L$ and $\TT{n}_2' = \TT{n}_2$
+           and $k_2' = k_2 = L$  or $k_1' = P$ or $k_2' = P$
+         \item $k_1 = k_2 = H$: $k_1' = k_1 = H$ and $k_2' = k_2 = H$
+         \item $k_1 = P$ or $k_2 = P$: From Lemma~\ref{lem:app:gpu:evol},
+           $k_1' = P$ or $k_2' = P$
+       \end{itemize}
+       
+    \item \refrule{bs:cmd:wt}: Similar to \refrule{bs:cmd:ie} and \refrule{bs:cmd:s}.
+  \end{itemize}
+\end{proof}
+
+\subsection{Examples for Equivalence Definition}
+\label{app:egequi}
+Consider the following notations for the examples:\\
+$l$, $m$, $h$, $l\pl$ represent any variable with label $L$, $M$,
+$H$, $L\pl$, respectively, such that $L \sqsubseteq M \sqsubseteq H$. \\
+An $\ell$-level adversary is assumed. \textcolor{red}{$\ell$}
+represents the labels that are above the level of the attacker.
+
+Table~\ref{tab:flows} shows example programs for the transition from
+low-equivalent values to low-equivalent values. First column and first
+row of the table represents all the possible ways in which two values
+can be low-equivalent (from defintion~\ref{def:gpua:veq}).
+
+\lstset{numbers=none}
+\begin{table*}
+%\onecolumn
+\centering
+\begin{tabular} {|c|c|c|c|c|c|c|c|}
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ & $\ell, \ell$ & $\ell_1\pl, \ell_2 $ & $\ell_1, \ell_2\pl$ &
+ $\ell_1\pl, \ell_2\pl $& $\textcolor{red}{\ell_1},
+ \textcolor{red}{\ell_2}$ & $\ell_1 \pl,
+ \textcolor{red}{\ell_2}$& 
+ $\textcolor{red}{\ell_1}, \ell_2 \pl$ \\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\ell, \ell$ & 
+-
+&
+\begin{lstlisting}
+if($h$) 
+ x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+if($h$) 
+ x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+if($h$) 
+ x1 = $l$
+else
+ x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $h$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $m$
+if($h$) 
+ x1 = 4
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $m$
+if($h$) 
+ x1 = 4
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} 
+\\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\ell_1\pl, \ell_2$ & 
+\begin{lstlisting}
+x1 = $l$
+\end{lstlisting} & 
+- & 
+\begin{lstlisting}
+x1 = $l$
+if($h$)
+  x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+if($h$)
+  x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $h$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $m$ 
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $m$ 
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} \\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\ell_1, \ell_2\pl$ &
+\begin{lstlisting}
+x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $l$
+if($h$)
+  x1 = $l$
+\end{lstlisting} & 
+- & 
+\begin{lstlisting}
+if($h$)
+  x1 = $l$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $h$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $m$ 
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} & 
+\begin{lstlisting}
+x1 = $m$ 
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting} \\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\ell_1\pl, \ell_2\pl$ & 
+\begin{lstlisting}
+x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+ x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+ x1 = $l$
+\end{lstlisting} 
+& 
+-
+&
+\begin{lstlisting}
+ x1 = $h$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+ x1 = $l$
+if ($m$)
+ x1 = $l\pl$
+\end{lstlisting} 
+&
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+ x1 = $l$
+if ($m$)
+ x1 = $l\pl$
+\end{lstlisting}  
+\\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\textcolor{red}{\ell_1}, \textcolor{red}{\ell_2}$ & 
+\begin{lstlisting}
+x1 = $l$ 
+\end{lstlisting}  
+& 
+\begin{lstlisting}
+x1 = $l$ 
+if ($h$)
+  x1 = $l$
+\end{lstlisting}  
+& 
+\begin{lstlisting}
+x1 = $l$ 
+if ($h$)
+  x1 = $l$
+\end{lstlisting}  
+& 
+\begin{lstlisting}
+x1 = $l$ 
+if ($h$)
+  x1 = $l$
+else
+  x1 = $l$
+\end{lstlisting}  
+& 
+-
+&
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$
+\end{lstlisting}   
+& 
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+ x1 = $l$
+if ($m$)
+ x1 = $l\pl$
+\end{lstlisting}   
+\\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\ell_1 \pl, \textcolor{red}{\ell_2}$ & 
+\begin{lstlisting}
+x1 = $l$
+\end{lstlisting}
+&
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+else
+  x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $h$
+\end{lstlisting} 
+&
+- 
+&
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+ x1 = $l$
+if ($m$)
+ x1 = $l\pl$
+\end{lstlisting} 
+\\
+\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\textcolor{red}{\ell_1}, \ell_2 \pl$ &
+\begin{lstlisting}
+x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $l$
+if ($h$)
+  x1 = $l$ 
+else
+  x1 = $l$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $h$
+\end{lstlisting} 
+& 
+\begin{lstlisting}
+x1 = $m$
+if ($h$)
+  x1 = $l$
+if($m$)
+  x1 = $l\pl$ 
+\end{lstlisting} 
+& 
+-
+\\
+\hline
+\end{tabular}
+\renewcommand\thetable{A.1}
+\caption{Examples for all possible transitions of low-equivalent to
+  low-equivalent values}\label{tab:flows}
+\end{table*}
+
+\subsection{Proofs and Results for Generalized Permissive Upgrade for
+  Arbitrary Lattices}
+\label{app:gpu}
+\begin{myLemma}{\emph{Expression Evaluation Lemma}}\\
+\label{lem:app:gpua:exp}
+If $\sigma_1 \sim_\lab \sigma_2$, \\
+$\langle \sigma_1, e \rangle \Downarrow \emph{\TT{n}}_1^{k_1}$, \\
+$\langle \sigma_2, e \rangle \Downarrow \emph{\TT{n}}_2^{k_2}$, \\
+then
+$\emph{\TT{n}}_1^{k_1} \sim_\lab \emph{\TT{n}}_2^{k_2}$.
+\end{myLemma}
+\begin{proof}
+Proof by induction on the derivation and case analysis on the last
+expression rule.
+\begin{enumerate}
+\item \refrule{bs:exp:c}: $\TT{n}_1 = \TT{n}_2 = \TT{n}$ and $k_1 = k_2 = \perp$. 
+
+\item \refrule{bs:exp:v}: As $\sigma_1 \sim_\lab \sigma_2$, $\forall \TT{x}.\sigma_1(\TT{x}) = \TT{n}_1^{k_1}
+  \sim_\lab \sigma_2(\TT{x}) = \TT{n}_2^{k_2}$. 
+
+\item \refrule{bs:exp:o}: IH1: If $\langle \sigma_1, e_1 \rangle \Downarrow
+  \TT{n}_1'^{k_1'}$, $\langle \sigma_2, e_1 \rangle \Downarrow
+  \TT{n}_2'^{k_2'}$, $\sigma_1 \sim_\lab \sigma_2$, then $\TT{n}_1'^{k_1'}
+  \sim_\lab \TT{n}_2'^{k_2'}$.\\
+IH2: If $\langle \sigma_1, e_2 \rangle \Downarrow
+  \TT{n}_1''^{k_1''}$, $\langle \sigma_2, e_2 \rangle \Downarrow
+  \TT{n}_2''^{k_2''}$, $\sigma_1 \sim_\lab \sigma_2$, then $\TT{n}_1''^{k_1''}
+  \sim_\lab \TT{n}_2''^{k_2''}$.\\
+T.S. $\TT{n}_1^{k_1} \sim_\lab \TT{n}_2^{k_2}$, where $\TT{n}_1 = \TT{n}_1' \odot \TT{n}_1''$, $\TT{n}_2 = \TT{n}_2' \odot \TT{n}_2''$ 
+and $k_1 = k_1' \sqcup k_1''$, $k_2 = k_2' \sqcup k_2''$.\\
+As $\sigma_1 \sim_\lab \sigma_2$, from IH1 and IH2, $\TT{n}_1'^{k_1'}
+  \sim_\lab \TT{n}_2'^{k_2'}$ and $\TT{n}_1''^{k_1''}  \sim_\lab \TT{n}_2''^{k_2''}$.\\
+Proof by case analysis on low-equivalence definition for $\TT{n}_1'^{k_1'} 
+  \sim_\lab \TT{n}_2'^{k_2'}$ followed by case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  \sim_\lab \TT{n}_2''^{k_2''}$.
+  % \begin{itemize}
+  %   \item $(k_1' = k_2') = \lab' \sqsubseteq \lab$ and $\TT{n}_1' = \TT{n}_2' = n'$:
+  %     Case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  % \sim_\lab \TT{n}_2''^{k_2''}$.
+  %     \begin{itemize}
+  %       \item $(k_1'' = k_2'') = \lab'' \sqsubseteq \lab$ and $\TT{n}_1'' =
+  %         \TT{n}_2'' = n''$: $\TT{n}_1 = \TT{n}_2 = n' \odot n'' $ and $k_1 = k_2 = \lab'
+  %         \sqcup \lab''$. From definition~\ref{def:gpua:veq}.1, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+  %        \item $k_1'' = \lab_1'' \not\sqsubseteq \lab \wedge k_2'' =
+  %          \lab_2'' \not\sqsubseteq \lab$: $(k_1 = \lab' \sqcup
+  %          \lab_1'') \not\sqsubseteq \lab$ and $(k_2 = \lab' \sqcup
+  %          \lab_2'') \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.2, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' = \lab_1'' \pl \wedge k_2''
+  %           = \lab_2'' \pl$: $k_1 =   (\lab'
+  %           \sqcup \lab_1'') \pl  $ and $k_2 =   (\lab'
+  %           \sqcup \lab_2'') \pl  $. From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' =   \lab_1'' \pl   \wedge k_2''
+  %           = \lab_2''$: $k_1 =  ( \lab' \sqcup \lab_1'') \pl
+  %            $ and $k_2 = \lab' \sqcup \lab_2''$. \\
+  %           If $\lab_2'' \not\sqsubseteq \lab$, $\lab' \sqcup \lab_2''
+  %           \not\sqsubseteq \lab$. Else if $\lab_1'' \sqsubseteq
+  %           \lab_2''$, $\lab' \sqcup \lab_1'' \sqsubseteq \lab' \sqcup
+  %           \lab_2''$. From definition~\ref{def:gpua:veq}.4, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' = \lab_1'' \wedge k_2'' =   \lab_2''
+  %           \pl  $: $k_1 = \lab' \sqcup \lab_1''$ and $k_2 =   (\lab' \sqcup \lab_2'') \pl
+  %            $. \\
+  %           If $\lab_1'' \not\sqsubseteq \lab$, $\lab' \sqcup \lab_1''
+  %           \not\sqsubseteq \lab$. Else if $\lab_2'' \sqsubseteq
+  %           \lab_1''$, $\lab' \sqcup \lab_2'' \sqsubseteq \lab' \sqcup
+  %           \lab_1''$. From definition~\ref{def:gpua:veq}.5, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \end{itemize}
+
+  %      \item $k_1' = \lab_1' \not\sqsubseteq \lab \wedge k_2' =
+  %          \lab_2' \not\sqsubseteq \lab$:
+  %          Case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  % \sim_\lab \TT{n}_2''^{k_2''}$.
+  %     \begin{itemize}
+  %       \item $(k_1'' = k_2'') = \lab'' \sqsubseteq \lab$ and $\TT{n}_1'' =
+  %         \TT{n}_2'' = n''$: $k_1 = \lab_1' \sqcup \lab'' \not\sqsubseteq \lab$ and $k_2 =
+  %         \lab_2' \sqcup \lab'' \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.2, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %        \item $k_1'' = \lab_1'' \not\sqsubseteq \lab \wedge k_2'' =
+  %          \lab_2'' \not\sqsubseteq \lab$: $(k_1 = \lab_1' \sqcup
+  %          \lab_1'') \not\sqsubseteq \lab$ and $(k_2 = \lab_2' \sqcup
+  %          \lab_2'') \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.2, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' =   \lab_1'' \pl   \wedge k_2''
+  %           =   \lab_2'' \pl  $: $k_1 =   (\lab_1'
+  %           \sqcup \lab_1'') \pl  $ and $k_2 =   (\lab_2'
+  %           \sqcup \lab_2'') \pl  $. From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' =   \lab_1'' \pl   \wedge k_2''
+  %           = \lab_2''$: $k_1 =   (\lab_1' \sqcup \lab_1'') \pl
+  %            $ and $k_2 = \lab_2' \sqcup \lab_2''$. \\
+  %           As $\lab_2' \not\sqsubseteq \lab$, $\lab_2' \sqcup \lab_2''
+  %           \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.4, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \item $k_1'' = \lab_1'' \wedge k_2'' =   \lab_2''
+  %           \pl  $: $k_1 = \lab_1' \sqcup \lab_1''$ and $k_2 =   (\lab_2' \sqcup \lab_2'') \pl
+  %            $. \\
+  %           As $\lab_1' \not\sqsubseteq \lab$, $\lab_1' \sqcup \lab_1''
+  %           \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.5, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \end{itemize}
+ 
+  %     \item $k_1' =   \lab_1' \pl   \wedge k_2' =  
+  %          \lab_2' \pl  $:
+  %          $k_i = \forall k. ((k \sqcup   \lab') \pl   =  
+  %          \_ \pl  )$. From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$.
+ 
+  %      \item $k_1' =   \lab_1' \pl   \wedge k_2' = 
+  %          \lab_2' $:
+  %          Case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  % \sim_\lab \TT{n}_2''^{k_2''}$.
+  %     \begin{itemize}
+  %       \item $(k_1'' = k_2'') = \lab'' \sqsubseteq \lab$ and $\TT{n}_1'' =
+  %         \TT{n}_2'' = n''$: $k_1 =   (\lab_1' \sqcup \lab'') \pl  
+  %         \sqcup \lab''$ and $k_2 = \lab_2' \sqcup \lab''$. \\
+  %         If $\lab_2' \not\sqsubseteq \lab$, $\lab_2' \sqcup \lab''
+  %           \not\sqsubseteq \lab$. Else if $\lab_1' \sqsubseteq
+  %           \lab_2'$, $\lab_1' \sqcup \lab'' \sqsubseteq \lab_2' \sqcup
+  %           \lab''$. From definition~\ref{def:gpua:veq}.4, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+         
+  %        \item $k_1'' = \lab_1'' \not\sqsubseteq \lab \wedge k_2'' =
+  %          \lab_2'' \not\sqsubseteq \lab$: $k_1 =   (\lab_1' \sqcup
+  %          \lab_1'') \pl  $ and $(k_2 = \lab_2' \sqcup
+  %          \lab_2'') \not\sqsubseteq \lab$. From definition~\ref{def:gpua:veq}.4, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %         \item $k_1'' =  \lab_1''\pl   \wedge k_2''
+  %           =   \lab_2'' \pl  $: $k_1 =   (\lab_1'
+  %           \sqcap \lab_1'') \pl  $ and $k_2 =   (\lab_2'
+  %           \sqcup \lab_2'') \pl  $. From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %         \item $k_1'' =   \lab_1'' \pl   \wedge k_2''
+  %           = \lab_2''$: $k_1 =   (\lab_1' \sqcap \lab_1'') \pl
+  %            $ and $k_2 = \lab_2' \sqcup \lab_2''$. \\
+  %           If $\lab_2' \not\sqsubseteq \lab$, $\lab_2' \sqcup \lab_2''
+  %           \not\sqsubseteq \lab$. Else if $\lab_1' \sqsubseteq
+  %           \lab_2'$, then either $\lab_2'' \not\sqsubseteq \lab$, so
+  %           $\lab_2'' \sqcup \lab_2' \not\sqsubseteq \lab$ or
+  %           $\lab_1'' \sqsubseteq \lab_2''$, so $\lab_1' \sqcap
+  %           \lab_1'' \sqsubseteq \lab_2' \sqcup \lab_2''$. From definition~\ref{def:gpua:veq}.4, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %         \item $k_1'' = \lab_1'' \wedge k_2'' =   \lab_2''
+  %           \pl  $: $k_1 =   (\lab_1' \sqcup \lab_1'')
+  %           \pl  $ and $k_2 =  ( \lab_2' \sqcup \lab_2'') \pl
+  %            $. 
+  %          From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \end{itemize}
+ 
+  %     \item $k_1' = \lab_1'  \wedge k_2' =  
+  %          \lab_2' \pl  $:
+  %          Case analysis on low-equivalence definition for $\TT{n}_1''^{k_1''}
+  % \sim_\lab \TT{n}_2''^{k_2''}$.
+  %     \begin{itemize}
+  %      \item $(k_1'' = k_2'') = \lab'' \sqsubseteq \lab$ and $\TT{n}_1'' =
+  %         \TT{n}_2'' = n''$: $k_1 = \lab_1' \sqcup \lab''
+  %         \sqcup \lab''$ and $k_2 =  (\lab_2' \sqcup \lab'')
+  %         \pl  $. \\
+  %         If $\lab_1' \not\sqsubseteq \lab$, $\lab_1' \sqcup \lab''
+  %           \not\sqsubseteq \lab$. Else if $\lab_2' \sqsubseteq
+  %           \lab_1'$, $\lab_2' \sqcup \lab'' \sqsubseteq \lab_1' \sqcup
+  %           \lab''$. From definition~\ref{def:gpua:veq}.5, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+         
+  %        \item $k_1'' = \lab_1'' \not\sqsubseteq \lab \wedge k_2'' =
+  %          \lab_2'' \not\sqsubseteq \lab$: $(k_1 =  \lab_1' \sqcup
+  %          \lab_1'') \not\sqsubseteq \lab$ and $(k_2 =   (\lab_2' \sqcup
+  %          \lab_2'') \pl  )$. From definition~\ref{def:gpua:veq}.5, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %         \item $k_1'' =   \lab_1''\pl   \wedge k_2''
+  %           =   \lab_2''\pl  $: $k_1 =   (\lab_1'
+  %           \sqcup \lab_1'')\pl  $ and $k_2 =   (\lab_2'
+  %           \sqcap \lab_2'') \pl  $. From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %         \sim_\lab \TT{n}_2^{k_2}$. 
+
+  %         \item $k_1'' =   \lab_1''\pl   \wedge k_2''
+  %           = \lab_2''$: 
+  %           $k_1 =   (\lab_1' \sqcup \lab_1'')
+  %           \pl  $ and $k_2 =   (\lab_2' \sqcup \lab_2'') \pl
+  %            $. 
+  %          From definition~\ref{def:gpua:veq}.3, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$.  
+
+  %         \item $k_1'' = \lab_1'' \wedge k_2'' =   \lab_2''
+  %           \pl  $: 
+  %           $k_1 = \lab_1' \sqcup \lab_1''$ and $k_2 =   (\lab_2'
+  %           \sqcap \lab_2'') \pl  $. \\
+  %           If $\lab_1' \not\sqsubseteq \lab$, $\lab_1' \sqcup \lab_1''
+  %           \not\sqsubseteq \lab$. Else if $\lab_2' \sqsubseteq
+  %           \lab_1'$, then either $\lab_1'' \not\sqsubseteq \lab$, so
+  %           $\lab_1'' \sqcup \lab_1' \not\sqsubseteq \lab$ or
+  %           $\lab_2'' \sqsubseteq \lab_1''$, so $\lab_2' \sqcap
+  %           \lab_2'' \sqsubseteq \lab_1' \sqcup \lab_1''$. From definition~\ref{def:gpua:veq}.5, $\TT{n}_1^{k_1}
+  %           \sim_\lab \TT{n}_2^{k_2}$. 
+  %         \end{itemize}
+%  \end{itemize}
+\end{enumerate}
+\end{proof}
+
+
+\begin{myLemma}{\emph{$\star$-preservation Lemma}}\\
+\label{lem:app:gpua:sup1}
+$\forall \emph{\TT{x}}$.If $\langle \sigma, c \rangle \Downarrow_\pc
+\sigma'$, $\Gamma(\sigma(\emph{\TT{x}})) =   \lab \pl
+ $ and $\pc \not\sqsubseteq \lab$, then $\Gamma(\sigma'(\emph{\TT{x}})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$
+\end{myLemma}
+\begin{proof}
+Proof by induction on the derivation and case analysis on the last
+rule.
+
+\begin{enumerate}
+\item \refrule{bs:cmd:sk} : $\sigma = \sigma'$.
+
+\item \refrule{bs:cmd:agn}: As $\pc \not\sqsubseteq \lab$, these cases do not apply.
+
+\item \refrule{bs:cmd:ags}: From the premises, for $\TT{x}$ in statement $c$,
+  $\Gamma(\sigma'(\TT{x})) =   ((\pc \sqcup m)
+  \sqcap \lab) \pl  =  \lab'$. Thus, $\lab' \sqsubseteq \lab$.\\
+  For any other $y$, $\sigma(y) = \sigma'(y)$. Thus, $\lab' = \lab$.
+
+\item \refrule{bs:cmd:s} : IH1 : $\forall \TT{x}$.If $ \langle \sigma, c \rangle \Downarrow_\pc
+\sigma''$, $\Gamma(\sigma(\TT{x})) =   \lab\pl
+ $ and $\pc \not\sqsubseteq \lab$, then $\Gamma(\sigma''(\TT{x})) =
+  \lab'' \pl   \wedge \lab'' \sqsubseteq \lab$\\
+IH2 : $\forall \TT{x}$.If $ \langle \sigma'', c \rangle \Downarrow_\pc
+\sigma'$, $\Gamma(\sigma''(\TT{x})) =   \lab'' \pl
+ $ and $\pc \not\sqsubseteq \lab''$, then $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab''$\\
+Thus, from IH1 and IH2, $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$.
+
+\item \refrule{bs:cmd:ie}: Let $k = \lab''$. \\
+ IH: $\forall \TT{x}$.If $ \langle \sigma, c \rangle \Downarrow_{\pc \sqcup \lab''}
+\sigma'$, $\Gamma(\sigma(\TT{x})) =   \lab \pl
+ $ and $\pc \sqcup \lab'' \not\sqsubseteq \lab$, then $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$\\
+ As $\pc \not\sqsubseteq \lab$, so $\pc \sqcup \lab'' \not\sqsubseteq
+ \lab$. \\ Thus from IH, $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$
+
+\item \refrule{bs:cmd:wt}: Let $k = \lab_e$. \\
+ IH1: $\forall \TT{x}$.If $\langle \sigma, c \rangle \Downarrow_{\pc \sqcup \lab_e}
+\sigma''$, $\Gamma(\sigma(\TT{x})) =   \lab \pl
+ $ and $\pc \sqcup \lab_e \not\sqsubseteq \lab$, then $\Gamma(\sigma''(\TT{x})) =
+  \lab''\pl   \wedge \lab'' \sqsubseteq \lab$\\
+IH2: $\forall \TT{x}$.If $\langle \sigma'', c \rangle \Downarrow_{\pc \sqcup \lab_e}
+\sigma'$, $\Gamma(\sigma''(\TT{x})) =   \lab'' \pl
+ $ and $\pc \sqcup \lab_e \not\sqsubseteq \lab$, then $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$\\
+ As $\pc \not\sqsubseteq \lab$, so $\pc \sqcup \lab_e \not\sqsubseteq
+ \lab$. \\ Thus from IH1 and IH2, $\Gamma(\sigma'(\TT{x})) =
+  \lab' \pl   \wedge \lab' \sqsubseteq \lab$
+
+\item \refrule{bs:cmd:wf} : $\sigma = \sigma'$.
+\end{enumerate}
+\end{proof}
+
+\begin{mycor}
+\label{cor:app:gpua:cor1}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma(\emph{\TT{x}})) = \lab\pl $ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab'$, then 
+$\pc \sqsubseteq \lab$.
+\end{mycor}
+\begin{proof}
+Immediate from Lemma~\ref{lem:app:gpua:sup1}.
+\end{proof}
+
+\begin{myLemma}{\emph{$\pc$ Lemma}}\\
+\label{lem:app:gpua:pcl}
+If $\langle \sigma, c \rangle \Downarrow_\pc \sigma'$, then $\forall
+\emph{\TT{x}}.\Gamma(\sigma'(\emph{\TT{x}})) = \lab \implies
+(\sigma(\emph{\TT{x}}) = \sigma'(\emph{\TT{x}})) \vee \pc 
+\sqsubseteq \lab$.
+\end{myLemma}
+\begin{proof}
+Proof by induction on the derivation and case analyis on the last
+rule.
+\begin{itemize}
+  \item \refrule{bs:cmd:sk}: $\sigma(\TT{x}) = \sigma'(\TT{x})$. 
+  \item \refrule{bs:cmd:agn}: For $\TT{x}$ in the statement $c$, by premises, $\lab = \pc
+    \sqcup \lab_e$. Thus, $\pc \sqsubseteq \lab$.\\
+    For any other $\TT{y}$ s.t. $\Gamma(\sigma'(\TT{y})) = \lab'$, $\sigma(\TT{y}) =
+    \sigma'(\TT{y})$. For \refrule{bs:cmd:ags}, case does not apply.
+  \item \refrule{bs:cmd:s}: IH1: If $\langle \sigma, c_1 \rangle \Downarrow_\pc \sigma''$, then $\forall
+    \TT{x}.\Gamma(\sigma''(\TT{x})) = \lab'' \implies (\sigma(\TT{x}) = \sigma''(\TT{x})) \vee \pc
+    \sqsubseteq \lab''$.\\
+    IH2: If $\langle \sigma'', c_2 \rangle \Downarrow_\pc \sigma'$, then $\forall
+    \TT{x}.\Gamma(\sigma'(\TT{x})) = \lab \implies (\sigma''(\TT{x}) = \sigma'(\TT{x})) \vee \pc
+    \sqsubseteq \lab$.\\
+    From IH2, if $\sigma''(\TT{x}) \neq \sigma'(\TT{x})$, then $\pc \sqsubseteq
+    \lab$.\\
+    If $\sigma''(\TT{x}) = \sigma'(\TT{x})$, then from IH1:
+    \begin{itemize}
+    \item If $\sigma(\TT{x}) = \sigma''(\TT{x})$: $\sigma(\TT{x}) = \sigma'(\TT{x})$.
+    \item If $\sigma(\TT{x}) \neq \sigma''(\TT{x})$: $\pc \sqsubseteq \lab''$,
+      where $\lab'' = \Gamma(\sigma''(\TT{x}))$. As $\sigma''(\TT{x}) =
+      \sigma'(\TT{x})$, $\lab'' = \Gamma(\sigma'(\TT{x})) = \lab$. Thus, $\pc
+      \sqsubseteq \lab$.
+    \end{itemize}
+    
+  \item \refrule{bs:cmd:ie}: IH: If $\langle \sigma, c \rangle \Downarrow_{\pc \sqcup \lab_e} \sigma'$, then $\forall
+    \TT{x}.\Gamma(\sigma'(\TT{x})) = \lab \implies (\sigma(\TT{x}) = \sigma'(\TT{x})) \vee \pc
+    \sqcup \lab_e \sqsubseteq \lab$.\\
+    From IH, either $(\sigma(\TT{x}) = \sigma'(\TT{x}))$ or $\pc \sqcup \lab_e
+    \sqsubseteq \lab$. Thus, $(\sigma(\TT{x}) = \sigma'(\TT{x})) \vee \pc \sqsubseteq \lab$.
+  \item \refrule{bs:cmd:wt}: IH1: If $\langle \sigma, c \rangle \Downarrow_{\pc
+      \sqcup \lab_e} \sigma''$, then $\forall
+    \TT{x}.\Gamma(\sigma''(\TT{x})) = \lab'' \implies (\sigma(\TT{x}) = \sigma''(\TT{x})) \vee \pc
+    \sqsubseteq \lab''$.\\
+    IH2: If $\langle \sigma'', c \rangle \Downarrow_{\pc \sqcup \lab_e} \sigma'$, then $\forall
+    \TT{x}.\Gamma(\sigma'(\TT{x})) = \lab \implies (\sigma''(\TT{x}) = \sigma'(\TT{x})) \vee \pc
+    \sqsubseteq \lab$.\\
+    From similar reasoning as in ``\refrule{bs:cmd:s}'', either $\sigma(\TT{x}) =
+    \sigma'(\TT{x})$ or $\pc \sqcup \lab_e \sqsubseteq \lab$. Thus, $\sigma(\TT{x}) =
+    \sigma'(\TT{x}) \vee \pc \sqsubseteq \lab$. 
+  \item \refrule{bs:cmd:wf}:  $\sigma(\TT{x}) = \sigma'(\TT{x})$. 
+\end{itemize}
+\end{proof}
+
+\begin{mycor}
+\label{cor:app:gpua:cor2}
+If $\langle \sigma, c \rangle \bscmd \sigma'$ and
+$\Gamma(\sigma(\emph{\TT{x}})) = \lab\pl $ and
+$\Gamma(\sigma'(\emph{\TT{x}})) = \lab'$, then 
+$\pc \sqsubseteq \lab'$.
+\end{mycor}
+\begin{proof}
+Immediate from Lemma~\ref{lem:app:gpua:pcl}.
+\end{proof}
+
+\begin{myLemma}{\emph{Conf{i}nement Lemma}}
+\label{lem:app:gpua:conf}
+If $\pc \not\sqsubseteq \lab$, $\langle \sigma, c \rangle \Downarrow_\pc
+\sigma'$, then $\sigma \sim_\lab \sigma'$.
+\end{myLemma}
+\begin{proof}
+Proof by induction on the derivation and case analysis on the last rule.
+\begin{enumerate}
+\item \refrule{bs:cmd:sk} : $\sigma = \sigma'$.
+
+\item \refrule{bs:cmd:agn}: Let $\TT{x}_i = \TT{v}_i^{k_i}$ and $\TT{x}_f =
+  \TT{v}_f^{k_f}$, s.t $k_i = \lab_i \vee k_i =   \lab_i \pl
+   $ and  $\pc \sqsubseteq \lab_i$ : As $\pc \not\sqsubseteq \lab$, $\lab_i
+      \not\sqsubseteq \lab$. By premises of
+      \refrule{bs:cmd:agn}, $k_f = \lab_f \vee k_f =  \lab_f\pl  $,
+      where $\lab_f = \pc \sqcup \lab_e$. As $\pc \not\sqsubseteq \lab$,
+      $\lab_f \not\sqsubseteq \lab$. 
+      Thus, by definition \ref{def:gpua:veq}.2, \ref{def:gpua:veq}.3, \ref{def:gpua:veq}.4 or
+      \ref{def:gpua:veq}.5, $\TT{x}_i \sim_\lab \TT{x}_f$. 
+
+\item \refrule{bs:cmd:ags}: Let $\TT{x}_i = \TT{v}_i^{k_i}$ and $\TT{x}_f =
+  \TT{v}_f^{k_f}$, s.t $k_i = \lab_i \vee k_i =   \lab_i \pl
+   $ and $\pc \not\sqsubseteq \lab_i$ :
+  By premise, $k_f =   ((\pc \sqcup m) \sqcap \lab_i) \pl  $. Thus,
+  $\lab_f \sqsubseteq \lab_i$ and by definition
+  \ref{def:gpua:veq}.3 or~\ref{def:gpua:veq}.5 $\TT{x}_i \sim_\lab \TT{x}_f$.
+
+\item \refrule{bs:cmd:s} : IH1: $\sigma \sim_\lab \sigma''$ and IH2: $\sigma''
+  \sim_\lab \sigma'$. 
+ T.S : $\sigma \sim_\lab \sigma'$.\\
+  For all $\TT{x} \in dom(\sigma)$,
+ respective $\TT{x}''  \in dom(\sigma'')$ and
+ respective $\TT{x}' \in dom(\sigma')$, $\TT{x} \sim_\lab \TT{x}''$ and $\TT{x}''
+ \sim_\lab \TT{x}'$. \\
+ To show: $\TT{x} \sim_\lab \TT{x}'$. \\
+ Let $\TT{x} = \TT{v}_1^{k_1}, \TT{x}'' = \TT{v}_2^{k_2}, \TT{x}' = \TT{v}_3^{k_3}$, where $k_1 =
+ \lab_1 \vee k_1 =   \lab_1\pl  $, $k_2 =
+ \lab_2 \vee k_2 =   \lab_2\pl  $ and $k_3 =
+ \lab_3 \vee k_3 =   \lab_3\pl  $.\\
+Case-analysis on definition~\ref{def:gpua:veq} for IH1.
+ \begin{itemize}
+
+   \item $(k_1 = k_2) = \lab' \sqsubseteq \lab \wedge \TT{v}_1 = \TT{v}_2$ : By IH2
+     and definition~\ref{def:gpua:veq}, 
+     \begin{enumerate}
+       \item $(k_2 = k_3) = \lab' \sqsubseteq \lab \wedge \TT{v}_2 = \TT{v}_3$
+         (case 1): Transitivity of equality, $(k_1 =
+         k_3) = \lab' \sqsubseteq \lab \wedge \TT{v}_1 = \TT{v}_3$. Thus, $\TT{x}
+         \sim_\lab \TT{x}'$.
+        \item $k_2 = \lab'$ and $k_3  =   \lab_3 \pl   \wedge
+          \lab_3 \sqsubseteq \lab' \sqsubseteq \lab$ (case 5): By definition~\ref{def:gpua:veq}.5 $\TT{x}
+          \sim_\lab \TT{x}'$.
+     \end{enumerate}
+
+     \item $k_1 = \lab_1 \not\sqsubseteq \lab \wedge k_2 =
+      \lab_2 \not\sqsubseteq \lab $: By IH2, either
+      \begin{enumerate}
+        \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+      \lab_3 \not\sqsubseteq \lab $. By definition~\ref{def:gpua:veq}.2, $\TT{x}
+         \sim_\lab \TT{x}'$.
+         \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+             \lab_3\pl  $: $\lab_1 \not\sqsubseteq
+           \lab$. Thus, by definition~\ref{def:gpua:veq}.5, $\TT{x} \sim_\lab \TT{x}'$.
+       \end{enumerate}
+
+    \item $k_1 =   \lab_1  \pl   \wedge k_2 =
+        \lab_2  \pl  $: By IH2, 
+      \begin{enumerate}
+       \item $k_2 =   \lab_2  \pl   \wedge k_3 =
+        \lab_3  \pl  $ (case 3): By
+      definition~\ref{def:gpua:veq}.3, $\TT{x} \sim_\lab \TT{x}'$. 
+      \item $k_2 =   \lab_2  \pl   \wedge k_3 =
+      \lab_3 \wedge (\lab_3 \not\sqsubseteq \lab)$ (case 4):
+      By definition~\ref{def:gpua:veq}.4, $\TT{x} \sim_\lab \TT{x}'$.
+      \item $k_2 =   \lab_2  \pl   \wedge k_3 =
+      \lab_3 \wedge (\lab_2 \sqsubseteq \lab_3)$ (case 4):  
+      By corollary~\ref{cor:app:gpua:cor1}, $\pc \sqsubseteq \lab_2$. As $\pc \not\sqsubseteq
+      \lab$ and $\lab_2 \sqsubseteq \lab_3$, so $\lab_3
+      \not\sqsubseteq \lab$. By definition~\ref{def:gpua:veq}.4, $\TT{x} \sim_\lab
+      \TT{x}'$.
+     .
+     \end{enumerate}
+
+   \item $k_1 =   \lab_1  \pl   \wedge k_2 =
+      \lab_2~s.t.~(\lab_2 \not\sqsubseteq \lab)$ (case 4): Either
+      \begin{itemize}
+        \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+      \lab_3 \not\sqsubseteq \lab$: By definition~\ref{def:gpua:veq}.4, $\TT{x} \sim_\lab
+      \TT{x}'$.
+    \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+       \lab_3  \pl $: By definition~\ref{def:gpua:veq}.3, $\TT{x} \sim_\lab
+      \TT{x}'$.
+        \end{itemize}
+    \item $k_1 =   \lab_1  \pl   \wedge k_2 =
+      \lab_2~s.t.~ (\lab_1 \sqsubseteq \lab_2)$ (case 4): 
+      \begin{itemize}
+        \item $k_2 = k_3 = \lab_2$: By definition~\ref{def:gpua:veq}.4, $\TT{x} \sim_\lab
+      \TT{x}'$.
+    \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+      \lab_3 \not\sqsubseteq \lab$: By definition~\ref{def:gpua:veq}.4, $\TT{x} \sim_\lab
+      \TT{x}'$.
+    \item $k_2 = \lab_2 \not\sqsubseteq \lab \wedge k_3 =
+        \lab_3  \pl $: By definition~\ref{def:gpua:veq}.3, $\TT{x} \sim_\lab
+      \TT{x}'$.
+        \end{itemize}
+
+   \item $k_1 = \lab_1  \wedge k_2 =  
+      \lab_2 \pl  ~s.t.~ (\lab_1 \not\sqsubseteq \lab)$: By
+      IH2, 
+      \begin{enumerate}
+        \item $k_2 =   \lab_2  \pl   \wedge k_3 =
+        \lab_3  \pl  $ (case 3): By definition~\ref{def:gpua:veq}.5, $\TT{x}
+         \sim_\lab \TT{x}'$.
+        \item  $k_2 =   \lab_2  \pl   \wedge k_3 =
+      \lab_3~s.t.~(\lab_3 \not\sqsubseteq \lab)$ (case 4): By
+      definition~\ref{def:gpua:veq}.2, $\TT{x} \sim_\lab \TT{x}'$.
+      \item  $k_2 =   \lab_2  \pl   \wedge k_3 =
+      \lab_3~s.t.~(\lab_2 \sqsubseteq \lab_3)$ (case 4): By corollary~\ref{cor:app:gpua:cor1},
+      $\pc \sqsubseteq \lab_2$. As $\pc \not\sqsubseteq 
+      \lab$ and $\lab_2 \sqsubseteq \lab_3$, so $\lab_3
+      \not\sqsubseteq \lab$. By definition~\ref{def:gpua:veq}.2, $\TT{x} \sim_\lab
+      \TT{x}'$.
+     \end{enumerate}
+
+      \item $k_1 = \lab_1  \wedge k_2 =  
+      \lab_2 \pl  ~s.t.~ (\lab_2 \sqsubseteq \lab_1)$: Also,
+      $(\lab_2 \sqsubseteq \lab_1 \sqsubseteq \lab)$. By
+      IH2, 
+      \begin{enumerate}
+        \item $k_2 =   \lab_2  \pl   \wedge k_3 =
+        \lab_3  \pl  $ (case 3): As $\lab_2 \sqsubseteq
+      \lab$ and $\pc \not\sqsubseteq \lab$, $\pc \not\sqsubseteq
+      \lab_2$.  By lemma~\ref{lem:app:gpua:sup1}, $\lab_3 \sqsubseteq \lab_2 $. Thus,
+      $\lab_3\sqsubseteq \lab_2 \sqsubseteq \lab_1$. By definition~\ref{def:gpua:veq}.5, $\TT{x}
+         \sim_\lab \TT{x}'$.
+        \item  $k_2 =   \lab_2  \pl   \wedge k_3 =
+      \lab_3$ (case 4): As $\lab_2 \sqsubseteq
+      \lab$ and $\pc \not\sqsubseteq \lab$, $\pc \not\sqsubseteq
+      \lab_2$. But, by corollary~\ref{cor:app:gpua:cor1}, $\pc \sqsubseteq \lab_2$. By
+      contradiction, this case      does not hold.
+     \end{enumerate}
+ \end{itemize}
+ 
+\item \refrule{bs:cmd:ie} : IH : $k = \lab'$. If $(pc \sqcup \lab')
+   \not\sqsubseteq \lab $, then $\sigma \sim_\lab \sigma'$. \\
+  As $pc \not\sqsubseteq \lab$, $pc \sqcup \lab' \not\sqsubseteq 
+  \lab$. Thus, by IH, $\sigma \sim_\lab \sigma'$. 
+ 
+ \item \refrule{bs:cmd:wt}: IH1 : $k = \lab'$. If $(pc \sqcup \lab')
+   \not\sqsubseteq \lab $, then $\sigma \sim_\lab \sigma'$. \\
+   As $pc \not\sqsubseteq \lab$, $pc \sqcup \lab' \not\sqsubseteq
+  \lab$. Thus, by IH1, $\sigma \sim_\lab \sigma''$. \\
+   IH2 : $k = \lab'$. If $(pc \sqcup \lab')
+   \not\sqsubseteq \lab $, then $\sigma' \sim_\lab \sigma''$. \\
+As $pc \not\sqsubseteq \lab$, $pc \sqcup \lab' \not\sqsubseteq
+  \lab$. Thus, by IH, $\sigma'' \sim_\lab \sigma'$. \\
+  Therefore, $\sigma \sim_\lab \sigma''$ and $\sigma'' \sim_\lab
+  \sigma'$. \\ 
+ (Reasoning similar to \refrule{bs:cmd:s}.)
+ 
+\item \refrule{bs:cmd:wf} : $\sigma = \sigma'$
+\end{enumerate}
+\end{proof}
+
+\begin{myThm}{\emph{Termination-insensitive non-interference}}\\
+\label{thm:app:gpua:ni}
+If
+$~\sigma_1 \sim_\lab \sigma_2$, 
+$\langle \sigma_1, c  \rangle \Downarrow_\pc \sigma_1' $, 
+$\langle \sigma_2, c   \rangle\Downarrow_\pc \sigma_2' $, 
+then 
+$\sigma_1' \sim_\lab \sigma_2'$.
+\end{myThm}
+\begin{proof}
+By induction on the derivation and case analysis on the last step
+\begin{enumerate}
+ \item \refrule{bs:cmd:sk}: $\sigma_1' = \sigma_1 \sim_\lab \sigma_2 = \sigma_2'$
+
+ \item \refrule{bs:cmd:agn} and \refrule{bs:cmd:ags}: As $\sigma_1 \sim_\lab \sigma_2$, 
+   $\forall \TT{x}. \sigma_1(\TT{x}) \sim_\lab \sigma_2(\TT{x})$. Let $\sigma_1(\TT{x}) =
+   \TT{v}_1^{k_1}$, $\sigma_2(\TT{x}) = \TT{v}_2^{k_2}$ and \\ $\sigma_1'(\TT{x}) =
+   \TT{v}_1'^{k_1'}$, $\sigma_2'(\TT{x}) = \TT{v}_2'^{k_2'}$ \\ s. t. $k_i = \lab_i
+   \vee k_i =   \lab_i \pl  $ and $k'_i = \lab'_i
+   \vee k_i =   \lab'_i \pl  $ for $i=1,2$. \\
+   Let
+   $\langle  e_1, \sigma_1 \rangle \Downarrow
+   w_1^{k^{e}_1} \wedge \langle  e_2, \sigma_2 \rangle \Downarrow
+   w_2^{k^{e}_2}$ \\ s. t. $k^{e}_i =
+   \lab^{e}_i \vee k^{e}_i =   \lab^{e}_i \pl  $ for $i
+   =1,2$.
+      For low-equivalence of $e_1$ and $e_2$, the following cases
+       arise:
+       \begin{enumerate}
+         
+          \item $k^{e}_i = \lab^{e}_i,~s.t.~ (\lab^e_1 = \lab^e_2) = \lab^e \sqsubseteq \lab \wedge
+          w_1 = w_2$:
+          \begin{enumerate}
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \not\sqsubseteq \lab_2$: By premise of \refrule{bs:cmd:ags} rules, $k_i'
+              =   ((\pc \sqcup \lab^e) \sqcap \lab_i) \pl $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' =   ((\pc \sqcup \lab^e) \sqcap \lab_1) \pl
+               $ and $k_2' = \pc \sqcup \lab^e$. As $\lab_1'
+              \sqsubseteq \lab_2'$, by
+              definition~\ref{def:gpua:veq}.4, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \not \sqsubseteq \lab_2$: $k_2' =   ((\pc \sqcup \lab^e) \sqcap \lab_2) \pl
+               $ and $k_1' = \pc \sqcup \lab^e$. As $\lab_2'
+              \sqsubseteq \lab_1'$, by
+              definition~\ref{def:gpua:veq}.5, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' = \pc \sqcup \lab^e$ and
+              $k_2' = \pc \sqcup \lab^e$. If $\pc \sqsubseteq \lab$
+              and $\lab^e \sqsubseteq \lab$ and $w_1 = w_2$, by 
+              definition~\ref{def:gpua:veq}.1, $\sigma_1' \sim_\lab
+              \sigma_2'$. If $\pc \not\sqsubseteq \lab$, $\pc \sqcup
+              \lab^e \not\sqsubseteq \lab$. By
+              definition~\ref{def:gpua:veq}.2, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+          \end{enumerate}
+       
+        \item $\lab^e_1 \not\sqsubseteq \lab \wedge
+          \lab^e_2 \not\sqsubseteq \lab$: 
+          From premise of assignment rules, 
+          $k_1'= \pc \sqcup \lab^e_1 \vee
+          k_1'=   (\pc \sqcup \lab^e_1) \pl
+            \vee  k_1' =   ((\pc \sqcup \lab^e_1) \sqcap
+          \lab_1) \pl  $.
+          Similarly, 
+          $k_2' = \pc \sqcup \lab^{e}_2 \vee
+          k_2'=   (\pc \sqcup \lab^{e}_2) \pl
+            \vee  k_2'=   ((\pc \sqcup \lab^e_2) \sqcap
+          \lab_2) \pl  $.
+          Since $\lab^{e}_1  \not\sqsubseteq \lab$ and $\lab^{e}_2
+          \not\sqsubseteq \lab$, $\pc \sqcup \lab^{e}_1  \not\sqsubseteq \lab$
+          and $\pc \sqcup \lab^{e}_1  \not\sqsubseteq \lab$. Therefore, from
+          Definition~\ref{def:gpua:veq}.2, \ref{def:gpua:veq}.3, \ref{def:gpua:veq}.4 or
+          \ref{def:gpua:veq}.5 $\sigma_1' \sim_\lab \sigma_2'$.        
+ 
+       \item $k^{e}_i =   \lab^{e}_i \pl  $: By premise of \refrule{bs:cmd:ags} rules, $k_i'
+              =   ((\pc \sqcup \lab^e_i) \sqcap \lab_i) \pl  $ or $k_i'
+              =   (\pc \sqcup \lab^e_i) \pl  $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$. 
+
+        \item $k^{e}_1 =   \lab^{e}_1 \pl   \wedge
+          k^{e}_2 = \lab^e_2$: 
+         \begin{enumerate}
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \not\sqsubseteq \lab_2$: By premise of \refrule{bs:cmd:ags} rules, $k_i'
+              =   ((\pc \sqcup \lab^e_i) \sqcap \lab_i) \pl  $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' =   ((\pc \sqcup \lab^e_1) \sqcap \lab_1) \pl
+               $ and $k_2' = \pc \sqcup \lab^e_2$. From
+               definition~\ref{def:gpua:veq}.4, $\lab^e_1 \sqsubseteq \lab^e_2$,
+               so $(\pc \sqcup \lab^e_i)\sqcap
+              \lab_1 \sqsubseteq \pc \sqcup \lab^e_2$. By
+              definition~\ref{def:gpua:veq}.4, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \not \sqsubseteq \lab_2$: $k_2' =   ((\pc \sqcup
+              \lab^e_2) \sqcap \lab_2) \pl 
+               $ and $k_1' =   (\pc \sqcup \lab^e_1)
+              \pl $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' =   (\pc \sqcup
+              \lab^e_1) \pl  $ and $k_2' = \pc \sqcup
+              \lab^e_2$. If $\lab^e_2 \not\sqsubseteq \lab$, so $\pc
+              \sqcup \lab^e_2 \not\sqsubseteq \lab$. Else if $\lab^e_1
+              \sqsubseteq \lab^e_2$, then $\pc \sqcup \lab^e_1
+              \sqsubseteq \pc \sqcup \lab^e_2$. By
+              definition~\ref{def:gpua:veq}.4, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+          \end{enumerate}
+
+       \item $k^{e}_1 = \lab^{e}_1 \wedge
+          k^{e}_2 =   \lab^e_2 \pl  $: 
+         \begin{enumerate}
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \not\sqsubseteq \lab_2$: By premise of \refrule{bs:cmd:ags} rules, $k_i'
+              =   ((\pc \sqcup \lab^e_i) \sqcap \lab_i) \pl  $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \not\sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' =   ((\pc \sqcup
+              \lab^e_1)\sqcap \lab_1) \pl 
+               $ and $k_2' =   (\pc \sqcup \lab^e_2)
+              \pl $. By
+              definition~\ref{def:gpua:veq}.3, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \not \sqsubseteq \lab_2$: $k_1' = \pc \sqcup \lab^e_1$
+              and $k_2' =   ((\pc \sqcup \lab^e_2) \sqcap \lab_2) \pl
+               $. $(\pc \sqcup \lab^e_2) \sqcap
+              \lab_2 \sqsubseteq \pc \sqcup \lab^e_1$. By
+              definition~\ref{def:gpua:veq}.5, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+            \item $\pc \sqsubseteq \lab_1 \wedge \pc
+              \sqsubseteq \lab_2$: $k_1' = (\pc \sqcup
+              \lab^e_1) \pl $ and $k_2' =  \pc \sqcup
+              \lab^e_2  $. If $\lab^e_1 \not\sqsubseteq \lab$, so $\pc
+              \sqcup \lab^e_1 \not\sqsubseteq \lab$. Else if $\lab^e_2
+              \sqsubseteq \lab^e_1$, then $\pc \sqcup \lab^e_2
+              \sqsubseteq \pc \sqcup \lab^e_1$. By
+              definition~\ref{def:gpua:veq}.5, $\sigma_1' \sim_\lab
+              \sigma_2'$.
+          \end{enumerate}
+       \end{enumerate}
+
+ \item \refrule{bs:cmd:s}: IH1: If $\sigma_1 \sim_\lab \sigma_2$ then $\sigma_1''
+   \sim_\lab \sigma_2''$ \\
+   IH2: If $\sigma_1'' \sim_\lab \sigma_2''$ then $\sigma_1'
+   \sim_\lab \sigma_2'$ \\
+   Since $\sigma_1 \sim_\lab \sigma_2$, therefore, from IH1 and IH2 
+   $\sigma_1' \sim_\lab \sigma_2'$.
+
+ \item \refrule{bs:cmd:ie}: IH: If $\sigma_1 \sim_\lab \sigma_2$, $ \langle 
+   \sigma_1, c  \rangle \Downarrow_{\pc \sqcup \lab^e_1} \sigma_1'$, $  \langle 
+   \sigma_2, c \rangle \Downarrow_{\pc \sqcup \lab^e_2} \sigma_2'$ and
+   $\pc \sqcup \lab^e_1 = \pc \sqcup \lab^e_2$ then $\sigma_1'
+   \sim_\lab \sigma_2'$. 
+   \begin{itemize}
+     \item If $\lab^e_1 \sqsubseteq \lab$, $\lab^e_1 = \lab^e_2$ and $\TT{n}_1 =
+   \TT{n}_2$. By IH, $\sigma_1' \sim_\lab \sigma_2'$.
+   \item If $\lab^e_1 \not\sqsubseteq \lab$, then $\lab^e_2
+     \not\sqsubseteq \lab$, $\pc \sqcup \lab^e_i \not\sqsubseteq
+   \lab$ for $i =1,2$. By Lemma~\ref{lem:app:gpua:conf}, $\sigma_1 \sim_\lab \sigma_1'$ and $\sigma_2
+   \sim_\lab \sigma_2'$.
+   T.S. $\sigma_1' \sim_\lab \sigma_2'$, i.e., $(\forall \TT{x}. \sigma_1'(\TT{x}) \sim_\lab \sigma_2'(\TT{x}))$\\
+   Case analysis on the definition of low-equivalence of values, $\TT{x}$, in $\sigma_1$ and
+$\sigma_2$. Let $\sigma_1(\TT{x}) = \TT{v}_1^{k_1}$ and $\sigma_2(\TT{x}) =
+\TT{v}_2^{k_2}$ and $\sigma_1'(\TT{x}) = \TT{v}_1'^{k_1'}$ and $\sigma_2'(\TT{x}) =
+\TT{v}_2'^{k_2'}$
+\begin{enumerate}
+\item $(k_1 = k_2) = \lab' \sqsubseteq \lab ~\wedge~\TT{v}_1 = \TT{v}_2 = \TT{v}$:
+ \begin{itemize}
+\item   If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.1, $\lab' = \lab_1' \wedge \TT{v} = \TT{v}_1'$ and
+  $\lab' = \lab_2' \wedge \TT{v} = \TT{v}_2'$. Thus, $\lab_1' = \lab_2' \wedge
+  \TT{v}_1' = \TT{v}_2'$, so $\sigma_1'(\TT{x})  \sim_\lab \sigma_2'(\TT{x})$.
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.5 $\lab_1' \sqsubseteq \lab_1 = \lab'$ and by
+  definition~\ref{def:gpua:veq}.1 
+  $k_2' = \lab_2' =\lab_2 = \lab'$. So, $\lab_1' \sqsubseteq \lab_2'$.
+  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$,by
+  definition~\ref{def:gpua:veq}.1 $k_1' = \lab_1' =\lab_1 = \lab'$ and by
+  definition~\ref{def:gpua:veq}.5 $\lab_2' \sqsubseteq \lab_2 = \lab'$. So,
+  $\lab_2' \sqsubseteq \lab_1'$. 
+  By definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, then by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+ \end{itemize}
+
+\item $(k_1 = \lab_1 \not\sqsubseteq \lab)\wedge (k_2 = \lab_2
+  \not\sqsubseteq \lab)$:
+ \begin{itemize}
+\item  If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.2, $(k_1' = \lab_1' \not\sqsubseteq
+  \lab)\wedge (k_2' = \lab_2' \not\sqsubseteq \lab)$. So,
+  $\sigma_1'(\TT{x})  \sim_\lab \sigma_2'(\TT{x})$.
+ \item If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.2  $k_2' = \lab_2' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$,by
+  definition~\ref{def:gpua:veq}.2 $k_1' = \lab_1' \not\sqsubseteq \lab$. 
+  By definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, then by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+ \end{itemize}
+
+\item $(k_1 =   \lab_1\pl   ~\wedge~k_2 =  
+  \lab_2\pl  )$ :
+ \begin{itemize}
+\item If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$,by 
+corollary~\ref{cor:app:gpua:cor2}, $\pc \sqcup \lab^e_1 \sqsubseteq \lab_1'$. As $\pc \sqcup \lab^e_1 \not\sqsubseteq \lab$ and
+  by  definition~\ref{def:gpua:veq}.2,
+  $\lab_1' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by 
+corollary~\ref{cor:app:gpua:cor2}, $\pc \sqcup \lab^e_2 \sqsubseteq \lab_2'$. As $\pc \sqcup
+  \lab^e_2 \not\sqsubseteq \lab$ and
+  by definition~\ref{def:gpua:veq}.2,
+  $\lab_2' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by 
+  corollary~\ref{cor:app:gpua:cor2}, $\pc \sqcup \lab^e_1 \sqsubseteq \lab_1'$ and $\pc \sqcup \lab^e_2 \sqsubseteq \lab_2'$. As
+  $\pc \sqcup \lab^e_i \not\sqsubseteq \lab$ and by definition~\ref{def:gpua:veq}.2, $\lab_1'
+  \not\sqsubseteq \lab$ and 
+  $\lab_2' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.2, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+ \end{itemize}
+
+\item $(k_1 =   \lab_1 \pl   ~\wedge~k_2 = 
+  \lab_2)$: 
+\begin{itemize}
+\item $\lab_2 \not\sqsubseteq \lab$ : 
+ \begin{itemize}
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$,by
+  corollary~\ref{cor:app:gpua:cor2},  $\pc \sqcup \lab^e_1\sqsubseteq \lab_1'$. As $\pc \sqcup \lab^e_1 \not\sqsubseteq \lab$ and by
+  definition~\ref{def:gpua:veq}.2, $\lab_1' \not\sqsubseteq \lab$.  By
+  definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x}) 
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.2, $\lab_2' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  corollary~\ref{cor:app:gpua:cor2},  $\pc \sqcup \lab^e_1\sqsubseteq \lab_1'$. As $\pc \sqcup \lab^e_1 \not\sqsubseteq \lab$ and by
+  definition~\ref{def:gpua:veq}.2, $\lab_1' \not\sqsubseteq \lab$. By
+  definition~\ref{def:gpua:veq}.2, $\lab_2' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.2, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+ \end{itemize}
+\item $\lab_1 \sqsubseteq \lab_2 \sqsubseteq \lab$ : 
+ \begin{itemize}
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  corollary~\ref{cor:app:gpua:cor2},  $\pc \sqcup \lab^e_1 \sqsubseteq \lab_1'$. As $\pc \sqcup
+  \lab^e_1 \not\sqsubseteq \lab$, and by definition ~\ref{def:gpua:veq}.2,
+  $\lab_1' \not\sqsubseteq \lab$. By definition~\ref{def:gpua:veq}.5,
+  $\sigma_1'(\TT{x}) \sim_\lab \sigma_2'(\TT{x})$.
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, $\lab_1' \sqsubseteq
+  (\pc \sqcup \lab^e_1)\sqcap \lab_1$ as $\pc \sqcup \lab^e_1\not\sqsubseteq \lab_1$ and $\lab_2' =
+  \lab_2$ by corollary~\ref{cor:app:gpua:cor1} and definition~\ref{def:gpua:veq}.1. Thus,
+  $\lab_1'\sqsubseteq \lab_2'$.  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by 
+  corollary~\ref{cor:app:gpua:cor1}, $\pc \sqcup \lab^e_1\sqsubseteq \lab_1$. As $\pc \sqcup
+  \lab^e_1 \not\sqsubseteq \lab$, by 
+  contradiction the case does not hold.
+ \end{itemize}
+\end{itemize}
+
+
+\item $(k_1 = \lab_1 ~\wedge~k_2 = 
+    \lab_2 \pl  )$:
+\begin{itemize}
+ \item $\lab_1 \not\sqsubseteq \lab$ : 
+\begin{itemize}
+\item  If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' =   \lab_1'\pl  ~\wedge~k_2' = \lab_2' $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$,by 
+corollary~\ref{cor:app:gpua:cor2}, $\pc \sqcup \lab^e_2 \sqsubseteq \lab_2'$. As $\pc \sqcup \lab^e_2 \not\sqsubseteq \lab$ and by
+  definition~\ref{def:gpua:veq}.2, $\lab_2' \not\sqsubseteq \lab$.  By
+  definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x}) 
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item  If $k_1' = \lab_1' ~\wedge~k_2' =  
+ \lab_2' \pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  definition~\ref{def:gpua:veq}.2, $\lab_1' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by 
+  corollary~\ref{cor:app:gpua:cor2}, $\pc \sqcup \lab^e_2\sqsubseteq \lab_2'$. As $\pc \sqcup \lab^e_2\not\sqsubseteq \lab$ and by
+  definition~\ref{def:gpua:veq}.2, $\lab_2' \not\sqsubseteq \lab$. By
+  definition~\ref{def:gpua:veq}.2, $\lab_1' \not\sqsubseteq \lab$.
+  By definition~\ref{def:gpua:veq}.2, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+\end{itemize}
+\item $\lab_2 \sqsubseteq \lab_1$ :
+\begin{itemize}
+\item If $k_1' =  \lab_1'\pl   ~\wedge~k_2' =
+ \lab_2'\pl  $, by definition~\ref{def:gpua:veq}.3,
+$\sigma_1'(\TT{x})   \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' ~\wedge~k_2' =  \lab_2'\pl  $, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, $\lab_2' \sqsubseteq
+  (\pc \sqcup \lab^e_2)\sqcap \lab_2$ as $\pc \sqcup \lab^e_2\not\sqsubseteq \lab_2$ and $\lab_1' =
+  \lab_1$ by corollary~\ref{cor:app:gpua:cor1} and definition~\ref{def:gpua:veq}.1. Thus,
+  $\lab_2'\sqsubseteq \lab_1'$.  By definition~\ref{def:gpua:veq}.5, $\sigma_1'(\TT{x})
+  \sim_\lab \sigma_2'(\TT{x})$.
+ \item If $k_1' =  \lab_1'\pl   ~\wedge~k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  corollary~\ref{cor:app:gpua:cor2},  $\pc \sqcup \lab^e_2\sqsubseteq \lab_2'$. As $\pc \sqcup \lab^e_2\not\sqsubseteq \lab$, and by
+  definition~\ref{def:gpua:veq}.2, $\lab_2' \not\sqsubseteq \lab$.  By
+  definition~\ref{def:gpua:veq}.4, $\sigma_1'(\TT{x}) 
+  \sim_\lab \sigma_2'(\TT{x})$.
+\item If $k_1' = \lab_1' \wedge k_2' = \lab_2'$, then as $\sigma_1
+  \sim_\lab \sigma_1'$ and $\sigma_2 \sim_\lab \sigma_2'$, by
+  corollary~\ref{cor:app:gpua:cor1},  $\pc \sqcup \lab^e_2\sqsubseteq \lab_2$. As $\pc \sqcup \lab^e_2\not\sqsubseteq \lab$, by
+  contradiction the case does not hold.
+  \end{itemize}
+ \end{itemize}
+\end{enumerate}
+\end{itemize}
+
+
+ \item \refrule{bs:cmd:wt}:  IH1: If $\sigma_1 \sim_\lab \sigma_2$, $ \langle 
+   \sigma_1, c   \rangle\Downarrow_{\pc \sqcup \lab^e_1} \sigma_1''$, $ \langle 
+   \sigma_2, c \rangle \Downarrow_{\pc \sqcup \lab^e_2} \sigma_2''$ and
+   $\pc \sqcup \lab^e_1 = \pc \sqcup \lab^e_2$ then $\sigma_1''
+   \sim_\lab \sigma_2''$.\\
+   IH2: If $\sigma_1'' \sim_\lab \sigma_2''$, $ \langle 
+   \sigma_1'',c \rangle \Downarrow_{\pc \sqcup \lab^e_1} \sigma_1'$, $\langle 
+   \sigma_2'',c \rangle \Downarrow_{\pc \sqcup \lab^e_2} \sigma_2'$ and
+   $\pc \sqcup \lab^e_1 = \pc \sqcup \lab^e_2$ then $\sigma_1'
+   \sim_\lab \sigma_2'$.
+   \begin{itemize}
+     \item If $\lab_1^e \sqsubseteq \lab$, $\lab_1^e = \lab^e_2$ and
+       $\TT{n}_1=\TT{n}_2$. By IH1 and IH2, $\sigma_1' \sim_\lab \sigma_2'$.
+      \item If $\lab^e_1 \not\sqsubseteq \lab$, then $\lab^e_2
+        \not\sqsubseteq \lab$, $\pc \sqcup \lab^e_i \not\sqsubseteq
+        \lab$ for $i = 1,2$. By Lemma~\ref{lem:app:gpua:conf}, $\sigma_1 \sim_\lab
+        \sigma_1''$ and $\sigma_2 \sim_\lab \sigma_2''$. \\
+        T.S. $\sigma_1'' \sim_\lab \sigma_2''$: By similar reasoning
+        as \refrule{bs:cmd:ie}.\\
+        As $\sigma_1'' \sim_\lab \sigma_2''$, and by Lemma~\ref{lem:app:gpua:conf}, $\sigma_1'' \sim_\lab
+        \sigma_1'$ and $\sigma_2'' \sim_\lab \sigma_2'$. \\
+        T.S. $\sigma_1' \sim_\lab \sigma_2'$: By similar reasoning
+        as \refrule{bs:cmd:ie}.
+    \end{itemize}
+
+  \item \refrule{bs:cmd:wf}: $\sigma_1' = \sigma_1 \sim_\lab \sigma_2 = \sigma_2'$
+\end{enumerate}
+
+\end{proof}

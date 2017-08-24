@@ -1,0 +1,929 @@
+\section{Limited Information Release}
+\label{sec:lir-desc}
+Limited information release (LIR) is an information release policy that
+declassifies small fractions of sensitive information. The motivation
+for LIR is that, in general, certain information flows leak only an
+insignificant piece of a secret. As an example, the
+\emph{comparison} of a secret with a constant value is largely considered
+acceptable and its rejection by standard IFC analyses is too restrictive in
+practice~\cite{scd,dta}. Such information leaks are usually acceptable if one
+can guarantee that an adversary cannot widen the declassification to launder
+information. The need for such policies is motivated with some
+examples below. 
+
+\subsection{Motivating Examples}
+\label{sec:examples}
+\begin{lstlisting}[float,caption=Age-based Advertisement, label=egLeak2]
+ age $=$ getCurrentAge(birthday, birthyear);
+ if (age $<$ 13)
+    preference $=$ "child";
+ else if (age $<$ 20)
+    preference $=$ "teenager";
+ else 
+    preference $=$ "adult";
+\end{lstlisting}
+
+\paragraph{Age-based advertisements}
+A third-party advertising library might want to display ads %to its users
+based on the viewer's age. Consider the program snippet in
+Listing~\ref{egLeak2}, a modified version of the program in
+Listing~\ref{egLeak} which determines the preferred advertisements based on the
+secret value \texttt{age}. The third-party ad service does not 
+need to know the exact age of the viewer for that purpose. It is
+sufficient to know whether the viewer is
+a child, a teenager or an adult. While leaking very little information
+this provides focussed functionality and might
+even be required in some jurisdictions to protect minors from inappropriate
+ads. As another example, consider a music app that hosts
+advertisements for music shows and concerts in a town. Based
+on the age (whether the user is an adult, a teenager or a child) and
+the preferences of the user, the advertisement might display different
+categories. Again, there is a tradeoff between a slight amount of
+private information and better services. %do not require access to the
+% precise age and would leak very little information about the user's age.  
+% Limited information release allows
+% such small leaks through comparisons on the sensitive value.
+
+\begin{lstlisting}[float,caption=Password Checker, label=egpc]
+ dbPwd $=$ getActualPassword(user);
+ uPwd $=$ readUserPassword();
+ login $=$ (dbPwd $==$ uPwd);
+\end{lstlisting}
+
+% \medskip
+\paragraph{Password checker}
+User authentication is often based on a secret password or PIN.
+The password checker in Listing~\ref{egpc} %the variable \texttt{dbPwd}
+compares the secret password to the
+variable \texttt{uPwd} containing the password entered by the
+user. The public variable
+\texttt{login} reflects whether these match,
+indicating whether login was successful. Strict
+non-interference prohibits assignments to the low
+variable \texttt{login} as the value is derived from the
+secret password. However, releasing the login
+status to the user cannot be avoided. Normally, a user enters her password correctly
+in a single try but the probability of an adversary guessing the
+correct password in one (or even a few) tries can be
+assumed to be negligible when the password is strong. In general, a
+brute-force attack on the secret would be required, and if the secret
+is from a large domain then such an attack is not a
+threat~\cite{relSec}. Thus, the assignment to the \texttt{login}
+variable may be permitted. % in the context of the secret
+%information. Limited information release allows assignments under such
+% checks and, thus, deems the program secure.
+
+\begin{lstlisting}[float,caption=Shortcut Key Usage,label=egsk]
+window.addEventListener("keypress", function(event) {
+       if (event.altKey) {
+          send("ALT key pressed!");
+ }});
+\end{lstlisting}
+
+% \medskip
+\paragraph{Analytics}
+many web pages include analytics scripts to track user behavior on
+the page in order to improve the user
+experience. Most of these analytics scripts track events
+on the web page. One such analytics code is shown in
+Listing~\ref{egsk}, which tracks whether or not the
+\texttt{alt} modifier is pressed by the user. To prevent precise
+keylogging, the event
+properties (the keys pressed) are secret in this case, hence this
+program snippet does not satisfy non-interference. However, the only
+information that the script gains in this case is whether or not the
+\texttt{alt} modifier was pressed by the user. Such checks could be
+allowed in practice unless the script tries to track %and keep a log of
+all the keys pressed by the user.
+
+\begin{lstlisting}[float,caption=Sanity Check,label=egsc]
+ if (textInput $\neq$ NULL)
+    useInput ();
+ else
+    error("no input");
+\end{lstlisting}
+% \medskip
+\paragraph{Sanity check}
+Another common case where information release is acceptable is during
+sanity checks, e.g., whether input has been provided or not, as shown in
+Listing~\ref{egsc}. The \texttt{textInput} could be some secret value
+but in order to use the value it might be necessary to check if the value is
+non-null. If no input is
+provided, the error ``\texttt{no input}'' only reveals that the
+secret \texttt{textInput} is equal to \texttt{NULL}.
+% Information release in such cases could be acceptable and allowed.
+% Limited information release allows this kind of release.
+
+
+\subsection{Limited Information Release Policy}
+\label{sec:lir-policy}
+
+In practice most implicit flows leak a single bit of information only,
+which might be required for providing proper functionality. King
+\emph{et al.}~\cite{king08implicit} investigate the occurrence of
+implicit flows in some standard algorithms and discuss both the pros
+and cons of handling implicit flows. Russo \emph{et
+  al.}~\cite{implicit} also observe that implicit flows cannot be
+exploited in non-malicious code to leak secrets
+efficiently. Unfortunately, allowing information release when only an
+insignificant amount of information is leaked can be widened to leak
+the complete secret~\cite{relSec,delRelease}.  The LIR policy is,
+thus, guided by two key tenets: 
+\begin{itemize}
+\item \textbf{Declassification at comparison operations.}
+As has been observed by various authors \cite{scd, dta} and is exemplified
+above (Section~\ref{sec:examples}), comparison operations often
+provide a low bandwidth channel for information
+leak. For instance, $(h \neq l)$ only reveals whether the two values
+in $h$ and $l$ are equal or not. Similarly, $(h < l)$ and $(h > l)$
+only reveal that the value of $h$ is lesser and greater than the value
+of $l$, respectively. With LIR, such comparison operations are treated
+as potential points of information release. This means that 
+under LIR only expressions involving comparison operations can be
+declassified. 
+As all comparison operations need not be declassified, information is
+released only for those comparison operations that are annotated with
+\TT{declassify}. 
+
+\begin{lstlisting}[float, caption=Laundering attack via implicit flow, label=lst:laundering]
+ pub $=$ 0; i $=$ 1;
+ while (i $\leq 2^{31}$) { @\label{imp:while}@
+    if ((sec $\&$ i) $==$ i) @\label{imp:if}@
+       pub $=$ pub $|$ i;
+    i $=$ i $<<$ 1;
+ }
+\end{lstlisting}
+
+\item \textbf{Bounding the information released.}
+It is well known in the literature that low bandwidth channel (like leaks due
+to comparisons involving secrets) can be widened to laundering
+attacks~\cite{relSec,delRelease}. The example in Listing~\ref{lst:laundering} is
+a classical example of a laundering attack. It implicitly leaks the secret value
+in \texttt{sec} to the variable \texttt{pub} without any direct assignments.
+Every time the check on line~\ref{imp:if} is performed, it leaks one
+bit of \texttt{sec}. The whole secret gets implicitly laundered into
+the variable \texttt{pub} as this comparison is performed in a loop of 
+length equal to the size of the secret (in bits).
+
+To limit the amount of information that can be leaked by such
+laundering attacks, LIR introduces a notion of \emph{budget} (a
+non-negative number) associated with a sensitive value, which is an
+upper bound on the amount of information that is allowed to leak about
+the sensitive value. A budget is associated with every secret in the
+program and defaults to zero, if left unspecified. 
+\end{itemize}
+
+% \medskip
+Intuitively, a program is said to satisfy limited information release, if
+the information released about the initial value of each secret in the system is
+limited by its pre-specified budget. If the budgets for all secrets
+drop to zero, LIR falls back to the standard non-interference policy. It is
+important to note that even when staying within the bounds of the budget one can
+leak the entire secret via comparison operations. For instance, in an equality
+comparison ($h==l$) involving secret $h$ and a public value $l$, if the
+operation returns $\true$, the adversary knows that the value of the secret is
+the same as the value in $l$. The bounds are only meaningful in an
+average sense like in many other existing entropy-based notions of information
+leakage~\cite{denning82, clark, smith2009}. In other words, LIR only
+ensures that the average information 
+leak over multiple executions is bounded by the specified budget and it should
+not be understood as providing leakage bounds over a single execution.
+
+Although declassification of only those expressions that involve
+comparison operations is allowed by LIR, this can be extended to other
+expressions as well. In such cases, the leak is accounted for by
+assuming that the entire secret is leaked (as shown
+by~\cite{clark}). Such policies, however, are not of interest as this
+would effectively mean that the secret value either need not be
+labeled secret to begin with or can be declassified upfront. 
+
+% In the next section we give a formalize this definition in the setting of a
+% standard while language.
+
+%% Thus, in the example presented in Listing~\ref{lst:laundering}
+%% above, if the budget of the initial value in \texttt{sec} is $1$, then the LIR
+%% policy would allow only the first check involving \texttt{sec} on
+%% line~\ref{imp:if} to release the value. Subsequent checks on \texttt{sec} would
+%% not release any more information as the budget of the variable would have
+%% expired after the first check.
+
+%% It is worth noting that similar to the notion of Shannon entropy, the one bit
+%% released through the comparison operation may reveal the complete secret in some
+%% cases. For instance, in an equality comparison ($h==l$) involving secret $h$ and
+%% a public value $l$, if the operation returns $\true$, the adversary knows that
+%% the value of the secret is $l$.
+
+%% With LIR kind of a policy in place say one wants to declassify upto $1$ bit of
+%% information about the value in \texttt{sec} at line \ref{imp:if}. This can be
+%% acheived simply by specifying a budget of $1$ bit with \texttt{sec} and by
+%% declassifying the check at line \ref{imp:if} by using \texttt{declassify (sec &
+%%   i) == i}. As a result only one comparison in the declassify command will be
+%% allowed, post that LIR will fall back to
+
+
+%% secret $\mathcal{H}$ through comparison operations on the secret
+%% remains bounded by its budget $\mathcal{N}_{\mathcal{H}}$. The bound
+%% $\mathcal{N}_{\mathcal{H}}$ is specified as part of the \emph{policy}
+%% that specifies the security level of the initial values in the memory
+%% and the security levels to which the information about the initial
+%% secrets can be released, which we assume to be given. A sanity check
+%% for the definition of information released is that whenever the
+%% execution of a program releases no secret information, then the
+%% program satisfies non-interference, i.e., if $\forall \mathcal{H}.~
+%% \mathcal{N}_{\mathcal{H}} = 0$, then the program satisfies
+%% non-interference.
+
+% Having defined these principles the next question to answer would be: When can we
+% say that a program 'c' is secure under LIR ?
+%% To define it formally let us assume
+%% a configuration of the following form: $\langle \sigma, \iota, \comm \rangle$
+%% where $\sigma$ is the memory, $\iota$ is the budget store and $\comm$ is the
+%% command/program.
+
+%% \begin{mydef}[LIR extensional definition]
+%%   $\forall \sigma_1, \sigma_2, \iota_1, \iota_2, \comm, \pred$.
+
+%%   $\sigma_1 \eq \sigma_2$ $\wedge$
+%%   $\iota_1 \eq \iota_2$ $\wedge$
+
+%%   $\langle \sigma_1, \iota_1, \comm \rangle$ $\Downarrow$ $\langle \sigma_1',
+%%   \iota_1'\rangle$ $\wedge$
+%%   $\langle \sigma_2, \iota_2, \comm \rangle$ $\Downarrow$ $\langle \sigma_2',
+%%   \iota_2'\rangle$ $\wedge$
+
+%%   $\big($
+%%   $\forall x \in \dom(\sigma_1)$.
+
+%%   $(\sigma_1(x) = -^{\lab_1} \wedge \lab_1 \not\leq \attacker)$ $\implies$
+
+%%   $(\iota_1 (x) =-^{\lab_2} \wedge \lab_2 \not\leq \attacker)$ $\implies$
+
+%%   $(\pred(\sigma_1(x)) \iff \pred(\sigma_2(x))$ $\wedge$ $\iota_1(x) = \iota_2(x)$ $\wedge$
+
+%%   $\forall \pred' \in c. \pred \implies \pred')$ $\big)$
+%%   $\implies$
+
+%%   $\sigma_1' \eq \sigma_2'$ $\wedge$ $\iota_1' \eq \iota_2'$
+%% \end{mydef}
+
+%% %% \section{Limited Information Release}
+%% This section gives an overview of the limited information release
+%% (LIR) policy. As indicated by the examples above, branch or loop
+%% predicates based on \emph{comparison} operators usually reveal little
+%% information about the operands. For instance, $(h \neq l)$ only
+%% reveals whether the two values in $h$ and $l$ are equal. Similarly,
+%% $(h \leq l)$ and $(h \geq l)$ reveal that the value of $h$ is lesser
+%% and greater than the value of $l$, respectively. In all these cases,
+%% an adversary who observes the result can refine her knowledge about
+%% the secret. However, the gain in knowledge is very little.
+%% %  unless, of
+%% % course, the secret operand is a Boolean\footnote{In practice there
+%% % might be other small domains of a secret where leaking a single bit
+%% % reveals too much. In a practical implementation one would therefore
+%% % have to define a minimum domain size and check, e.g., using the LattE
+%% % model counter~\cite{latte}, that the domain of a variable with
+%% % automatic information release is larger than the specified minimal
+%% % size. In this work we assume that there are only two domain sizes,
+%% % Boolean and Integer.}
+%% LIR aims at capturing such cases, where the adversary gains very
+%% little knowledge about the secret. This allows third-parties to use
+%% the released information safely, as the examples above demonstrate.
+%% % In cases when the value is a Boolean, no release of information
+%% % takes place as this would reveal the secret to the
+%% % adversary. Consider, for instance, the program in
+%% % Listing~\ref{egbool} where based on the option selected by the user,
+%% % the adversary can infer the gender of the user. This program leaks
+%% % the secret value (the gender of the user) in every run and thus, is
+%% % not allowed by LIR.  implicit leaks in such cases leak very little
+%% % information and \CH{very weak: could be allowed in order for the
+%% % program to run successfully.}
+
+%% % \begin{lstlisting}[float,caption=Boolean secrets, label=egbool]
+%% %  isMale = false;
+%% %  if (optionMale == true) {
+%% %      isMale = true;
+%% %  }
+%% % \end{lstlisting}
+
+%% % Another set of harmless leaks could be the comparison of two high
+%% % labeled values. Such comparisons only reveal the relation between the
+%% % two high values and nothing more (unless one of them is fully
+%% % declassified later). % Consider the program snippet in
+%% % % Listing~\ref{egps}, which checks if the two adjacent characters in the
+%% % % password are the same. Such checks might be required to determine the
+%% % % strength of the password. At the same time, the only information this
+%% % % check releases is whether the two characters are same or not and does
+%% % % not release the value of the actual character.
+%% % Limited information
+%% % release also allows such checks to release data.
+
+%% % \begin{lstlisting}[float, caption=Password Strength Checker Snippet,label=egps]
+%% %  ...
+%% %  if (pwd[x] == pwd[x+1]) {
+%% %     repeatCharacter = true;
+%% %  }
+%% %  ...
+%% % \end{lstlisting}
+
+%% \begin{lstlisting}[float,caption=Safe Equality Testing, label=eget]
+%%  input = "";
+%%  if (inChar == "a") {
+%%     input = "a";
+%%  }
+%% \end{lstlisting}
+
+%% \begin{lstlisting}[float,caption=Unsafe Equality Testing, label=eguet]
+%%  input = "";
+%%  if (inChar == "a") {
+%%     input = "a";
+%%  } else if (inChar == "b") {
+%%     input = "b";
+%%  } ...
+%%  else if (inChar == "z") {
+%%     input = "z";
+%%  }
+%% \end{lstlisting}
+
+%% LIR allows equivalence comparison, for instance, $h == l$. The program
+%% can compare the value of a low variable $l$ with a high variable
+%% $h$. This is generally required when comparing passwords,
+%% or tracking usage of certain keys etc. However, this relaxation could
+%% be used to launder a secret by executing this condition in
+%% a loop or by repetitively querying the secret. Consider the example in
+%% Listing~\ref{eget}, which checks if the character \texttt{``a''} has been
+%% entered. The only time the program can guess the secret is when
+%% the high variable \texttt{inChar} is actually \texttt{``a''}. In
+%% all other cases, the low variable \texttt{input} remains
+%% unchanged. Such a query can be accepted as a legitimate flow as the
+%% script does not try to leak the high variable
+%% \texttt{inChar} by querying it; it only checks for a particular
+%% character (in this case, \texttt{``a''}). % has been pressed.
+%% However, a malicious third-party script might try to leak the secret
+%% value \texttt{inChar} as shown in Listing~\ref{eguet}, by
+%% repeatedly querying the secret variable.
+
+%% In fact, other comparison operators can also be used to launder the
+%% secret in a similar manner. Espinoza and Smith~\cite{esp13} show that
+%% adaptive tests on comparison operators $(\leq, \geq)$ can leak more
+%% than adaptive tests on equality operators $(==)$.
+%% LIR limits the number of releases due to comparisons for each secret
+%% value $\mathcal{H}$ to a policy-stipulated non-negative upper bound,
+%% $\mathcal{N}_{\mathcal{H}}$. Note that these relaxations are not
+%% limited to branch or loop predicates and can be applied to all
+%% expressions that evaluate a comparison operator as illustrated in
+%% Listing~\ref{egpc}.
+
+%% % and releases data about a secret only if $n > n_{\mathcal{H}}$ where $n$
+%% % is the number of bits of information \CH{??? about the secret} and
+%% % $n_{\mathcal{H}}$ is the number of comparisons allowed. Thus, LIR
+%% % would not allow information to be released in the above example
+%% % if $n_{\texttt{inChar}} = 1$ and the program is rejected as insecure.
+
+%% % \begin{lstlisting}[float,caption=Boolean secrets, label=egbool]
+%% %  isMale = false;
+%% %  if (optionMale == true) {
+%% %      isMale = true;
+%% %  }
+%% % \end{lstlisting}
+
+%% % In cases when the secret value is a Boolean, generally no release of
+%% % information should be allowed, as a single comparison would reveal the
+%% % secret to the adversary. Consider, for instance, the
+%% % program in Listing~\ref{egbool} where based on the option selected by
+%% % the user, the adversary can infer the gender of the user. This program
+%% % leaks the secret value (the gender of the user) in every run and thus
+%% % must not be allowed by LIR.
+
+%% % This restriction can be relaxed further as we discuss in
+%% % Section~\ref{sec:disc}. However, the relaxation is out of the scope of
+%% % this paper.
+
+%% The LIR policy allows the adversary to gain
+%% some knowledge about secret values. To formalize this gain in
+%% knowledge, lets assume that $\mathcal{S}$ is the domain of all
+%% possible values of a secret $\mathcal{H}$. The total number of
+%% possible secret values is given by $n = |\mathcal{S}|$.
+%% %  We assume that
+%% % the secret values are uniformly distributed.
+%% A sequence of $p$
+%% comparison operators, all involving $\mathcal{H}$, can be modeled as a
+%% function that takes as input a value from $\mathcal{S}$ and returns
+%% one of $2^p$ possible observable outputs.
+%% $$f : \mathcal{S} \mapsto O(2^p)$$ where $O(2^p)$ represents a set of
+%% outputs with $2^p$ elements.  Thus, for the example in
+%% Listing~\ref{egpc} if the actual password is
+%% \texttt{secret}, then the function corresponding to the equivalence
+%% comparison would be:
+%% \begin{equation*}
+%% f(h) =
+%% \begin{cases}
+%% \texttt{true} &  \textit{if}~h = \texttt{secret}\\
+%% \texttt{false} & \textit{otherwise}
+%% \end{cases}
+%% \end{equation*}
+%% Information release happens only at comparison operations, which release up
+%% to one bit of information every time they are evaluated as the output
+%% of comparison operations is Boolean. Thus for $p$
+%% comparison operations of a secret value, the number of bits of
+%% information released is bounded by $p$ bits.
+
+%% \begin{mydef}[Limited Information Release]
+%% A program is said to satisfy \emph{limited information release}
+%% if the information released about the
+%% initial value of each secret $\mathcal{H}$ due to comparison
+%% operations on the secret remains bounded by a
+%% pre-stipulated non-negative number $\mathcal{N}_{\mathcal{H}}$.
+%% \end{mydef}
+
+%% The bound $\mathcal{N}_{\mathcal{H}}$ is
+%% specified as part of the \emph{policy} that specifies the security
+%% level of the initial values in the memory, which we assume to be
+%% given. A sanity check for the definition of information released is that
+%% whenever the execution of a program releases no secret information,
+%% then the program satisfies non-interference, i.e., if
+%% $\forall \mathcal{H}.~ \mathcal{N}_{\mathcal{H}} = 0$, then the program
+%% satisfies non-interference.
+
+%% For illustration, consider the program in Listing~\ref{eget}. Here the
+%% possible input to the program, i.e., the
+%% \texttt{inChar} variable, is uniformly distributed from
+%% \texttt{a-z}. Assume $\mathcal{N}_{\texttt{inChar}} = 1$. The
+%% function corresponding to the comparison is:
+%% \begin{equation*}
+%% f(\texttt{inChar}) =
+%% \begin{cases}
+%% \texttt{"a"} &  \textit{if}~\texttt{inChar} = \texttt{"a"}\\
+%% \texttt{""} & \textit{else}
+%% \end{cases}
+%% \end{equation*}
+%% The adversary can infer the actual value of \texttt{inChar} only if
+%% it is \texttt{a}. In all other cases, the adversary cannot determine
+%% the actual character and only knows that it is not \texttt{a}. Thus,
+%% this program satisifies LIR for $\mathcal{N}_{\texttt{inChar}} = 1$.
+%% In Listing~\ref{eguet}, however, the adversary can always infer the
+%% value of \texttt{inChar} as the number of comparisons on
+%% \texttt{inChar} is equal to the number of possible values the
+%% secret can take. The function corresponding to this comparison is:
+%% \begin{equation*}
+%% f(\texttt{inChar}) =
+%% \begin{cases}
+%% \texttt{"a"} &  \textit{if}~\texttt{inChar} = \texttt{"a"}\\
+%% \texttt{"b"} &  \textit{if}~\texttt{inChar} = \texttt{"b"}\\
+%% \ldots \\
+%% \texttt{"z"} & \textit{else}
+%% \end{cases}
+%% \end{equation*}
+%% As $\mathcal{N}_{\texttt{inChar}} = 1$, this program does not satisfy
+%% LIR, because it releases more information than
+%% allowed if \texttt{inChar} is not \texttt{"a"}.
+
+%% % The rules for expression-evaluation are mostly standard except for
+%% % \texttt{op-comp} that releases the evaluated Boolean value by labeling
+%% % $n$ as $\bot$. The comparison operation releases one bit of
+%% % information about the initial values of all the variables in $\dep_1$,
+%% % $\dep_2$ and $\Delta(\pc)$. $\Delta(\pc)$ returns the set of predicate
+%% % dependencies in the current $\pc$. We do not track the dependencies
+%% % further when information has been released as no new information can
+%% % be released through the evaluated value. Hence $\delta = \{\}$ in the
+%% % conclusion of the rule.
+
+%% % \begin{figure}[tb]
+%% % \begin{align*}
+%% % \inference[const: ]
+%% % {}
+%% % {\langle\sigma, \map, \iota, n \rangle \Downarrow_\pc n^{\bot} , \{\}, \iota}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[var: ]
+%% % {\sigma(x) = n^l : \tau}
+%% % {\langle\sigma,\map, \iota, x \rangle \Downarrow_\pc n^l
+%% %   ,\{\map(x)\}, \iota}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[op-comp: ]
+%% % {\langle \sigma,  \map, \iota, \expr_1 \rangle \Downarrow_\pc
+%% %   n_1^{l'} , \dep_1, \iota_1\\
+%% %  \langle \sigma,  \map, \iota_1, \expr_2  \rangle \Downarrow_\pc
+%% %  n_2^{l''} ,  \dep_2, \iota_2  \\
+%% % n = n_1~\op~n_2 \\ \iota' = \iota_2[x \mapsto \iota_2(x) + 1 ~|~ x \in
+%% % \dep_1 \cup \dep_2 \cup
+%% % \Delta(\pc)]}
+%% % {\langle\sigma, \map, \iota,
+%% %   (\expr_1~\op~\expr_2) \rangle \Downarrow_\pc n^{\bot}
+%% %   , \{ \}, \iota'}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[op-arith: ]
+%% % {\langle \sigma,  \map, \iota, \expr_1 \rangle \Downarrow_\pc
+%% %   n_1^{l'} , \dep_1, \iota_1 \\
+%% %   \langle \sigma, \map, \iota_1, \expr_2 \rangle \Downarrow_\pc
+%% %   n_2^{l''},  \dep_2, \iota_2 \\ n = n_1 \odot n_2 \qquad l = l'
+%% %   \sqcup l''}
+%% % { \langle\sigma,  \map, \iota, (\expr_1 \odot \expr_2) \rangle
+%% %   \Downarrow_\pc n^l, \dep_1 \cup \dep_2, \iota_2}
+%% % \end{align*}
+%% % \caption{Semantics of expressions}
+%% % \label{fig:sem-e1}
+%% % \end{figure}
+
+%% % \begin{figure}[!htbp]
+%% % \begin{align*}
+%% % \inference[skip: ]
+%% % {}
+%% % {\langle   \sigma,  \map, \iota, \sk \rangle \Downarrow_\pc
+%% %   \langle \sigma,  \map, \iota \rangle}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[assn: ]
+%% % {\Gamma(\pc) \sqsubseteq \Gamma(\sigma(x)) \qquad  \langle   \sigma, \map,
+%% %   \iota ,  \expr \rangle \Downarrow_\pc n^m, \dep , \iota'
+%% % \\ l := \Gamma(\pc) \sqcup m \qquad
+%% %  \map' = \map[x \mapsto \dep \cup \Delta(\pc)]}
+%% % {\langle   \sigma,  \map, \iota,  (x := \expr)  \rangle
+%% %   \Downarrow_\pc \langle \sigma[x \mapsto
+%% %   n]^{l},  \map', \iota'\rangle}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[seq: ]
+%% % {\langle   \sigma,  \map, \iota, \comm_1 \rangle
+%% %   \Downarrow_\pc \langle
+%% %   \sigma', \map', \iota' \rangle  \\ \langle   \sigma',  \map',
+%% %   \iota', \comm_2
+%% %   \rangle \Downarrow_\pc \langle \sigma'', \map'', \iota''
+%% %   \rangle }
+%% % {\langle   \sigma,  \map, \iota, \comm_1;\comm_2 \rangle
+%% %   \Downarrow_\pc \langle \sigma'', \map'', \iota'' \rangle}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[if: ]
+%% % {\langle   \sigma, \map,\iota, \expr \rangle \Downarrow_\pc
+%% %   n^l , \dep, \iota' \\ (n = \texttt{true})~ ?~(i := 1) : (i := 2)
+%% % \\ \langle   \sigma,  \map, \iota', \comm_i
+%% %   \rangle \Downarrow_{\pc \sqcup (l, \dep)} \langle
+%% %   \sigma', \map', \iota''  \rangle}
+%% % {\langle   \sigma,  \map,\iota,
+%% %   (\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2)
+%% %   \rangle \Downarrow_\pc  \langle \sigma', \map', \iota'' \rangle}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[w-t: ]
+%% % {\langle   \sigma, \map, \iota, \expr \rangle \Downarrow_\pc
+%% %   n^l , \dep, \iota_0 \qquad n = \texttt{true}
+%% % \\ \langle   \sigma,  \map,\iota_0,  \comm
+%% %   \rangle \Downarrow_{\pc \sqcup (l, \dep)} \langle
+%% %   \sigma', \map', \iota'
+%% %   \rangle \\
+%% % \langle   \sigma',  \map', \iota', \texttt{while}~\expr~\texttt{do}~\comm
+%% % \rangle \Downarrow_{\pc \sqcup (l, \dep)}  \langle
+%% % \sigma'', \map'', \iota'' \rangle}
+%% % {\langle   \sigma,  \map, \iota,
+%% %   \texttt{while}~\expr~\texttt{do}~\comm
+%% %   \rangle \Downarrow_\pc  \langle \sigma'', \map'', \iota'' \rangle}
+%% % \end{align*}
+
+%% % \begin{align*}
+%% % \inference[w-f: ]
+%% % {\langle   \sigma, \map, \iota, \expr \rangle \Downarrow_\pc
+%% %   n^l, \dep, \iota' \qquad n = \texttt{false}}
+%% % {\langle   \sigma,  \map, \iota,
+%% %   \texttt{while}~\expr~\texttt{do}~\comm
+%% %   \rangle \Downarrow_\pc \langle \sigma, \map, \iota' \rangle}
+%% % \end{align*}
+%% % \caption{Semantics of Commands}
+%% % \label{fig:sem-c1}
+%% % \end{figure}
+
+%% % A sanity check for the definition of information released is that
+%% % whenever the execution of a program releases no secret information,
+%% % then the program satisfies non-interference, i.e., if
+%% % $\forall \mathcal{H} \in
+%% % \sigma.\; \mathcal{I}^\sigma_\comm(\mathcal{H}) = 0$, then $\comm$
+%% % satisfies non-interference.
+
+%% % \subsection{Information Leak through Limited Information Release}
+%% % In recent years, there has been a lot of work in quantifying the
+%% % information that can be leaked through a program as an alternative to
+%% % declassification. Based on how much information is leaked by the
+%% % program, the program is either accepted or rejected. This allows the
+%% % programs that leak very little or ``acceptable'' amount of information
+%% % to be accepted as secure.
+
+%% % Unlike quantitative information flow analyses, limited information
+%% % release allows data to be released only implicitly, i.e., there is no
+%% % explicit flow of secret data to public channels.
+%% % Though limited information release does not quantify the amount of
+%% % information leaked through the program, it is interesting to know how
+%% % much leakage of secret information this policy allows. In this regard,
+%% % we compute the information leaked through the policy using two
+%% % established measures of uncertainity -- \emph{Shannon entropy}~\cite{}
+%% % and \emph{min-entropy}~\cite{}.
+
+%% % \subsubsection{Shannon entropy and limited information release}
+%% % Assume that a secret variable $\mathcal{S}$ has a possible set of
+%% % values $\mathcal{N}$. The Shannon entropy of the secret $\mathcal{S}$
+%% % is defined as:
+%% % \begin{equation*}\label{eq1}
+%% % H(\mathcal{S}) = \sum\limits_{n \in \mathcal{N}} P(\mathcal{S} = n)
+%% % \log_2 \frac{1}{P(\mathcal{S} = n)}
+%% % \end{equation*}
+%% % The Shannon entropy of the secret $\mathcal{S}$ given the set of
+%% % output observation $O$ is given as
+%% % \begin{equation*}\label{eq2}
+%% % H(\mathcal{S}|O) = \sum\limits_{o \in \mathcal{O}} P(O = o)
+%% % H(\mathcal{S}|O=o)
+%% % \end{equation*}
+%% % where
+%% % \begin{equation*}
+%% % H(\mathcal{S}|O = o) = \sum\limits_{n \in \mathcal{N}} P(\mathcal{S} =
+%% % n | O=o) \log_2 \frac{1}{P(\mathcal{S} = n | O=o)}
+%% % \end{equation*}
+%% % From the above defined uncertainities, the information leak can be
+%% % computed as
+%% % \begin{equation*}\label{eq3}
+%% % I = H(\mathcal{S}) - H(\mathcal{S}|O)
+%% % \end{equation*}
+
+%% % For the limited information release policy with a uniform distribution
+%% % over $n$ values and $m$ output equivalence classes, the Shannon
+%% % entropy is given as:
+%% % \begin{align*}
+%% % H(\mathcal{S}) &= \sum\limits_{1}^{n} \frac{1}{n}\log_2 n \\
+%% % &= \log_2 n
+%% % \end{align*}
+
+%% % For uniform distributions with the size set $n$ mapping to outputs
+%% % $m$, the input set can be divided into subsets of $n_i$ elements where
+%% % $i = 1 \ldots m$. Thus,
+%% % \begin{align*}
+%% % H(\mathcal{S}|O = o) &= \sum\limits_{n \in \mathcal{N}} P(\mathcal{S} =
+%% % n | O=o) \log_2 \frac{1}{P(\mathcal{S} = n | O=o)} \\
+%% % &= \sum\limits_{1}^{n_i} \frac{1}{n_i} (\log_2 n_i) = \log_2 n_i
+%% % \end{align*}
+%% % The probability of the output being $o_i$ is given $P(O=o_i) =
+%% % \frac{n_i}{n}$. Thus, the conditional entropy of secret $\mathcal{S}$
+%% % given output $O$ is
+%% % \begin{align*}
+%% % H(\mathcal{S}|O) &= \sum\limits_{i = 1}^{m} \frac{n_i}{n} \log_2 n_i
+%% % \end{align*}
+%% % and the information leakage is
+%% % \begin{equation*}\label{eq4}
+%% % I =  \log_2 n - \sum\limits_{i = 1}^{m} \frac{n_i}{n} \log_2 n_i
+%% % \end{equation*}
+%% % To determine the upper bound, we use the method of Lagrange
+%% % multipliers~\cite{} for maximizing $I$.
+%% % \begin{align*}
+%% % f(n_1, \ldots, n_m) &= \log_2 n - \sum\limits_{i = 1}^{m}
+%% % \frac{n_i}{n} \log_2 n_i \\
+%% % g(n_1, \ldots, n_m) &= \sum\limits_{i = 1}^{m} n_i = n \\
+%% % \intertext{For $j$ = $1$ to $m$, we have}
+%% % \frac{\partial}{\partial n_j} (f(n_1, \ldots, n_m) - \lambda(g(n_1 \ldots n_m) - n)) &= 0 \\
+%% % \frac{\partial}{\partial n_j} (\log_2 n - \sum\limits_{i = 1}^{m}
+%% % \frac{n_i}{n} \log_2 n_i - \lambda \sum\limits_{i = 1}^{m} n_i + \lambda n) &=0
+%% % \end{align*}
+%% % which gives $m$ equations of the form:
+%% % \begin{align*}
+%% % -\frac{1}{n.\ln 2} - \frac{\log_2 n_i}{n} - \lambda &= 0\\
+%% % n_i &= 2^{-(n\lambda + \frac{1}{\ln 2})}
+%% % \end{align*}
+%% % Substituting this in $g$, we have
+%% % \begin{align*}
+%% % m.2^{-(n\lambda + \frac{1}{\ln 2})} &= n \\
+%% % \lambda &= -\frac{1}{n}(\log_2 \frac{n}{m} + \frac{1}{\ln 2})
+%% % \end{align*}
+%% % Resubstituting the value of $\lambda$ in the $m$ equations:
+%% % \begin{align*}
+%% % n_i &= 2^{-(n\lambda + \frac{1}{\ln 2})} \\
+%% % n_i &=  2^{-\big(n.\big(-\frac{1}{n}(\log_2 \frac{n}{m} + \frac{1}{\ln 2})\big) + \frac{1}{\ln 2}\big)} \\
+%% % n_i &=  2^{-(-(\log_2 \frac{n}{m} + \frac{1}{\ln 2}) + \frac{1}{\ln 2})} \\
+%% % n_i &= \frac{n}{m}
+%% % \end{align*}
+%% % Thus, from $f$ we have:
+%% % \begin{align*}
+%% % I &=  \log_2 n - \sum\limits_{i = 1}^{m} \frac{n_i}{n} \log_2 n_i \\
+%% % &= \log_2 n - \sum\limits_{i = 1}^{m} \frac{1}{m} \log_2 \frac{n}{m}
+%% % \\
+%% % &= \log_2 n - \log_2  \frac{n}{m} \\
+%% % I &= \log_2 m
+%% % \end{align*}
+
+%% % \paragraph{Non-uniform distributions:}
+%% % For non-uniform distributions with $n$ possible values having
+%% % probabilities
+%% % $p_1 \ldots p_n$ such that $p_i > p_{i+1}$ for $i = 1..(n-1)$, we have:
+%% % \begin{equation*}
+%% % H(\mathcal{S}) = \sum\limits_{i = 1}^{n} p_i\log_2 \frac{1}{p_i}
+%% % \end{equation*}
+%% % and
+%% % \begin{align*}
+%% % H(\mathcal{S}|O) = \sum\limits_{i = 1}^{m} p_i \sum\limits_{j=1}^{k_i} p_j^{i} \log_2 \frac{1}{p_j^{i}}
+%% % \end{align*}
+%% % where $k_i$ is the number of elements in the $i$th subset, which
+%% % varies over the number of possible outputs and $p_j^{i}$ is the
+%% % probability of the $j$th element in $i$th set.
+
+%% % For maximizing the information leakage $I$, we try to maximize
+%% % $H(\mathcal{S})$ and minimize $H(\mathcal{S}|O)$, using Lagrange
+%% % multipliers. The maxima for $H(\mathcal{S})$ is at $p_i =
+%% % \frac{1}{n}$, thus at $H(\mathcal{S}) = \log_2 n$.
+
+%% % To minimize  $H(\mathcal{S}|O)$:
+%% % \begin{align*}
+%% % f(p_1^i, \ldots, p_{k_i}^i) = \sum\limits_{j=1}^{k_i} p_j^{i} \log_2
+%% % \frac{1}{p_j^{i}} &\\
+%% % g(p_1^i, \ldots, p_{k_i}^i) = \sum\limits_{j = 1}^{k_i} p_{j}^i = 1 &\\
+%% % \intertext{For $l$ = $1$ to $k_i$ where $i$ is the $i^{th}$ output class, we have}
+%% % \frac{\partial}{\partial p_l^i} (f(p_1^i, \ldots, p_{k_i}^i) + \lambda(g(p_1^i, \ldots, p_{k_i}^i) - 1)) &= 0 \\
+%% % \frac{\partial}{\partial p_l^i}  (-\sum\limits_{j=1}^{k_i} p_j^{i}
+%% % \log_2 p_j^{i} + \lambda(\sum\limits_{j = 1}^{k_i} p_{j}^i - 1)) &=0
+%% % \end{align*}
+%% % which gives $k_i$ equations of the form:
+%% % \begin{align*}
+%% % \frac{1 + \ln p_j^i}{\ln 2} &= \lambda \\
+%% % p_j^i &= 2^{\lambda - \frac{1}{\ln 2}}
+%% % \end{align*}
+%% % Thus, we have
+%% % \begin{align*}
+%% % k_i. 2^{\lambda -  \frac{1}{\ln 2}} &= 1 \\
+%% % \lambda &= \log_2 \frac{1}{k_i} + \frac{1}{\ln 2} \\
+%% % \intertext{Substituting above,}
+%% % p_j^i &= 2^{\log_2 \frac{1}{k_i} + \frac{1}{\ln 2} - \frac{1}{\ln
+%% %     2}}\\
+%% % p_j^i &= \frac{1}{k_i}
+%% % \end{align*}
+%% % Minimizing the outer summation:
+%% % \begin{align*}
+%% % f(p_1, \ldots, p_m, k_1, \ldots, k_m) &= \sum\limits_{i=1}^{m} p_i \log_2 (k_i) \\
+%% % g_1(p_1, \ldots, p_m) &= \sum\limits_{i = 1}^{m} p_i = 1 \\
+%% % g_2(k_1, \ldots, k_m) &= \sum\limits_{i = 1}^{m} k_i = n
+%% % \end{align*}
+%% % For $j$ = $1$ to $m$, we have
+%% % \begin{align*}
+%% % \frac{\partial}{\partial p_m} (f + \lambda_1(g_1 - 1) +&\lambda_2(g_2 -
+%% % n)) = 0 \text{~~and}\\
+%% % \frac{\partial}{\partial k_m} (f + \lambda_1(g_1 - 1) +&\lambda_2(g_2 -
+%% % n)) = 0 \\
+%% % \frac{\partial}{\partial p_m} (\sum\limits_{i=1}^{m}  p_i \log_2
+%% % (k_i) + &\lambda_1(\sum\limits_{i = 1}^{m} p_i - 1)
+%% % +\lambda_2(\sum\limits_{i = 1}^{m} k_i - n) ) =0  \text{~~and}\\
+%% % \frac{\partial}{\partial k_m} (\sum\limits_{i=1}^{m}  p_i \log_2
+%% % (k_i) + &\lambda_1(\sum\limits_{i = 1}^{m} p_i - 1)
+%% % +\lambda_2(\sum\limits_{i = 1}^{m} k_i - n) ) =0
+%% % \end{align*}
+
+%% % Solving for $p_i$ and $k_i$, we get $p_i = \frac{1}{m}$ and $k_i =
+%% % \frac{n}{m}$.
+%% % Thus, the maximum information leakage in this case would also be
+%% % bounded by:
+%% % \begin{equation*}
+%% % I = \log_2 m
+%% % \end{equation*}
+
+%% % \subsubsection{Min-entropy and limited information release}
+%% % The min-entropy is based on the concept of vulnerability~\cite{} and is
+%% % defined as
+%% % \begin{align*}
+%% % H_{\infty}(\mathcal{S}) &= \log_2 \frac{1}{V(\mathcal{S})}\\
+%% % &= \log_2 \frac{1}{\max\limits_{n \in \mathcal{N}}P(\mathcal{S} = n)}
+%% % \end{align*}
+%% % and the conditional min-entropy is defined as
+%% % \begin{align*}
+%% % H_{\infty}(\mathcal{S}|O) &= \log_2 \frac{1}{V(\mathcal{S}|O)}\\
+%% % V(\mathcal{S}|O) &= \sum\limits_{o \in \mathcal{O}}P(O = o)V(\mathcal{S}|O=o)\\
+%% % V(\mathcal{S}|O=o) &= \max\limits_{n \in \mathcal{N}}P(\mathcal{S} = n|O=o)
+%% % \end{align*}
+%% % The information leakage in this case is given as
+%% % \begin{equation*}
+%% % I = H_{\infty}(\mathcal{S}) - H_{\infty}(\mathcal{S}|O)
+%% % \end{equation*}
+
+%% % The min-entropy for limited information release policy in the case of
+%% % uniform distribution over $n$ values and $m$ output classes would be
+%% % \begin{align*}
+%% % V(\mathcal{S}) &= \frac{1}{n} \\
+%% % H_{\infty}(\mathcal{S}) &= \log_2 n
+%% % \end{align*}
+
+%% % %% and the conditional min-entropy would be
+%% % %% \begin{align*}
+%% % %% H_{\infty}(\mathcal{S}|O) &= \log_2 \frac{n}{m}\\
+%% % %% \end{align*}
+
+%% % Now,
+%% % \begin{align*}
+%% % V(\mathcal{S}|O) &= \sum\limits_{o \in O} P(O=o)V(S|O=o) \\
+%% %                  &= \sum\limits_{o \in O} P(O=o)\max\limits_{s \in \mathcal{S}}V(s= \mathcal{S}|O=o) \\
+%% %                  &= \sum\limits_{o \in O} \max\limits_{s \in \mathcal{S}}P(\mathcal{S}=s|O=o) P(O=o)\\
+%% %                  &= \sum\limits_{o \in O} \max\limits_{s \in \mathcal{S}}P(O=o|\mathcal{S}=s) P(\mathcal{S}=s)\\
+%% %                  &= \sum\limits_{o \in O} \max\limits_{s \in \mathcal{S}}P(O=o|\mathcal{S}=s) P(\mathcal{S}=s)\\
+%% % \end{align*}
+
+%% % For deterministic programs we know that, O is partitioned into $|\mathcal{S}|$ equivalence class i.e
+%% % $\{ s \in S | P[O=o|\mathcal{S}=s] = 1\}$
+
+%% % Therefore
+%% % \begin{align*}
+%% % V(\mathcal{S}|O) &= \sum\limits_{o \in O} \max\limits_{s \in \mathcal{S}} P(\mathcal{S}=s)\\
+%% % \end{align*}
+
+%% % And when the distribution is uniform, then the conditional vulnerability gets further simplified to
+%% % \begin{align*}
+%% % V(\mathcal{S}|O) &= \sum\limits_{o \in O} 1/m\\
+%% %                  &=  n/m\\
+%% % \end{align*}
+
+%% %% \begin{align*}
+%% %% V(\mathcal{S}|O) &= \frac{m-1}{n} V(\mathcal{S}|O=o) +
+%% %% \frac{n-(m-1)}{n}V(\mathcal{S}|O\neq o)\\
+%% %% &= \frac{m-1}{n} + \frac{n-(m-1)}{n}\Big(\frac{1}{n-(m-1)}\Big)\\
+%% %% &= \frac{m}{n}\\
+%% %% H_{\infty}(\mathcal{S}|O) &= \log_2 \frac{n}{m}
+%% %% \end{align*}
+%% %% Thus, the information leakage with limited information release is
+%% %% \begin{align*}
+%% %% I &= H_{\infty}(\mathcal{S}) - H_{\infty}(\mathcal{S}|O)\\
+%% %% &= \log_2 n - \log_2 \frac{n}{m}\\
+%% %% &= \log_2 m
+%% %% \end{align*}
+%% %% Again, the information leakage is very less when the value of $m$ is
+%% %% low, and the program satisfies non-interference when $m = 1$.
+%% %% For non-uniform distributions with the $n$ possible values having
+%% %% probabilities $p_1 \ldots p_n$ such that $p_i > p_{i+1}$ for $i =
+%% %% 1..(n-1)$, we have:
+%% %% \begin{align*}
+%% %% V(\mathcal{S}) &= p_1 \\
+%% %% V(\mathcal{S}|O) &= \sum\limits_{i=1}^{m-1}p^o_i(p_i) +
+%% %% p^o_m\sum\limits_{j=m}^{n}p_j'\\
+%% %% I &= \log_2 \frac{\sum\limits_{i=1}^{m-1}p^o_i(p_i) +
+%% %% p^o_m\sum\limits_{j=m}^{n}p_j'}{p_1}
+%% %% \end{align*}
+%% %% The information leakage is less when the value of $m$ is low but could
+%% %% still be significant for a non-uniformly distributed secret.
+
+%% % \subsubsection{Discussion}
+%% % For programs having non-uniformly distributed secret values, the
+%% % information leakage measure would generally be high as limited
+%% % information release policy allows information to be released by
+%% % querying for the most probable values. However, such information
+%% % release might be required in many cases even though most quantitative
+%% % techniques would reject the program as leaking too much information.
+%% % Consider, for instance, the
+%% % password checker example in Listing~\ref{egpc}. Assume that the
+%% % password the user chooses is ``123456'' and the probability of the
+%% % password being ``123456'' is 0.5. By answering the query, the program
+%% % leaks information whose measure would be considerable and thus
+%% % rejected by many quantitative techniques. However, it is required that
+%% % the program return a response to the user in this case, which
+%% % justifies the release of information by limited information
+%% % release. Another interesting example script is shown in
+%% % Listing~\ref{egbr}, which uses \texttt{attachEvent} instead of
+%% % \texttt{addEventListener} if the browser is an old version of Internet
+%% % Explorer. If the probability of the browser being Internet Explorer is
+%% % high, then most quantitative analysis techniques would deem the leak
+%% % as \emph{not-acceptable}. However, for providing the correct
+%% % functionality these checks are required to release such ``limited''
+%% % information.
+%% % \begin{lstlisting}[float, caption=Browser Sniffing Script, label=egbr]
+%% % iExplorer = false;
+%% % if (navigator.appName ==
+%% %             'Microsoft Internet Explorer') {
+%% %     iExplorer = true;
+%% % }
+%% % if (iExplorer) {
+%% %     document.attachEvent(''onclick'', foo);
+%% % } else {
+%% %     document.addEventListener(''click'', foo);
+%% % }
+%% % \end{lstlisting}
+
+%% % The information leakage can further be controlled by choosing low
+%% % values of $m$, thus limiting the data-releasing comparisons on the
+%% % secret.
+
+%% % \subsection{Theorems}
+%% % We partition the initial set of \emph{high} variables from the
+%% % \emph{low} variables with respect to an attacker at level
+%% % $\attacker$ in the initial memory $\sigma$. Assuming that the set of
+%% % high variables is $X = \{x_1, \ldots,  x_m\}$ and the output
+%% % observation is the low part of the final memory
+%% % $\sigma'_\attacker$. To determine the mutual information shared
+%% % between each  $x_i$ and the final low memory $\sigma'_\attacker$
+%% % \begin{align*}
+%% % \forall x_i. I(x_i; \sigma' | \sigma) = H(\sigma' | \sigma)
+%% % \end{align*}
+%% % The information shared from each $x_i$ assuming that all the other
+%% % high variables are known to the attacker is given by:
+%% % \begin{align*}
+%% % \forall x_i. I(x_i; \sigma' |\sigma, X \setminus x_i) = H(\sigma' |
+%% % \sigma, X \setminus x_i)
+%% % \end{align*}
+
+%% % \begin{myThm}
+%% % If $\forall x_i. I(x_i; \sigma | X \setminus x_i) \leq k$, then $I(x_i; \sigma) \leq k$
+%% % \end{myThm}

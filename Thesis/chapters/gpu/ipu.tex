@@ -1,0 +1,41 @@
+\chapter{Improved Permissive-Upgrade}
+\label{ch:ipu}
+
+\begin{lstlisting}[float,label=lst1.1,caption=Impermissiveness of the NSU strategy][escapechar=@]
+x = false
+if (not(z))
+  x = true@\label{lineref1}@
+if (y) f() else g()
+x = false@\label{lineref2}@
+\end{lstlisting}
+%
+The no-sensitive-upgrade (NSU) check described earlier provides the basic
+foundations for sound dynamic IFC. However, terminating a program
+preemptively because of the NSU check is quite restrictive in practice. For
+example, consider the program of Listing~\ref{lst1.1}, where \TT{z} is
+labeled $H$ and \TT{y} is labeled $L$. This program potentially upgrades
+variable \TT{x} at line~\ref{lineref1} under a high $pc$, and then
+executes function \texttt{f} when \TT{y} is \texttt{true} and
+executes function \texttt{g} otherwise. Suppose that \texttt{f}
+does not read \TT{x}. Then, for $\TT{y} \mapsto \texttt{true}^L$, this program
+leaks no information, but the NSU check would terminate this program
+prematurely at line~\ref{lineref1}. (Note: \texttt{g} may read \TT{x},
+so \TT{x} is not a dead variable at line~\ref{lineref1}.)
+
+To improve permissiveness, Austin and Flanagan~\cite{plas10} proposed
+the permissive-upgrade strategy as a replacement for NSU. However,
+that development lacks permissiveness in certain cases. 
+This chapter presents the soundness results of the permissive-upgrade
+strategy with the improvement for further permissiveness in place.
+ % are presented here 
+% (using the modified notation for the imperative language)
+% and the next
+% chapter builds a generalization of the permissive-upgrade strategy to
+% arbitrary lattices.
+
+
+\input{chapters/gpu/background}
+\input{chapters/gpu/improved}
+% \input{chapters/gpu/approach}
+
+% \Blindtext

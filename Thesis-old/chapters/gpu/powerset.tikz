@@ -1,0 +1,12 @@
+\begin{tikzpicture}[xscale=1.3]
+\node (Lp) at (0,2) {$HH$};
+\node (L1) at (-1,1) {$LH$};
+\node (L2) at (1,1) {$HL$};
+\node (L) at (0,0) {$LL$};
+	
+\tikzstyle{every path}=[black] 
+\path 	(L2) edge (L)
+			(L1) edge (L)
+			(Lp) edge (L1)
+			(Lp) edge (L2);				
+\end{tikzpicture}

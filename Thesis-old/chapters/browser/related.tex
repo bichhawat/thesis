@@ -1,0 +1,174 @@
+\chapter{Related Work}
+\label{ch:related}
+
+Browser security is a very widely-studied topic. Here, only closely
+related work on information flow control for browsers, browser
+security policies and policy enforcement techniques is described. 
+
+\medskip\noindent\textbf{Information flow control and script
+  isolation.} With the widespread use of JavaScript,
+research in dynamic techniques for IFC has regained momentum.
+Nonetheless, static analyses are not completely futile. Guarn\-ieri
+\emph{et al.}~\cite{guarnieri11ISSTA} present a static abstract
+interpretation for tracking taints in JavaScript. However, the
+omnipresent \texttt{eval} construct is not supported and this approach
+does not take implicit flows into account.  Chugh \emph{et al.}
+propose a staged information flow approach for 
+JavaScript~\cite{stagedIFC}. They perform static server-side policy
+checks on statically available code and generate residual
+policy-checks that are applied to dynamically loaded code.  This
+approach is limited to certain JavaScript constructs excluding dynamic 
+features like dynamic field access or the \texttt{with} construct.
+
+Austin and Flanagan~\cite{plas09} propose purely dynamic IFC for
+dynamically-typed languages like JavaScript. They use the
+no-sensitive-upgrade (NSU) check~\cite{zdancewic02PhD} to handle
+implicit flows. Their per\-mis\-sive-upgrade strategy~\cite{plas10} is
+more permissive than NSU but retains ter\-mi\-na\-tion-insensitive
+non-interference. This work builds on the permissive-upgrade
+strategy. They also present faceted evaluation~\cite{austin12POPL},
+which is the most permissive technique of the three. However, given
+the performance considerations, the technique is not suitable for
+enforcing information flow control in browsers.  Just
+et al.~\cite{just11PLASTIC} present dynamic IFC for JavaScript
+bytecode with static analysis to determine implicit flows precisely
+even in the presence of semi-unstructured control flow like
+\texttt{break} and \texttt{continue}. Again, NSU is leveraged to
+prevent implicit flows. This thesis builds on top of their work to
+enforce information flow control in browsers.
+
+JSFlow~\cite{csf12,jsflow} is a stand-alone implementation of
+a JavaScript interpreter with fine-grained taint tracking. Many
+seminal ideas for labeling and tracking flows in JavaScript owe their
+lineage to JSFlow, but since JSFlow is written from scratch it has
+very high overheads and  introduces annotations to deal with
+semi-structured control flow. It detects
+security violations due to branches that have not been executed and
+injects annotations to prevent these in subsequent runs. The approach
+presented in this thesis relies on analyzing CFGs and does not require
+annotations. To improve permissiveness,
+their subsequent work~\cite{esorics12} uses testing. 
+
+Kerschbaumer et al.~\cite{crowdflow} build an implementation of an
+information flow monitor for WebKit but do not handle all implicit
+flows.  A black-box approach to enforcing non-interference is based on
+secure multi-execution (SME)~\cite{SME}. Bielova \emph{et
+  al.}~\cite{rnib} and De Groef \emph{et al.}~\cite{flowfox} implement
+SME for web browsers. These systems do not attach labels to specific
+fields in the DOM. Instead, labels are attached to individual DOM
+APIs.
+
+Chudnov and Naumann~\cite{chudnov-ccs} present another approach to
+fine-grained IFC for JavaScript. They rewrite source programs to add
+shadow variables that hold labels and additional code that tracks
+taints. This approach is inherently more portable than that of JSFlow
+or the work presented in this thesis, both of which are tied to
+specific, instrumented browsers. However, it is unclear how this
+approach could be extended with a policy framework like {\sys} that
+assigns state-dependent labels at runtime.
+
+The work most closely related to $\sys$ is that of
+Vanhoef \emph{et al.}~\cite{csf14} on stateful declassification
+policies in reactive systems, including web browsers. Their policies
+are similar to the ones presented here, but there are significant
+differences. First, 
+their policies are attached to the browser and they are managed by the
+browser user rather than website developers. Second, the policies have 
+coarse-granularity: They apply uniformly to all events of a certain
+type. Hence, it is impossible to specify a policy that makes
+keypresses in a password field secret, but makes other keypresses
+public. Third, the enforcement is based on secure
+multi-execution~\cite{SME}, which is, so far, not compatible with
+shared state like the DOM.
+
+COWL~\cite{cowl} enforces mandatory access control at
+coarse-granularity. In COWL, third-party scripts are sandboxed. Each
+script gets access to either remote servers or the host's DOM, but not
+both. Scripts that need both must be re-factored to pass DOM elements
+over a message-passing API (\texttt{postMessage}). This can be both
+difficult and have high overhead. For scripts that do not need this
+factorization, COWL is more efficient than solutions based on FGTT.
+
+Mash-IF~\cite{mashif} uses static analysis to enforce IFC
+policies. Mash-IF's model is different from {\sys}'s model. Mash-IF
+policies are attached only to DOM nodes and there is no support for
+adding policies to new objects or events. Also, in Mash-IF, the
+browser user (not the website developer) decides what
+declassifications are allowed. Mash-IF is limited to a JavaScript
+subset that excludes commonly used features such as \texttt{eval} and
+dynamic property access.
+
+JSand~\cite{jsand} uses server-side changes to the host page to
+introduce wrappers around sensitive objects, in the style of object
+capabilities~\cite{millerphd}. These wrappers mediate every access by
+third-party scripts and can enforce rich access policies. Through
+secure multi-execution, coarse-grained information flow policies are
+also supported. However, as mentioned earlier, it is unclear how
+secure multi-execution can be used with scripts that share state with
+the host page.
+
+{\sys} policies are enforced using an underlying IFC
+component. Although, in principle, any IFC technique such as
+fine-grained taint tracking~\cite{jang10CCS,jsflow,post14},
+coarse-grained taint tracking~\cite{cowl} or secure
+multi-execution~\cite{SME} can be used with {\sys}, to leverage the
+full expressiveness of {\sys}'s finely-granular policies, a
+fine-grained IFC technique is needed. 
+
+\medskip\noindent\textbf{Access control.}  The traditional browser
+security model is based on restricting scripts' access to data, not on
+tracking how scripts use data. In the traditional model, it is
+impossible to allow scripts access to data they need for legitimate
+purposes and, simultaneously, to prevent them from leaking the data on
+the side, which is the goal of IFC and {\sys}. More broadly, no
+mechanism based only on access control can solve this
+problem. Nonetheless, some closely related work on access
+control in web browsers is discussed below.
+
+All browsers today implement the same-origin policy (SOP)~\cite{sop},
+which prevents a page and scripts included in it from making requests
+to domains other than the page's host. However, for pragmatic reasons,
+image requests are exempt, which is sufficient to leak
+information. Consequently, the SOP is not effective against malicious
+or buggy scripts. Cross-origin resource sharing (CORS)~\cite{cors}
+relaxes the SOP further to allow some cross-origin requests.
+%
+%% Besides IFC, there is a significant amount of work on \emph{access
+%%   control} in web browsers. Access control either allows or denies a
+%% script access to data. It is ineffective in cases where a script
+%% legitimately needs access to the data, but the risk is that it may
+%% leak data on the side. Consequently, access control targets a simpler
+%% problem than IFC and {\sys}---that of protecting data that the script
+%% does not need in the first place. Nonetheless, we compare to some
+%% closely related work on access control in web browsers.
+%
+Content security policies (CSPs)~\cite{csp} allow white- and
+black-listing scripts. Unlike {\sys}, CSPs offer no protection against
+scripts that have been included by the developer without realizing
+that they leak information.
+
+Conscript~\cite{conscript} allows the specification of fine-grained
+access policies on individual scripts, limiting what actions every
+script can perform. Similarly, AdJail~\cite{adjail} limits the
+execution of third-party scripts to a shadow page and restricts
+communication between the script and the host page.
+
+Zhou and Evans~\cite{zhouESORICS11} take a dual approach, where
+fine-grained access control rules are attached to DOM elements. The
+rules specify which scripts can and cannot access individual
+elements. Along similar lines, Dong \emph{et al.}~\cite{ccs13crypton}
+present a technique to isolate sensitive data using authenticated
+encryption. Their goal is to reduce the size of the trusted computing
+base.
+
+ADsafe~\cite{adsafe} and FBJS~\cite{fbjs} restrict third-party code to
+subsets of JavaScript, and use static analysis to check for
+illegitimate access. Caja~\cite{caja} uses object capabilities to
+mediate all access by third-party scripts. Webjail~\cite{webjail}
+supports least privilege integration of third-party scripts by
+restricting script access based on high-level policies specified by
+the developer.
+
+All these techniques enforce only access policies and cannot control
+what a script does with data it has access to.
+

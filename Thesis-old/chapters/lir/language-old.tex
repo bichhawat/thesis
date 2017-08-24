@@ -1,0 +1,698 @@
+\section{LIR Enforcement}
+\label{sec:formalization}
+
+\subsection{Language and Syntax}
+This section describes a runtime enforcement of LIR for the simple
+imperative language shown in Figure~\ref{basic:syntax} extended with
+the \dec~operator as shown in Figure~\ref{fig:syntaxLIR}. The
+comparison and arithmetic operators are separated as $\op$ and $\aop$,
+respectively, for the rules. The language
+is sufficient for describing the key idea of LIR --- appropriate
+deduction of budgets at declassification of boolean expressions involving
+secrets. 
+
+\begin{figure}[!htbp]
+\begin{align*}
+  \expr	:=~&\TT{n}~\arrowvert~\TT{x}~\arrowvert~\expr_1 \aop \expr_2~\arrowvert~
+             \expr_1 \op \expr_2~\arrowvert~\dec(\expr_1 \op \expr_2)\\
+  \comm	:=~&\sk~\arrowvert~\TT{x} :=
+             \expr~\arrowvert~\comm_1;\comm_2~\arrowvert~\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2~\arrowvert~ 
+   \texttt{while}~\expr~\texttt{do}~\comm
+\end{align*}
+\caption{Syntax of the language}
+\label{fig:syntaxLIR}
+\end{figure}
+
+Every input (coming in via store variables) to the program has a confidentiality
+label (part of a security lattice and represented using 
+$k, m$) associated with it referred to as the \emph{initial label}. An
+immutable map $\ilabel$ represents the mapping from a variable to
+its initial label. Along with the initial confidentiality label, every
+input is also associated with a \emph{budget} and an immutable
+\emph{budget-label}. The budget on an input represents an upper bound 
+on the amount of information that is allowed to leak about that
+input. The budget-label serves the purpose of indicating the
+confidentiality level to which the value can be
+declassified. Additionally, the budget-label helps in increasing the 
+permissiveness of the approach as described later. An immutable map
+$\blabel$ tracks the budget-label associated with different variables.
+Since the budgets change as the program executes, they themselves can
+be a channel of information leak. The budgets are represented as
+$\TT{n}^l$, where $\TT{n}$ is the budget and $l$ is the budget-label, i.e., if a
+variable has a budget of $1$ and the budget-label $L$, it is denoted
+as $1^L$.
+% To counter that, we
+% associate the budgets with a confidentiality label of their own, i.e.,
+% the budget-label. 
+% As a result, the budget label should never be above
+% the the initial label of the input.
+
+Instead of directly tracking the label on the values, the variable
+dependencies (also referred to as provenance) are tracked.
+As every variable has its initial label, its budget and its budget
+label associated with it, tracking dependencies enables access to 
+this metadata for every dependency individually. This assists the
+enforcement by choosing the right variable to deduct budget from, 
+which is required at the point of declassification. These dependencies
+are split into two parts and represented as a pair: $(l, \dep)$. 
+$\dep$ is a set of variables on whose initial values the current
+value depends. Information can be released only about the variables
+that are part of the provenance set ($\dep$). The security level $l$
+of the label is the join of security levels (upper-bound) of all the
+provenances for which no more information is allowed to be
+released. Once the budget of a variable expires (becomes $0$), the
+security level of that provenance is joined with the security level of
+the value and the variable is removed from the provenance set, i.e.,
+for initial $\TT{x} = \TT{n}^{(\bot, \{\TT{x}, \TT{y}\})}$ such that
+$\ilabel(\TT{x}) = l$ and $\ilabel(\TT{y}) = m$, once the budget of
+$\TT{y}$ expires, $\TT{x} = \TT{n}^{(m, \{\TT{x}\})}$.  Thus, the
+security level of a value ($l$) represents the minimal level at which
+the value can be observed. The current value in the variable can never
+be released to a level below $l$. Initially, every variable depends
+only on itself. Every initial variable $\TT{x}$ is labeled $(\bot,
+\{\TT{x}\})$, where $\bot$ represents the least element in the lattice. 
+
+The function $\Gamma(\TT{n}^{(l, \dep)})$ returns the label of the
+value, i.e., $\Gamma(\TT{n}^{(l, \dep)}) = l \bigsqcup\limits_{\TT{x}
+  \in \dep} \ilabel(\TT{x}) \bigsqcup\limits_{\TT{x} \in \dep}
+\blabel(\TT{x})$.  The function $\Gamma_f(\TT{n}^{(l, \dep)})$ returns
+the security level $l$ of the label.  The function $\dep(\TT{x})$
+returns all the provenances of $\TT{x}$. 
+The join operation on the labels returns the join of the security levels and the
+union of the provenance sets as the final label, i.e.,
+$$(l, \dep) \sqcup (l', \dep') = (l \sqcup l', \dep \cup \dep')$$
+Similarly, the ordering on the labels is defined as:
+$$(l, \dep) \sqsubseteq (l', \dep') = (l \sqsubseteq l', \dep \subseteq \dep')$$
+$\pc$ denotes the current program-context level, and % $\Gamma_f(pc)$
+% and $\Gamma(\pc)$ function as before. 
+contains \emph{only} the security level, represented as $(l, \{\})$,
+i.e., none of the provenances in the $\pc$ are allowed to release any
+information through the variables being assigned within the branch and
+are hence joined with the security level $l$ of the $\pc$.  This
+decision is justified below with an example. The function
+$\Gamma(\pc)$ returns the security level $l$ of the 
+$\pc$. When the meaning is clear from the context, $\pc$ is used
+instead of $\Gamma(\pc)$.  
+
+\subsection{Key Aspects of the Enforcement}
+\label{sec:enf-design}
+
+\subsubsection{Provenance Tracking}
+As the monitor is \emph{flow-sensitive}, information can be released
+through other variables that are dependent on the initial value of
+some of the secret variables. Instead of directly tracking abstract
+labels, which gives a bound on the secrecy but loses the actual input
+variable dependency, variable dependencies are tracked. These
+dependencies determine the  variables to deduct the budget
+from. Provenance tracking is required for a correct analysis 
+and to prevent an adversary from laundering secret information as
+described below. Consider the example in Listing~\ref{egDep} with the 
+security lattice $L \sqsubseteq H$. Assume that the initial values in
+\texttt{sec} and \texttt{h} are both secret with the initial label $H$
+and an initial budget of $1^L$; the initial values in \texttt{pub} and
+\texttt{i} are both public with an initial label $L$.
+
+\begin{lstlisting}[float,caption=Leak due to dependent variables, label=egDep]
+ pub $=$ 0;
+ h $=$ sec $\%$ 2;  @\label{a:t}@
+ sec $=$ sec $/$ 2;
+ if (declassify(h $==$ 1))  @\label{if:h}@
+    pub $=$ pub $|$ 1; @\label{if:a}@
+ i $=$ sec $\%$ 2; @\label{a:2}@
+ if (declassify(i $==$ 1)) @\label{if:i}@
+    pub $=$ pub $|$ 2; @\label{if:a1}@
+\end{lstlisting}
+
+Suppose that at the assignment on line~\ref{a:t} only the label of
+\texttt{sec} is carried over to the label of \texttt{h} (like any flow-sensitive IFC
+monitor would) but the actual variable dependencies are not tracked.  Without 
+tracking the dependent variables, the declassification on line~\ref{if:h}
+would release the value of \texttt{h} (the last bit of \texttt{sec}) to
+\texttt{pub} deducting the budget of \texttt{h} but not \texttt{sec}. As a
+result another bit of information about \texttt{sec} can be leaked later
+(through declassify on line~\ref{a:2}), which should not have been
+allowed as the budget of \texttt{sec} is just $1$.
+
+With dependency tracking, initially \texttt{h} and \texttt{sec} will
+be $\dep(\texttt{h}) = \texttt{h}$ and $\dep(\texttt{sec}) = \texttt{sec}$.
+The monitor would update the dependence of \texttt{h} on
+\texttt{sec} on line~\ref{a:t}. As a result, the declassification on
+line~\ref{if:h} would deduct the budget from \texttt{sec} and not
+\texttt{h}. On line~\ref{a:2}, \texttt{i} is updated with the next bit
+of \texttt{sec} and so is the dependence of \texttt{i} on
+\texttt{sec}, i.e., $\dep(\texttt{i}) = \texttt{sec}$. When executing
+the branch on line~\ref{if:i} as \texttt{sec} has expired its budget,
+the monitor joins the security level of \texttt{sec} in the new
+program context making it secret $H$, hence limiting the amount of
+information released about the initial value of \texttt{sec}. 
+% At every assignment, the LIR monitor embedded in the semantics determines the
+% variables on which the assigned value depends and adds these variables to the
+% provenance set for the assigned variable.
+
+\begin{lstlisting}[float,caption=Example to illustrate budget reduction,label=egbr]
+ x $=$ (a $\%$ 2) @\label{brass}@
+ if (a $==$ 0) @\label{br0}@
+   x $=$ b @\label{brxb}@
+ z $=$ declassify(x $==$ 1) @\label{brz}@
+ y $=$ declassify(b $==$ 0) @\label{bry}@
+\end{lstlisting}
+\subsubsection{Budget-label Constraints}
+When declassifying a value labeled $(l, \dep)$, budget is reduced
+for only those variables in the provenance set $\dep$ that have a
+budget-label at least as high as $l$, i.e., $\forall \TT{x} \in \dep. l
+\sqsubseteq \blabel(\TT{x})$ as when the budget-label is below $l$ no 
+useful information can be released. 
+The reduction of budget and release of information is subject to the 
+condition that declassification of a value in a secret context is not
+allowed, as this could leak information about the context itself. In
+the current setting, this would mean that if the label of the value
+being declassified is $(l, \dep)$, then $\pc \sqsubseteq l$. It
+turns out that this suffices to prevent leaks via change of budgets,
+as for declassification it is required that the budget-label is at
+least as secret as $l$, i.e., no value is declassified to a level
+below $\pc$. Without these checks in place, the monitor could leak
+additional information as shown below.
+
+Consider, for illustration, the example in Listing~\ref{egbr}. Assume
+that \texttt{a} and \texttt{b} are two secrets with initial labels
+$(M, \{\})$ and $(L, \{\texttt{b}\})$, initial labels $M$ and $H$ such
+that $L \sqsubseteq M \sqsubseteq H$, and initial budgets of $0$ and
+$1^L$, respectively. On line~\ref{brass}, \texttt{x}'s label becomes
+$(M, \{\})$ as the budget of \texttt{a} has already expired. Consider
+two executions of the program depending on whether \texttt{a} is $0$
+or not. When \texttt{a} is $0$, \texttt{x} is assigned \texttt{b} on
+line~\ref{brxb} with a label $(M, \{\texttt{b}\})$. On line~\ref{brz},
+\texttt{x} can be declassified to level $M \sqcup L$ (as
+$\blabel(\texttt{b}) = L$). Assume that the value that is declassified
+is \texttt{true}. Thus, the label of the declassified value in
+\texttt{z} is $(M, \{\})$ and the budget of \texttt{b} becomes $0$. On
+line~\ref{bry}, as \texttt{b} has expired its budget, \texttt{y} is
+labeled $(H, \{\})$. The value released in this run is
+\texttt{true}$^M$.  In the other run when \texttt{a} is not $0$,
+\texttt{x} has a label of $(M, \{\})$ on line~\ref{brz}. Thus, no
+declassification occurs on line~\ref{brz}. As the budget of \texttt{b}
+on line~\ref{bry} is still $1^L$, the value on line~\ref{bry} is
+declassified to $L$. Thus, the label of \texttt{y} after the
+assignment becomes $(L, \{\})$ and the value released for this run is
+\texttt{false}$^L$.  Thus, in the first run an $L$-level adversary
+cannot observe any value while in the second run, the adversary can
+see the value as it is labeled $L$. As the adversary knows the budget
+of \texttt{b}, he/she can conclude that in the first case the branch on
+line~\ref{br0} was taken and in the second case it was not taken. This
+leaks an additional bit of information about \texttt{a} although the
+budget of \texttt{a} doesn't allow any information release.
+
+To prevent this leak, in the first case, the value of \texttt{x} on
+line~\ref{brz} is not declassified as the budget-label of
+\texttt{b} ($\blabel(\texttt{b}) = L$) is lower than the
+security level of the value ($M$).
+
+% Intuitively, the program context
+% affecting a variable need to be captured in the variable's label to
+% avoid leaking information about the context. As any variable's value
+% at a given point in the program can only be affected by security
+% contexts ($\pc$) that are lower than or equal to the variable's
+% current security level (i.e., if the label of a variable is $(l,
+% \dep)$, then the value in the variable could have only been modified
+% in a $\pc \sqsubseteq (l, \dep)$, else the assignment would have
+% failed the NSU check or be labeled partially-leaked), we impose this
+% check at declassification points. In general, if a variable in the
+% provenance set has expired its budget no further information should be
+% released about the other 
+% provenances as this could also leak information about the variable
+% with expired budget as shown above. However, as the information can
+% only be released to a level specified by the budget-label of the
+% variable, we have the additional check.
+
+% \medskip
+\subsubsection{Handling implicit flows}
+Implicit flows are handled as per the permissive-upgrade strategy ---
+assignments to public variables in a secret context ($\pc$) are
+labeled partially-leaked. However, for simplicity of exposition the
+no-sensitive-upgrade check is used here and further in the chapter
+instead of the permissive-upgrade strategy. 
+
+Since variable dependencies are used in
+addition to the security levels, those dependencies also need to be
+checked for during assignment operations. For an assignment to
+succeed, it is important that
+no new dependencies are handed over to the variable as part of the
+assignment operation. Thus, it is required that % either:
+% \begin{itemize}
+% \item $\pc \sqcup (m, \dep') \sqsubseteq (l, \dep)$ where $(l,
+%   \dep)$ is the label of the variable \TT{x} being assigned to and $(m,
+%   \dep')$ is the label of the expression being assigned to the variable
+%   \TT{x}. The reason being that the assignments that happen in one of
+%   the runs would carry the dependencies of the value being assigned
+%   too while in an alternate run those dependencies might not be
+%   present in the label of the assigned variable. 
+% \item 
+  $\pc \sqsubseteq k$, where $k$ is the security level of the
+  variable being assigned, i.e., the security
+  level of the variable being assigned is at least as high as the
+  security level of the $\pc$. 
+  % In this case, the final security
+  % level of \TT{x} would be at least as high as $\Gamma(\pc)$, thus,
+  % carrying the security level of the dependency variables rather than
+  % carrying the dependencies.
+  This prevents leaks as the assignments
+  that happen under a $\pc$ would carry the dependencies of the $\pc$
+  too while in an alternate run those dependencies might not be
+  present in the label of the assigned variable. 
+% \end{itemize}
+The mismatch of dependencies in the two cases can leak information as
+illustrated using an example in Listing~\ref{egimp}. 
+
+%% To handle implicit flows, the assignments are subject to the standard
+%% no-sensitive-upgrade (NSU) check described earlier in
+%% Section~\ref{sec:bgdifc}, i.e., assignment to any variable $x$ is allowed
+%% only if $\pc \sqsubseteq \Gamma(x)$. However, we do not allow $\pc$ to carry
+%% provenances, i.e., $\pc = (l, \{\})$. All the provenances in the label of the
+%% predicate are joined with the security level $l$ as no information is allowed
+%% to be released about those provenances. This is done to prevent the
+%% occurrence of unaccounted information leaks.
+
+
+\begin{lstlisting}[float,caption=Example illustrating handling of
+  implicit flows,label=egimp]
+ if (x $\leq$ 10) @\label{impbr}@
+   x $=$ y @\label{impassn}@
+ z $=$ declassify(x $\leq$ 5) @\label{impdec}@
+\end{lstlisting}
+
+For the program in Listing~\ref{egimp}, assume that \texttt{x}, \texttt{y} and
+\texttt{z} have the initial confidentiality labels of $H$, $H$ and $L$ ($L
+\sqsubseteq H$), and budgets of $1^L$, $0$ and $0$ assigned to them,
+respectively. Also assume that their current dependencies are of the form $(L,
+\{\texttt{x}\})$, $(H, \{\})$ and $(L, \{\})$. Consider two runs of the program
+with $\texttt{x} \leq 10$ in one and $\texttt{x} > 10$ in the
+other. Suppose that check for provenances are kept in the $\pc$, i.e.,
+the assignment succeeds if $\pc = (l, \dep) \sqsubseteq (k_o, \dep_o)$
+where $(k_o, \dep_o)$ is the label of the variable \texttt{x}.  When
+$\texttt{x} \leq 10$, the branch  on line~\ref{impbr} is taken and the
+$\pc$ on line~\ref{impassn} would be $(L, 
+\{\texttt{x}\})$, which would allow the assignment (as dependency of
+\TT{x} is not less sensitive than the dependencies in $\pc$). As a
+result the label of \texttt{x} would be updated to $(H, \{x\})$ (join
+of $\pc$ and label of \texttt{y}). On line~\ref{impdec}, when the
+value of $\texttt{x} \leq 5$ is declassified, no information is
+released as the budget-label of \texttt{x} is lower than its security
+level ($H$) (as explained above). In the other run when $\texttt{x}
+> 10$, the branch is not taken and the value of $\texttt{x} \leq 5$ on
+line~\ref{impdec} is released to the level $L$ as the label of
+\texttt{x} on line~\ref{impdec} is $(L, \{\texttt{x}\})$ and 
+the budget is $1^L$. This leads to different sensitivity of \texttt{z} in the
+two runs which leads to leaking the value of $x \leq 10$ in the first
+run without being accounted for in its budget.
+
+With the modification suggested above in place, in the first run ---
+the value of $\pc = H$ (because $\ilabel(\texttt{x}) = H$) and
+$\Gamma_f(\TT{x}) = L$ and $H \not\sqsubseteq L$.  
+Thus, in the first run of the above example, the assignment is not
+allowed as per the no-sensitive-upgrade check. In case of the
+permissive-upgrade strategy, the label would be computed as
+$((\Gamma(\pc \sqcup m)) \sqcap l)\pl$. A partially-leaked value
+does not carry any provenances as no declassification is allowed on a
+partially-leaked value.
+
+%% Intuitively, this happens because we allow declassification of the
+%% provenances in the $\pc$ that carried over to the variables through the
+%% assignments within the branch, although these provenances were used as
+%% ``secret'' within the branch.
+
+% \medskip
+
+\subsubsection{Permissiveness}
+The overall confidentiality of the underlying value with a
+label $(l, \dep)$ is the join of $l$ with the initial label of all the
+variables in the dependency set. Thus, all those dependencies whose
+initial label is below the first part of the label can be removed as
+keeping those dependencies does not affect the confidentiality of the
+value.  This improves the permissiveness of the technique by not
+marking the release of information for variables that have a label
+lesser than or equal to the current security level or the $\pc$
+because no information can be released below the current security
+level of the variable or the current $\pc$. For instance, consider a
+value $n^{(k, \{\TT{x}\})}$ such that its label's first part is $k$ and the
+dependency set consists of just one variable \TT{x}. If
+$\ilabel(\TT{x}) \sqsubseteq k$ then \TT{x} is removed from the
+dependency set and represent the value as $n^{(k, \{\})}$. As
+explained earlier, budgets are deducted only when $\pc \sqsubseteq k$, 
+thus, the budgets of any variable whose initial label
+is below the $\pc$ are not deducted from. 
+% This improves the permissiveness of the enforcement.
+
+%% When evaluating a comparison expression that releases some information, budgets
+%% are deducted for only those provenances that have labels greater than the
+%% current context ($l \not\sqsubseteq \Gamma_f(\pc)$), where $\pc$ returns the
+%% current program-context label). This improves the permissiveness of the
+%% technique by not marking the release of information for variables that have a
+%% label lesser than or equal to the current $\pc$-label because no information can
+%% be released below the current $\pc$-label in the program.
+
+\begin{lstlisting}[float,caption=Example to illustrate permissiveness,label=egp]
+ if (med $\leq$ 0) 
+    x $=$ declassify(sec $==$ y); @\label{ifb}@
+ if (declassify(y $\neq$ 100))   @\label{if1}@
+    pub $=$ 1;  @\label{ifb1}@
+\end{lstlisting}
+
+For illustration, consider the program in Listing~\ref{egp}. Assume that,
+\texttt{med}, \texttt{x}, \texttt{sec}, \texttt{y}, and \texttt{pub}
+are labeled $(M, \{\})$, $(M, \{\})$, $(M, \{\texttt{sec}\}),
+(L, \{\texttt{y}\})$, and $(L, \{\texttt{pub}\})$,
+respectively, $\ilabel(\texttt{sec}) = H, \ilabel(\texttt{y}) = M,
+\ilabel(\texttt{pub}) = L$ such that $L \sqsubset M \sqsubset H$ and the budgets
+of \texttt{sec} and \texttt{y} are $1^M$ and $1^L$, respectively. The program
+context label ($\pc$) on line~\ref{ifb} is $(M, \{\})$. The expression
+$\TT{sec} == \TT{y}$ on line~\ref{ifb} has the label $(M, \{\TT{sec},
+\TT{y} \})$. Without the check for the current security level, the
+expression evaluation on line~\ref{ifb} releases the value of 
+\texttt{sec} and \texttt{y} into \texttt{x}. However as the security
+level is $M$, the final value of \texttt{x} would have the security
+level of at least $M$. Thus, information about \texttt{y} is released
+to $M$-level observers, who already had access to the value of
+\texttt{y}. Subsequently, on line~\ref{if1} as the budget of
+\texttt{y} has expired, no more information about \texttt{y} is
+released and the assignment on line~\ref{ifb1} fails. Thus, no useful
+information about \texttt{y} is released at any point in the program,
+yet the program is terminated because of the NSU check. With the check
+for current security level and the context label, the budget of
+\texttt{y} is not deducted on line~\ref{ifb}, which allows the check
+on line~\ref{if1} to release information about \texttt{y} 
+thereby allowing the assignment on line~\ref{ifb1} to succeed.
+
+
+\subsection{Semantics}
+\label{sec:semantics}
+To formally define the information released by a program starting from some
+initial memory containing secret values, big-step semantics is defined
+for the language shown in Figure~\ref{fig:syntaxLIR} that releases
+some information about initial secret values at comparison operations.
+% For simplicity of
+% exposition, we explain the enforcement for a simple WHILE
+% language. The key idea of the policy, however, can be generalized to
+% any language.
+% We define a big-step semantics for the language in
+% Figure~\ref{fig:syntaxLIR}.
+% and instrument them with the kind
+% of budget and label checks described above.
+
+Program configurations are extended with $\iota$ representing the
+budget store, which is a map from the variables to the budget of these
+initial  values (inputs to the program). The configurations for
+expressions ($\expr$) and commands ($\comm$) are, thus, represented
+by $\langle \sigma, \iota, \expr \rangle$ and $\langle \sigma, \iota, 
+\comm \rangle$, respectively where $\sigma$ represents the memory
+store as before. 
+$\langle\sigma, \iota, \expr \rangle \lirsem \TT{n}^{(k, \dep)}, \iota',
+\trace$ defines expression evaluation. It means that under some
+$\pc$, starting with memory $\sigma$ and budget store $\iota$, the
+expression $\expr$ evaluates to a value $\TT{n}$ labeled
+$(k, \dep)$ resulting in a budget store $\iota'$. Additionally, the
+evaluation generates a trace $\trace$, which is a list of values of the
+form $\TT{n}_1^{k_1} :: \TT{n}_2^{k_2} :: \ldots ::
+\TT{n}_j^{k_j}$. Every declassified value is recorded on the trace along
+with the level to which it is declassified. The two immutable maps ---
+initial label map ($\ilabel$) and budget-label map ($\blabel$) are
+assumed to be available and omitted from the rules for clarity.
+
+\begin{figure}[!htbp]
+\begin{framed}
+\begin{mathparpagebreakable}
+%%%%%%%%%%%%%%%%%%CONST 
+\inferrule*[left=\mbox{\labelthis{lir:exp:c}{const}}]
+{ }
+{\langle\sigma,  \iota,  \TT{n} \rangle \lirsem
+  \TT{n}^{(\bot, \{\})}, \iota,  \emptyTrace}
+\and 
+%%%%%%%%%%%%%%%%%%VAR
+\inferrule*[left=\mbox{\labelthis{lir:exp:v}{var}}]
+{\sigma(\TT{x}) = \TT{n}^{(k_o, \dep_o)} \\ 
+  \dep' = \Reduce(\dep_o, \iota, k_o, \blabel) \\
+  \dep = \dep_o \setminus \dep' \\
+  % \dep = \dep' \\ 
+  k = k_o \bigsqcup\limits_{\TT{x} \in \dep'} \ilabel(\TT{x}) 
+}
+{\langle\sigma, \iota,  \TT{x} \rangle \lirsem \TT{n}^{(k, \dep)},
+  \iota, \emptyTrace}
+\and 
+%%%%%%%%%%%%%%%%%%AOP
+\inferrule*[left=\mbox{\labelthis{lir:exp:aop}{aop}}]
+{\langle \sigma, \iota,  \expr_1 \rangle \lirsem
+  \TT{n}_1^{(k_1, \dep_1)}, \iota_1, \trace_1 \\\\ \langle \sigma,
+  \iota_1,   \expr_2 \rangle \lirsem \TT{n}_2^{(k_2, \dep_2)},
+  \iota', \trace_2 \\\\ \TT{n} = \TT{n}_1 \aop \TT{n}_2 \\ k = k_1
+  \sqcup k_2   \\\\ \dep = \dep_1 \cup \dep_2 \\ \trace = \trace_1 :: 
+  \trace_2}
+{ \langle\sigma,  \iota,   (\expr_1~\aop~ \expr_2) \rangle
+  \lirsem \TT{n}^{(k, \dep)}, \iota', \trace}
+\and
+%%%%%%%%%%%%%%%%%%OPER-COP-W-D
+\inferrule*[left=\mbox{\labelthis{lir:exp:cop}{cop}}]
+{\langle \sigma, \iota,  \expr_1 \rangle \lirsem
+  \TT{n}_1^{(k_1, \dep_1)}, \iota_1, \trace_1 \\\\ \langle \sigma,
+  \iota_1,   \expr_2 \rangle \lirsem \TT{n}_2^{(k_2, \dep_2)},
+  \iota', \trace_2 \\\\ \TT{n} = \TT{n}_1 \cop \TT{n}_2 \\ k = k_1
+  \sqcup k_2 \\\\ \dep = \dep_1 \cup \dep_2 \\ \trace = \trace_1 ::
+  \trace_2
+  % \\  \forall x \in \dep.(l = l \sqcup \ilabel(x))
+}
+{ \langle\sigma,  \iota,   (\expr_1~\cop~ \expr_2) \rangle
+  \lirsem \TT{n}^{(k, \dep)}, \iota', \trace}
+\and
+%%%%%%%%%%%%%%%%%%OPER-COP
+\inferrule*[left=\mbox{\labelthis{lir:exp:dr}{dcopr}}]
+{\langle \sigma,  \iota,  \expr_1 \rangle \lirsem
+  \TT{n}_1^{(k_1, \dep_1)} , \iota_1, \trace_1 \\
+ \langle \sigma, \iota_1, \expr_2  \rangle \lirsem
+ \TT{n}_2^{(k_2, \dep_2)},  \iota_2, \trace_2  \\\\
+\TT{n} = \TT{n}_1 \op \TT{n}_2 \\ \dep_o = \dep_1 \cup \dep_2 \\
+k_o = k_1 \sqcup k_2 \\\\
+\pc \sqsubseteq k_o \\
+% \pc \sqsubseteq (k_o, \dep_o)~ \bigvee~ \Gamma(\pc) \sqsubseteq k_o \\
+ \dep' = \Delta(\dep_o, k_o, \ilabel) \\
+\dep'' = \Reduce(\dep',\iota_2, k_o, \blabel) \\\\
+  \dep = \dep' \setminus \dep'' \\ 
+k = k_o \bigsqcup\limits_{\TT{x} \in \dep''}
+  \ilabel(\TT{x}) \bigsqcup\limits_{\TT{y} \in \dep} \blabel(\TT{y}) \\ 
+\iota' = \mathbb{I}(\iota_2, \dep)\\
+\trace = 
+\left\{\begin{array}{ll}
+        \trace_1 :: \trace_2 :: \TT{n}^{k}, & \textit{if } (\dep \neq \emptyset) \arcr
+        \trace_1 :: \trace_2, & \textit{otherwise } \arcr
+        \end{array}\right\} 
+}
+{\langle\sigma,  \iota,  \dec(\expr_1 \op \expr_2)
+  \rangle \lirsem \TT{n}^{(k, \{\})}, \iota', \trace}
+\and
+%%%%%%%%%%%%%%%%%%OPER-COP
+\inferrule*[left=\mbox{\labelthis{lir:exp:dn}{dcopn}}]
+{\langle \sigma,  \iota,  \expr_1 \rangle \lirsem
+  \TT{n}_1^{(k_1, \dep_1)} , \iota_1, \trace_1 \\
+ \langle \sigma, \iota_1, \expr_2  \rangle \lirsem
+ \TT{n}_2^{(k_2, \dep_2)},  \iota_2, \trace_2  \\\\
+\TT{n} = \TT{n}_1 \op \TT{n}_2 \\ \dep =\dep_1 \cup \dep_2 \\
+k = k_1 \sqcup k_2 \\ 
+\pc \not\sqsubseteq k \\
+% \pc \not\sqsubseteq (k, \dep) \bigwedge
+% \Gamma(\pc) \not\sqsubseteq k \\ 
+% \forall x \in \dep. (l = l \sqcup \ilabel(x)) \qquad
+\trace = \trace_1 :: \trace_2
+}
+{\langle\sigma,  \iota,  \dec(\expr_1 \op \expr_2)
+  \rangle \lirsem \TT{n}^{(k, \dep)},
+  \iota_2, \trace}
+\end{mathparpagebreakable}
+%%%%%%%%%%%%%%%%%%AF used above
+\begin{flushleft}
+\textbf{Auxiliary functions:}
+\begin{align*}
+\Delta(\dep, k, \ilabel) =&~ \big\{\TT{x}~\big|~(\TT{x} \in \dep) \wedge
+                            (\ilabel(\TT{x}) \not\sqsubseteq k) \big\} \\
+\Reduce(\dep, \iota, k, \blabel) =&~ \left\{\TT{x}~\middle|~(\TT{x} \in \dep) \wedge \big(\iota(\TT{x})
+= 0 \, \vee \, k \not\sqsubseteq \blabel(\TT{x})\big)\right\} \\
+\mathbb{I}(\iota, \dep) =&~ \left\{(\TT{x},
+                           \TT{n})~\middle|~\big((\TT{x}, \TT{j}) \in
+                           \iota\big) \bigwedge \left(\TT{n}
+=
+\left\{\begin{array}{ll}
+        \TT{j} - 1, & \textit{if} ~ (\TT{x} \in \dep) \\
+        \TT{j}, & \textit{otherwise}
+        \end{array}\right\} 
+% \begin{cases}
+% \iota(x) - 1 & \mathit{if} ~ x \in \dep \\
+% \iota(x) & \mathit{else}
+%  % (~?~ \iota(x) - 1 ~:~ \iota(x))\big)\big\} 
+% \end{cases}
+\right)\right\}
+\end{align*}
+\end{flushleft}
+\end{framed}
+\caption{LIR - Semantics of expressions}
+\label{fig:lir:sem-e}
+\end{figure}
+
+The evaluation rules for expressions shown in Figure~\ref{fig:lir:sem-e}
+are explained below:
+\begin{itemize}
+\item \refrule{lir:exp:c}: Constant values evaluate to themselves with
+  the label $(\bot, \{\})$ as they do not have any dependencies. There
+  is no change to the budget store and it generates an empty trace ($\emptyTrace$).
+\item \refrule{lir:exp:v}: 
+  The evaluation of a variable returns its value $\TT{n}$ along
+  with the label $(k_o, \dep_o)$. The function $\Reduce$ returns those
+  variables in $\dep_o$ which have a budget $0$. The current security
+  level $k_o$ is joined with the initial labels of those variables
+  while removing them from the provenance set $\dep_o$.  As no new
+  information is released, $\iota$ remains unchanged and no trace is
+  generated. 
+\item \refrule{lir:exp:aop} and \refrule{lir:exp:cop}: For arithmetic
+  operations and normal comparison operations, the label of the
+  expression is the join of the label of the values that the two
+  sub-expressions evaluate to. The individual sub-expressions can
+  release some information $\trace_1$ and $\trace_2$, thus updating
+  $\iota$ to $\iota'$.
+\item \refrule{lir:exp:dr}: This rule corresponds to the comparison
+  operation with \dec, and allows information release in certain
+  cases. The separation of \TT{declassify} from the normal comparison operations
+  is to offer more control over what information is required to be
+  released. The rule applies only when the current context $\pc$ is
+  lower than or equal to the label of the value obtained by evaluation
+  ($\pc \sqsubseteq k_o$). This is to ensure that the declassification
+  does not happen 
+  in a high context. The function $\Delta(\dep, l, \ilabel)$ returns
+  the variables in the provenance set $\dep$ that have an initial
+  label greater than $l$. Additionally, if the budget of the variables
+  in the provenance set has expired during the evaluation of the
+  sub-expressions, those variables are removed from the provenance set
+  (using the function $\Reduce$). To prevent the leak described earlier,
+  if the budget label of any of the remaining variables in the
+  provenance set is not at least as high as the original security 
+  level of the computed value ($k_o \not\sqsubseteq \blabel(\TT{x})$),
+  then the variable is removed from the dependency set. For all the
+  variables removed from the provenance set, their security level is
+  joined with that of the actual label. 
+  Depending on whether the provenance set $\dep$ is empty or not,
+  either:  
+  \begin{itemize}
+  \item the budget of all remaining variables in the provenance set
+    $\dep$ is deducted by $1$, corresponding to the $1$-bit Boolean
+    value released on the trace. The function $\mathbb{I}(\iota,
+    \dep)$ reduces the budget and returns a new budget store. Their
+    budget label is also joined  with the actual security level, which
+    gives the final label of the declassified value \emph{or}
+  \item if the remaining provenance set is empty, no declassification
+    occurs
+  \end{itemize}
+  If declassification occurs, the declassified value is appended to
+  the trace.
+\item \refrule{lir:exp:dn}: If the current context ($\pc$) is not
+  lower than or equal to the security level of the value obtained by evaluation
+  ($\pc \not\sqsubseteq k$), no information release is allowed. The
+  final label is a join of the security 
+  levels of all the provenances. The individual sub-expressions can
+  release some information $\trace_1$ and $\trace_2$, thus updating
+  $\iota$ to $\iota_2$.
+\end{itemize}
+ 
+
+
+\begin{figure}[!htbp]
+\begin{framed}
+\begin{mathparpagebreakable}
+%%%%%%%%%%%%%%%%%%SKIP
+\inferrule*[left=\mbox{\labelthis{lir:cmd:sk}{skip}}]
+{ }
+{\langle   \sigma, \iota,   \sk \rangle \lirsem
+  \langle \sigma, \iota,  \emptyTrace \rangle}
+\and
+%%%%%%%%%%%%%%%%%%ASSN
+\inferrule*[left=\mbox{\labelthis{lir:cmd:an}{assn}}]
+{ % \sigma(\TT{x}) = \_^{(k_o, \dep_o)} \\ \pc = (k_p, \dep_p) \\
+  \pc \sqsubseteq \Gamma_f(\TT{x}) \\
+  \langle  \sigma, \iota,  \expr \rangle \lirsem \TT{n}^{(m, \dep')} ,
+  \iota', \trace \\ 
+  % \pc \sqcup (m, \dep') \sqsubseteq (k_o, \dep_o) \bigvee \Gamma(\pc)
+  % \sqsubseteq k_o  \\
+  k = \pc \sqcup m \\ \dep = \Delta(\dep', k, \ilabel)
+}
+{\langle   \sigma, \iota,  \TT{x} := \expr \rangle
+  \lirsem \langle \sigma[\TT{x} \mapsto
+  \TT{n}^{(k, \dep)}], \iota', \trace \rangle}
+\and
+%%%%%%%%%%%%%%%%%%SEQ
+\inferrule*[left=\mbox{\labelthis{lir:cmd:s}{seq}}]
+{\langle   \sigma,  \iota,  \comm_1 \rangle \lirsem
+  \langle  \sigma', \iota', \trace_1 \rangle  \\ 
+  \langle   \sigma',
+  \iota', \comm_2 \rangle \lirsem \langle \sigma'',
+  \iota'', \trace_2 \rangle
+}
+{\langle   \sigma, \iota,  \comm_1;\comm_2 \rangle
+  \lirsem \langle \sigma'', \iota'', \trace_1
+  :: \trace_2 \rangle}
+\and
+%%%%%%%%%%%%%%%%%%IF
+\inferrule*[left=\mbox{\labelthis{lir:cmd:ie}{if-else}}]
+{\langle   \sigma, \iota,   \expr \rangle \lirsem
+  \TT{n}^{(k_o, \dep)}, \iota', \trace_1 \\ 
+i = \left\{\begin{array}{ll}
+        1, & \textit{if } (\TT{n} = \texttt{true}) \arcr
+        2, & \textit{otherwise } \arcr
+        \end{array}\right\} \\
+k = k_o \bigsqcup\limits_{\TT{x} \in \dep} \ilabel(\TT{x})
+\\ \langle   \sigma,  \iota', \comm_i
+  \rangle \lirsemup \langle \sigma', \iota'',
+  \trace_2 \rangle \\
+}
+{\langle   \sigma,  \iota,
+  (\texttt{if}~\expr~\texttt{then}~\comm_1~\texttt{else}~\comm_2)
+  \rangle \lirsem  \langle \sigma', \iota'',
+  \trace_1 :: \trace_2 \rangle}
+\and
+%%%%%%%%%%%%%%%%%%W_FALSE
+\inferrule*[left=\mbox{\labelthis{lir:cmd:wf}{while-f}}]
+{\langle   \sigma, \iota,  \expr \rangle \lirsem
+  \texttt{false}^{(k, \dep)}, \iota', \trace 
+}
+{\langle   \sigma,\iota,
+  \texttt{while}~\expr~\texttt{do}~\comm
+  \rangle \lirsem  \langle \sigma, \iota', \trace \rangle}
+\and
+%%%%%%%%%%%%%%%%%%W_TRUE
+\inferrule*[left=\mbox{\labelthis{lir:cmd:wt}{while-t}}]
+{\langle   \sigma, \iota,  \expr \rangle \lirsem
+  \texttt{true}^{(k_o, \dep)}, \iota_1, \trace_1 \\ 
+k = k_o \bigsqcup\limits_{\TT{x} \in \dep} \ilabel(\TT{x})
+\\ \langle   \sigma,  \iota_1, \comm;
+\texttt{while}~\expr~\texttt{do}~\comm
+  \rangle \lirsemup \langle \sigma', \iota',
+  \trace_2  \rangle \\
+}
+{\langle   \sigma,  \iota,
+  \texttt{while}~\expr~\texttt{do}~\comm
+  \rangle \lirsem  \langle \sigma', \iota',
+  \trace_1 :: \trace_2 \rangle}
+\end{mathparpagebreakable}
+\end{framed}
+\caption{LIR - Semantics of commands}
+\label{fig:lir:sem-c}
+\end{figure}
+
+
+The judgment for a command execution is given by $\langle \sigma,
+\iota, \comm \rangle \lirsem \langle \sigma', \iota', \trace \rangle$,
+which means that under a program context $\pc$, the execution of a
+command $\comm$ starting with memory $\sigma$ and budget store $\iota$
+results in a final memory $\sigma'$ and budget store $\iota'$ while
+generating a trace $\trace$ of released values from expression
+declassification. The semantics of commands is shown in
+Figure~\ref{fig:lir:sem-c}. The rules are standard except for some changes
+in the assignment rule and branching rules. The assignment rule
+\refrule{lir:cmd:an} does the standard NSU check that disallows
+assignment to a public variable in a secret context --- $\Gamma(\pc)
+\sqsubseteq \Gamma_f(\TT{x})$. The branching rules
+\refrule{lir:cmd:ie} and \refrule{lir:cmd:wt} compute the context
+label by joining the initial labels ($\ilabel$) of all the provenances
+in $\dep$.

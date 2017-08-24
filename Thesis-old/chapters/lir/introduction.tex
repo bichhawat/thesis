@@ -1,0 +1,382 @@
+%!TEX root = main.tex
+
+\lstset{
+  numbers=left,
+  numbersep=5pt,
+  basicstyle=\ttfamily\small,
+  escapeinside={@}{@},
+  keywordstyle=\ttfamily,
+  firstnumber=1,
+  showspaces=false,
+  numberfirstline=true,
+  columns=fullflexible,
+  captionpos=b,
+  mathescape=true
+}
+
+\section{Introduction}
+
+Information flow control (IFC) is a mechanism for tracking the flow
+of information through a given program, which is useful for preventing
+malicious or inadvertent leaks of sensitive data to public
+channels. IFC can be enforced statically, analyzing the source code,
+and/or dynamically, monitoring the execution of the given
+program. Such enforcement techniques are often proven 
+correct against a standard two-trace property called
+\emph{non-interference}~\cite{goguen}.  Non-interference prevents
+all unauthorized flows without regarding the severity of the
+leaks. However, many 
+practical applications require some fragment of the sensitive
+data to be released to (untrusted) programs for providing additional
+functionality or to improve the user-experience. Non-interference is
+not appropriate for such cases. For instance, according to 
+non-interference even a standard login application would be considered
+insecure because it leaks information about the user's password through
+either allowing or denying access. 
+
+As a remedy, researchers have proposed various ways to intentionally
+\emph{declassify} sensitive data through relaxations of
+non-interference~\cite{dimDecl}, which is generally enforced using
+annotations like \texttt{declassify} in the program. For instance,
+\lstinline{declassify(pwd == input)} would treat the result of the
+password check as public, thus allowing access-information to be
+released to the user.
+% circumventing \CH{which?} the problem mentioned earlier. 
+Most of these approaches require policy specifications by the
+developer that define \emph{what} information can be released by the
+program 
+% \CH{unclear:
+  as in many settings it is difficult to trust
+  third-parties to include correct (declassify) annotations for
+  information release in the code. However, in highly dynamic
+scenarios like the web where the third-party code is unknown before
+loading-time, it is difficult for the developer to specify an
+appropriate  policy with declassification specifications that caters
+to all possible codes. For instance, consider the program snippet in
+Listing~\ref{egLeak} where the displayed advertisements for some
+webpage depend on the viewer's age. The exact age is
+considered sensitive data, but in order to provide its functionality only 
+an abstraction of the age is required, namely whether \lstinline{age < 18}.
+Thus the developer might specify a declassification policy that contains
+%A general declassification policy specified by the developer in this case could be:
+\lstinline{declassify(age < 18)}. However, different jurisdictions might
+entail adaptations to this rule %advertiser might change the criteria
+(requiring a different check on \lstinline{age}), %for displaying the advertisements frequently
+resulting in a cumbersome process where the developer needs to update
+the policy frequently. If, however, the developer were able to specify
+that one comparison with the value of \lstinline{age} is permitted, the advertiser
+could specify the exact limit without requiring any adaptations of
+the policy.
+% would allow free but limited access of \lstinline{age} to the advertiser.
+%
+Unfortunately, allowing information release
+when only an insignificant amount of information is leaked %. Although the amount of information leaked through such comparison operations is usually quite little, they
+can be widened to leak the complete
+secret~\cite{relSec,delRelease}. 
+
+% For instance,
+% consider an advertisement (included in some webpage that a user is 
+% browsing) that displays different content based on the age (child or adult) of
+% the user. But age being considered sensitive here, often the host page provides
+% the age bracket (Listing~\ref{egLeak}) instead of the exact age to the
+% advertisement code (say via shared variable preference) which is designed to
+% work on age brackets. Even then, under NI this program is still insecure
+% (Listing~\ref{egLeak}) as it leaks one bit of information about the age. But
+% this can be made to work by adding an explicit \lstinline{declassify(age < 18)}.
+% However, the advertiser might change the criteria (may be based on the
+% nationality ) later for displaying the content. And the developer of the host
+% page will have to reinsert such declassification construct to match the new
+% criteria. Clearly this is quite cumbersome !
+
+\begin{lstlisting}[float,belowskip=-0.5em,caption=Age-based Advertisement, label=egLeak]
+ age $=$ getCurrentAge(birthday, birthyear);
+ if (age $<$ 18)
+    preference $=$ "child";
+ else
+    preference $=$ "adult";
+\end{lstlisting}
+% \medskip
+
+% \vr{We need to change this. This motivation is not good enough as we dont have automatic declassification anymore}
+
+We envision an alternative approach, where the developer can specify a
+\emph{budget} for every sensitive value in the system (defaulting to
+zero if not specified), which is basically an upper bound on the
+number of bits of information allowed to leak about that value. An
+underlying enforcement mechanism 
+ensures that no more information is leaked than what is specified by
+the budget. Thus for the example in Listing~\ref{egLeak}, if a budget of
+$3$ is associated with the initial value in the variable
+\lstinline{age} (meaning that only $3$ bits of information about
+\lstinline{age} are allowed to leak), this example will be
+accepted in the envisioned model. If the advertiser changes
+the criteria to include another check whether the user is a
+teenager, this comparison can be included without requiring
+any change to the policy.
+%  Similarly since other secrets like 
+% nationality have their budgets assigned to them, the developer doesn't have to
+% necessarily keep up with the changing advertisements criteria. 
+The soundness of the underlying enforcement would ensure that no more
+information than the specified budget can ever leak. 
+% It still leaves the question of where exactly should we
+% declassify. This can be done by the traditional way of inserting
+% declassification constructs or we can also infer such declassification points
+% automatically (more on this in section~\ref{}).
+
+% Now, this brings us to the question of how
+The challenge, however, is to build an enforcement mechanism that
+quantifies such information leaks soundly. Statically quantifying the 
+% Enforcing a bound on the 
+information leaked by a program has been well studied in
+the literature and various static \emph{quantitative information flow}
+measures~\cite{shannon, guessing, smith2009, clarkson2009,
+  csf12GLeakage} and techniques~\cite{denning82, clark, clarkson2009, smith2009,
+  backes, kopf} have been proposed.   
+However, quantifying the information leak in a purely dynamic setting is still largely an open
+problem (with prior work limited to  
+% McCamant and Ernst
+\cite{mccamant}). Due to non-interference being a two-trace property, the absence 
+of alternate traces, which is inherent to any dynamic analysis, represents a major obstacle.
+
+As a solution, we propose \emph{limited information release}, an
+information release policy that allows the flow of secret information
+to public channels in a controlled manner by declassifying
+fragments of the secret. The policy enforces that the information
+leaked about the secrets by a program is bounded by the specified
+budgets. We prove the soundness of the approach by coding the
+outputs generated through information leaks and showing that the codes
+are uniquely-decodable. We utilize an important result
+by~\cite{shannon} that the average length of uniquely-decodable codes
+upper bounds the Shannon entropy of the outputs.
+% ~\cite{shannon}. 
+%  As a result all we need to make sure is that the leak of
+% information as counted by our analysis is at least the code length of the output
+% which is a safety property easily enforceable by a runtime monitor
+% (Section~\ref{}).
+
+In summary, we make the following contributions in this work:
+\begin{enumerate}
+\item We describe the need for a budget-based policy specification and
+  show how it can be useful for dynamic scenarios like the web.
+\item We propose the limited information release (LIR) policy that
+  bounds the information leaks to the budgets, and 
+  provide a purely dynamic enforcement for LIR for a while language.
+\item We describe a notion of soundness for such policies and prove
+  our enforcement sound w.r.t. it.
+\item We implement a prototype of our model in realistic
+  browser and report its performance overhead. Even for
+  performance-intensive benchmarks we only experience a moderate slowdown.
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% \emph{Information flow control} (IFC) has evolved into a promising
+%% approach for handling the problem of information leaks in
+%% applications that handle private or sensitive user-data.
+%% % For example, IFC in the
+%% % browser~\cite{rnib,flowfox,crowdflow,jsflow,cowl,csf15} monitors the
+%% % information flow through websites and prevents unauthorized flow of
+%% % secret data to publicly observable channels, generally formalized as
+%% % the property of \emph{non-interference}~\cite{goguen}.
+%% In general, information flow control mechanisms track the flow of information
+%% through a program and prevent unauthorized flow of secret data to publicly
+%% observable channels, generally formalized
+%% as \emph{non-interference}~\cite{goguen}. Enforcing non-interference in
+%% real-world programs, however, faces two important challenges.
+
+%% \paragraph{Challenge 1}
+%%   Most non-trivial applications require some fragment of the
+%%   sensitive data to be accessible to (untrusted) programs for
+%%   providing certain functionality and focussed user-experience, e.g.,
+%%   a standard login form releases a little information about a user's
+%%   password by allowing or denying access to the user's account. In
+%%   such cases, releasing some information about the ``secret''
+%%   user-data is usually acceptable.
+%%   % This paper argues that such minimal information leaks should be
+%%   % allowed automatically, albeit in a controlled fashion in order to
+%%   % prevent laundering attacks~\cite{relSec,delRelease}.
+%%   In recent years, there has been a lot of work on \emph{declassifying}
+%%   or releasing information legitimately in a program by specifying
+%%   policies that relax non-interference and allow such leaks (for a
+%%   survey see~\cite{dimDecl}). For instance, one could specify
+%%   \lstinline{declassify(pwd == input)} to release information about
+%%   the password check. Most of these declassification policies require
+%%   specifications that define \emph{what} information can be released by
+%%   the program as in many settings it is difficult to trust third-parties
+%%   to include correct annotations in the code.
+%%   % We envision an \emph{automatic} release policy as,
+%%   % It is also tedious for the user to specify
+%%   % declassification policies as this requires detailed understanding of
+%%   % the code.
+%%   Additionally, in scenarios like the web where the third-party code
+%%   changes quite often, it is difficult for the developer to keep up with
+%%   the changes and change the policy specifications accordingly.
+%%   For instance, consider the program snippet in
+%%   Listing~\ref{egLeak} where an advertiser displays the advertisements
+%%   based on the age of the user (considered sensitive data). The
+%%   advertiser does not need to know the exact age of the user and can set
+%%   its preference based on whether or not the user is an adult. A general
+%%   declassification policy in this case would be:
+%%   \lstinline{declassify(age < 18)}. However, the advertiser might
+%%   change the criteria for displaying the advertisements frequently
+%%   requiring the developer to update the policy accordingly. It would
+%%   be much easier for the developer to specify that one ``check'' on the
+%%   value of \lstinline{age} is allowed, which would allow free but limited
+%%   access of \lstinline{age} to the advertiser.
+
+
+%% \begin{lstlisting}[float, caption=Leaking a variable via implicit flows, label=egImp]
+%%  pub = 0; i = 1;
+%%  while (i $\leq 2^{31}$) { @\label{imp:while}@
+%%     if ((sec & i) == i)
+%%        pub = pub | i;
+%%     i = i << 1;
+%%  }
+%% \end{lstlisting}
+
+%% \vr{We need to remove the motivation coming from the implicit flow and instead
+%%   focus on the need to leak some bits in practical programs. I will work on this
+%%   part}
+
+%% \paragraph{Challenge 2}
+%%   The tension between theory focusing on the soundness of the proposed IFC
+%%   mechanisms, and practice, which laments the ``false positives'' induced by the
+%%   sound IFC mechanisms mostly due to the control flow of a program being taken
+%%   into account.
+%%   % and thus often ignores any channel
+%%   % other than explicit flow. Usually, the concern centers about
+%%   % whether (or which) implicit flows, i.e. information flows
+%%   Such \emph{implicit} information flows are subtle and challenging to
+%%   handle.
+%%   % Control structures of realistic programming languages (e.g. exception
+%%   % handling) induce subtle implicit flows and thus aggravate this
+%%   % situation.
+%%   Although the amount of information leaked implicitly is
+%%   usually lower than through explicit flows, they can be leveraged to
+%%   leak the complete secret. For instance, the program in
+%%   Listing~\ref{egImp} implicitly leaks the secret value in \texttt{sec}
+%%   to the variable \texttt{pub} without any direct assignments.
+%%   Such a widening of the implicit flow channel is
+%%   usually called a \emph{laundering attack}~\cite{relSec,delRelease}.
+%%   Thus, for a sound enforcement of information flow control, i.e., to
+%%   guarantee non-interference, it is necessary to handle implicit flows
+%%   if the attacker controls the executed code, which is usually the case
+%%   for third-party code.
+%%   The downside of handling all the implicit flows, however, is that it
+%%   makes IFC too restrictive in practice even though it does
+%%   not always leak the complete secret. % For instance, the implicit
+%%   flow in Listing~\ref{egImp} would have been contained to a single
+%%   bit of information about \texttt{sec} without the loop on
+%%   line~\ref{imp:while}.
+%%   In practice most implicit flows leak a single bit of information only,
+%%   which might be required for providing proper functionality. King
+%%   \emph{et al.}~\cite{king08implicit} investigate the occurrence of
+%%   implicit flows in some standard algorithms and discuss both the pros
+%%   and cons of handling implicit flows. Russo \emph{et
+%%     al.}~\cite{implicit} also observe that implicit flows cannot be
+%%   exploited in non-malicious code to leak secrets efficiently.
+
+
+%% Quantifying the amount of information leaked by a program about
+%% sensitive values has been an emerging alternative to the qualitative
+%% notion. The developer determines an acceptable upper bound on the
+%% number of bits of secret information a program can leak, which
+%% accepts or rejects the program. This allows the programs that leak
+%% very little or ``acceptable'' amount of information to be accepted as
+%% secure.
+%% Most quantitative information flow analysis methods that have
+%% been proposed until now are static in nature and quite a few of these
+%% determine an average worst-case bound on the amount of information
+%% that a program can leak. Additionally, all of these measures rely on
+%% the fact that the probability distribution of the output values is
+%% known up-front. This makes it difficult for these analysis methods to
+%% be applied in a dynamic setting. Dynamic analysis is usually concerned
+%% with a single execution of a program and a quantitative analysis in
+%% this setting should be able to compute the information leaked in that
+%% particular execution of the program. However, the area of dynamically
+%% quantifying information leaks hasn't been studied much and has been
+%% limited to the work by McCamant and Ernst~\cite{mccamant}, and Besson
+%% et al.~\cite{}.
+
+
+
+
+%% Therefore, it is required that some of the commonly required policies,
+%% particularly related to implicit flows, be applied automatically
+%% without requiring explicit annotations from the programmer or the user
+%% while providing well-defined soundness guarantees for IFC. To this
+%% end, we propose \emph{limited information release}, an information
+%% release policy that allows the flow of secret information to public
+%% channels in a controlled manner by automatically declassifying
+%% fragments of the secret. %, mostly due to implicit flows.
+
+%% The property of limited information release ameliorates the
+%% tension between soundness and practicability.
+%% It allows very little information to be released by the program
+%% without requiring any explicit declassification
+%% annotations by the programmer or the user.
+%% This policy can be seen as an instance of the \emph{what}
+%% dimension of declassification as it describes what information is
+%% allowed to be released by the program. As this policy is weaker than
+%% the notion of non-interference, it allows more programs to be accepted
+%% thereby increasing the permissiveness of the analysis. We enforce the
+%% limited information release policy for a simple imperative language
+%% using a runtime monitor by limiting the amount of information released
+%% per value and prove the enforcement sound.
+
+
+
+
+
+% In order to
+% prevent secret data from being published on public output channels, it
+% is undisputed that explicit flows, i.e., how data is used in
+% computations, need to be tracked. For instance, secret data in the
+% following program will be leaked through the explicit flow of the
+% assignment: \lstinline|x = secret; print(x);|
+%IFC usually takes two important channels into account that occur due
+%to different program constructs. %, namely explicit and implicit
+%flows, for guaranteeing non-interference or some variant of it.
+%\CH{TODO: public/secret variables}
+%An explicit flow of information occurs \CH{Change: either by publishing secret data on public
+%channels or via an assignment of secret data to public
+%variables}. Implicit flows on the other hand occur due to the control
+%structure of a program, i.e., \CH{based on the value of a secret, some
+%value is assigned to public variables}.
+
+% The contributions of this paper are:
+% \begin{itemize}
+% \item
+% The property of limited information release, which ameliorates the
+% tension between soundness and practicability.
+% It allows very little information to be released by the program
+% (generally, one bit) without requiring any explicit declassification
+% policy or annotations by the programmer or the user.
+% This policy can be seen as an instance of the \emph{what}
+% dimension of declassification as it describes what information is
+% allowed to be released by the program.
+% \item
+% \CH{remove} Limited information release controls the release of secret data by
+% modeling the knowledge an adversary gains by observing the released
+% values and ensuring that the adversary cannot infer correctly the
+% value of a secret by observing the released information with a
+% probability above a certain threshold. The adversary can observe
+% assignments to public variables and the outputs on the public channels
+% and can refine her knowledge about the initial secret values based on
+% those observations. %The formalization of this knowledge-based model
+% %and the security conditions based on it are similar to the one
+% %proposed by Askarov and Sabelfeld~\cite{gradRelease}. We provably
+% %enforce the policy of limited information release in a hybrid runtime
+% %monitor.
+% \item \CH{improves permissiveness}
+% \end{itemize}
