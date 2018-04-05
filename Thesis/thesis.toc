@@ -4,82 +4,82 @@
 \contentsline {section}{\numberline {1.1}Contributions of the Thesis}{5}{section.1.1}
 \contentsline {chapter}{\numberline {2}Background and Overview}{7}{chapter.2}
 \contentsline {section}{\numberline {2.1}Information Flow Control}{7}{section.2.1}
-\contentsline {subsection}{\numberline {2.1.1}Flow-sensitivity}{9}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.1}Flow-sensitivity}{8}{subsection.2.1.1}
 \contentsline {section}{\numberline {2.2}Information Release}{9}{section.2.2}
-\contentsline {section}{\numberline {2.3}Dynamic Information Flow Control}{11}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}No-sensitive-upgrade Check}{12}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Permissive-upgrade and Faceted Execution}{12}{subsection.2.3.2}
-\contentsline {subsection}{\numberline {2.3.3}Other Approaches for Permissiveness}{12}{subsection.2.3.3}
-\contentsline {part}{II\hspace {1em}Generalized Permissive-Upgrade Strategy}{15}{part.2}
-\contentsline {chapter}{\numberline {3}Improved Permissive-Upgrade}{17}{chapter.3}
-\contentsline {section}{\numberline {3.1}Overview}{18}{section.3.1}
-\contentsline {subsection}{\numberline {3.1.1}Basic IFC Semantics}{18}{subsection.3.1.1}
-\contentsline {subsection}{\numberline {3.1.2}Formalization of the No-sensitive-upgrade Check}{20}{subsection.3.1.2}
-\contentsline {section}{\numberline {3.2}Austin and Flanagan's Permissive-Upgrade Strategy}{21}{section.3.2}
-\contentsline {section}{\numberline {3.3}Improved Permissive-Upgrade Strategy}{23}{section.3.3}
-\contentsline {chapter}{\numberline {4}Generalized Permissive-Upgrade}{25}{chapter.4}
-\contentsline {section}{\numberline {4.1}Generalization of the Improved Permissive-Upgrade Strategy}{25}{section.4.1}
-\contentsline {section}{\numberline {4.2}Generalized Permissive-Upgrade on Arbitrary Lattices}{27}{section.4.2}
-\contentsline {paragraph}{Example}{28}{paragraph*.13}
-\contentsline {subsection}{\numberline {4.2.1}Termination-insensitive Non-interference (TINI)}{29}{subsection.4.2.1}
-\contentsline {section}{\numberline {4.3}Comparison of the Generalization of Section~\ref {sec:gen:pus} with the Generalization of Section~\ref {sec:gen:ipus}}{31}{section.4.3}
-\contentsline {paragraph}{Example}{32}{paragraph*.16}
-\contentsline {part}{III\hspace {1em}Handling Unstructured Control Flow}{33}{part.3}
-\contentsline {chapter}{\numberline {5}Dynamic IFC with Unstructured Control Flow and Exceptions}{35}{chapter.5}
-\contentsline {section}{\numberline {5.1}Control Flow Graphs and Post-dominator Analysis}{36}{section.5.1}
-\contentsline {section}{\numberline {5.2}Exceptions and Synthetic Exit Nodes}{38}{section.5.2}
-\contentsline {section}{\numberline {5.3}Formal Model}{39}{section.5.3}
-\contentsline {part}{IV\hspace {1em}Limited Information Release}{43}{part.4}
-\contentsline {chapter}{\numberline {6}Bounding Information Leaks Dynamically}{45}{chapter.6}
-\contentsline {section}{\numberline {6.1}Quantifying Information Leaks}{48}{section.6.1}
-\contentsline {section}{\numberline {6.2}Limited Information Release}{48}{section.6.2}
-\contentsline {section}{\numberline {6.3}LIR Enforcement}{51}{section.6.3}
-\contentsline {subsection}{\numberline {6.3.1}Language and Syntax}{51}{subsection.6.3.1}
-\contentsline {subsubsection}{\numberline {6.3.1.1}\textbf {Value-labels, budgets and budget-labels}}{51}{subsubsection.6.3.1.1}
-\contentsline {subsubsection}{\numberline {6.3.1.2}\textbf {Label format and dependencies}}{52}{subsubsection.6.3.1.2}
-\contentsline {subsection}{\numberline {6.3.2}Key Aspects of the Enforcement}{53}{subsection.6.3.2}
-\contentsline {subsubsection}{\numberline {6.3.2.1}\textbf {Dependency Tracking}}{53}{subsubsection.6.3.2.1}
-\contentsline {subsubsection}{\numberline {6.3.2.2}\textbf {Budget-label Constraints}}{54}{subsubsection.6.3.2.2}
-\contentsline {subsubsection}{\numberline {6.3.2.3}\textbf {Budget Reduction}}{55}{subsubsection.6.3.2.3}
-\contentsline {subsubsection}{\numberline {6.3.2.4}\textbf {Handling implicit flows}}{56}{subsubsection.6.3.2.4}
-\contentsline {subsubsection}{\numberline {6.3.2.5}\textbf {Permissiveness}}{57}{subsubsection.6.3.2.5}
-\contentsline {subsection}{\numberline {6.3.3}Semantics}{58}{subsection.6.3.3}
-\contentsline {section}{\numberline {6.4}Formalization of LIR}{62}{section.6.4}
-\contentsline {section}{\numberline {6.5}Soundness and Decoding Semantics}{64}{section.6.5}
-\contentsline {part}{V\hspace {1em}Application to an IFC-enabled Web Browser}{69}{part.5}
-\contentsline {chapter}{\numberline {7}Information Flow Policies for Web Browsers}{71}{chapter.7}
-\contentsline {section}{\numberline {7.1}Policy Component for Web Browsers}{72}{section.7.1}
-\contentsline {section}{\numberline {7.2}{\unhbox \voidb@x \hbox {WebPol}} policy model}{73}{section.7.2}
-\contentsline {subsection}{\numberline {7.2.1}Policies as event handlers}{73}{subsection.7.2.1}
-\contentsline {subsection}{\numberline {7.2.2}Integration with the web browser}{75}{subsection.7.2.2}
-\contentsline {section}{\numberline {7.3}Expressiveness of {\unhbox \voidb@x \hbox {WebPol}}}{76}{section.7.3}
-\contentsline {subsection}{\numberline {7.3.1}Example 1: Password strength checker}{76}{subsection.7.3.1}
-\contentsline {subsection}{\numberline {7.3.2}Example 2: Currency conversion}{77}{subsection.7.3.2}
-\contentsline {subsection}{\numberline {7.3.3}Example 3: Web analytics}{78}{subsection.7.3.3}
-\contentsline {subsection}{\numberline {7.3.4}Example 4: Defending against overlay-based attacks}{80}{subsection.7.3.4}
-\contentsline {subsection}{\numberline {7.3.5}Summary of {\unhbox \voidb@x \hbox {WebPol}} expressiveness}{80}{subsection.7.3.5}
-\contentsline {chapter}{\numberline {8}Policy Implementation and Evaluation in an IFC-enabled Browser}{83}{chapter.8}
-\contentsline {section}{\numberline {8.1}Implementation and Evaluation of \unhbox \voidb@x \hbox {WebPol}}{84}{section.8.1}
-\contentsline {subsection}{\numberline {8.1.1}Implementation of \unhbox \voidb@x \hbox {WebPol}}{84}{subsection.8.1.1}
-\contentsline {subsection}{\numberline {8.1.2}Evaluation of \unhbox \voidb@x \hbox {WebPol}}{84}{subsection.8.1.2}
-\contentsline {subsubsection}{\numberline {8.1.2.1}Performance Overheads on Synthetic Examples}{85}{subsubsection.8.1.2.1}
-\contentsline {subsubsection}{\numberline {8.1.2.2}Policies on Real-world Websites.}{86}{subsubsection.8.1.2.2}
-\contentsline {section}{\numberline {8.2}Implementation and Evaluation of LIR}{88}{section.8.2}
-\contentsline {chapter}{\numberline {9}Related Work}{89}{chapter.9}
-\contentsline {part}{VI\hspace {1em}Conclusion and Outlook}{93}{part.6}
-\contentsline {chapter}{\numberline {10}Conclusion}{95}{chapter.10}
-\contentsline {chapter}{\numberline {11}Future Directions}{97}{chapter.11}
-\contentsline {section}{\numberline {11.1}Evaluating Information Flow Policies on Real-World Websites}{97}{section.11.1}
-\contentsline {section}{\numberline {11.2}Exploring Alternative Granularities for Enforcing Information Flow Control}{98}{section.11.2}
-\contentsline {section}{\numberline {11.3}Handling Timing Leaks on the Web}{98}{section.11.3}
-\contentsline {part}{Appendix}{99}{part*.43}
-\contentsline {section}{\numberline {A}Proofs for Improved and Generalized Permissive Upgrade}{101}{section.Alph0.1}
-\contentsline {subsection}{\numberline {A.1}Proofs for Improved Permissive Upgrade Strategy}{101}{subsection.Alph0.1.1}
-\contentsline {subsection}{\numberline {A.2}Examples for Equivalence Definition}{103}{subsection.Alph0.1.2}
-\contentsline {subsection}{\numberline {A.3}Proofs and Results for Generalized Permissive Upgrade for Arbitrary Lattices}{104}{subsection.Alph0.1.3}
-\contentsline {section}{\numberline {B}Proofs of Precision for Dynamic IFC with Unstructured Control Flow and Exceptions}{114}{section.Alph0.2}
-\contentsline {section}{\numberline {C}Proofs for IFC with Unstructured Control Flow}{116}{section.Alph0.3}
-\contentsline {section}{\numberline {D}Proofs for Limited Information Release}{122}{section.Alph0.4}
-\contentsline {part}{List of Figures}{135}{appendix*.45}
-\contentsline {part}{List of Tables}{137}{appendix*.46}
-\contentsline {part}{Bibliography}{148}{appendix*.47}
+\contentsline {section}{\numberline {2.3}Dynamic Information Flow Control}{10}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}No-sensitive-upgrade Check}{11}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Permissive-upgrade and Faceted Execution}{11}{subsection.2.3.2}
+\contentsline {subsection}{\numberline {2.3.3}Other Approaches for Permissiveness}{11}{subsection.2.3.3}
+\contentsline {part}{II\hspace {1em}Generalized Permissive-Upgrade Strategy}{13}{part.2}
+\contentsline {chapter}{\numberline {3}Improved Permissive-Upgrade}{15}{chapter.3}
+\contentsline {section}{\numberline {3.1}Overview}{15}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Basic IFC Semantics}{16}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}Formalization of the No-sensitive-upgrade Check}{17}{subsection.3.1.2}
+\contentsline {section}{\numberline {3.2}Austin and Flanagan's Permissive-Upgrade Strategy}{18}{section.3.2}
+\contentsline {section}{\numberline {3.3}Improved Permissive-Upgrade Strategy}{20}{section.3.3}
+\contentsline {chapter}{\numberline {4}Generalized Permissive-Upgrade}{23}{chapter.4}
+\contentsline {section}{\numberline {4.1}Generalization of the Improved Permissive-Upgrade Strategy}{23}{section.4.1}
+\contentsline {section}{\numberline {4.2}Generalized Permissive-Upgrade on Arbitrary Lattices}{24}{section.4.2}
+\contentsline {paragraph}{Example}{25}{paragraph*.13}
+\contentsline {subsection}{\numberline {4.2.1}Termination-insensitive Non-interference (TINI)}{26}{subsection.4.2.1}
+\contentsline {section}{\numberline {4.3}Comparison of the Generalization of Section~\ref {sec:gen:pus} with the Generalization of Section~\ref {sec:gen:ipus}}{28}{section.4.3}
+\contentsline {paragraph}{Example}{29}{paragraph*.16}
+\contentsline {part}{III\hspace {1em}Handling Unstructured Control Flow}{31}{part.3}
+\contentsline {chapter}{\numberline {5}Dynamic IFC with Unstructured Control Flow and Exceptions}{33}{chapter.5}
+\contentsline {section}{\numberline {5.1}Control Flow Graphs and Post-dominator Analysis}{34}{section.5.1}
+\contentsline {section}{\numberline {5.2}Exceptions and Synthetic Exit Nodes}{35}{section.5.2}
+\contentsline {section}{\numberline {5.3}Formal Model}{36}{section.5.3}
+\contentsline {part}{IV\hspace {1em}Limited Information Release}{41}{part.4}
+\contentsline {chapter}{\numberline {6}Bounding Information Leaks Dynamically}{43}{chapter.6}
+\contentsline {section}{\numberline {6.1}Quantifying Information Leaks}{45}{section.6.1}
+\contentsline {section}{\numberline {6.2}Limited Information Release}{46}{section.6.2}
+\contentsline {section}{\numberline {6.3}LIR Enforcement}{48}{section.6.3}
+\contentsline {subsection}{\numberline {6.3.1}Language and Syntax}{48}{subsection.6.3.1}
+\contentsline {subsubsection}{\numberline {6.3.1.1}\textbf {Value-labels, budgets and budget-labels}}{48}{subsubsection.6.3.1.1}
+\contentsline {subsubsection}{\numberline {6.3.1.2}\textbf {Label format and dependencies}}{48}{subsubsection.6.3.1.2}
+\contentsline {subsection}{\numberline {6.3.2}Key Aspects of the Enforcement}{49}{subsection.6.3.2}
+\contentsline {subsubsection}{\numberline {6.3.2.1}\textbf {Dependency Tracking}}{49}{subsubsection.6.3.2.1}
+\contentsline {subsubsection}{\numberline {6.3.2.2}\textbf {Budget-label Constraints}}{50}{subsubsection.6.3.2.2}
+\contentsline {subsubsection}{\numberline {6.3.2.3}\textbf {Budget Reduction}}{51}{subsubsection.6.3.2.3}
+\contentsline {subsubsection}{\numberline {6.3.2.4}\textbf {Handling implicit flows}}{52}{subsubsection.6.3.2.4}
+\contentsline {subsubsection}{\numberline {6.3.2.5}\textbf {Permissiveness}}{53}{subsubsection.6.3.2.5}
+\contentsline {subsection}{\numberline {6.3.3}Semantics}{54}{subsection.6.3.3}
+\contentsline {section}{\numberline {6.4}Formalization of LIR}{57}{section.6.4}
+\contentsline {section}{\numberline {6.5}Soundness and Decoding Semantics}{58}{section.6.5}
+\contentsline {part}{V\hspace {1em}Application to an IFC-enabled Web Browser}{63}{part.5}
+\contentsline {chapter}{\numberline {7}Information Flow Policies for Web Browsers}{65}{chapter.7}
+\contentsline {section}{\numberline {7.1}Policy Component for Web Browsers}{65}{section.7.1}
+\contentsline {section}{\numberline {7.2}{\unhbox \voidb@x \hbox {WebPol}} policy model}{66}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Policies as event handlers}{67}{subsection.7.2.1}
+\contentsline {subsection}{\numberline {7.2.2}Integration with the web browser}{68}{subsection.7.2.2}
+\contentsline {section}{\numberline {7.3}Expressiveness of {\unhbox \voidb@x \hbox {WebPol}}}{69}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Example 1: Password strength checker}{69}{subsection.7.3.1}
+\contentsline {subsection}{\numberline {7.3.2}Example 2: Currency conversion}{70}{subsection.7.3.2}
+\contentsline {subsection}{\numberline {7.3.3}Example 3: Web analytics}{71}{subsection.7.3.3}
+\contentsline {subsection}{\numberline {7.3.4}Example 4: Defending against overlay-based attacks}{73}{subsection.7.3.4}
+\contentsline {subsection}{\numberline {7.3.5}Summary of {\unhbox \voidb@x \hbox {WebPol}} expressiveness}{73}{subsection.7.3.5}
+\contentsline {chapter}{\numberline {8}Policy Implementation and Evaluation in an IFC-enabled Browser}{75}{chapter.8}
+\contentsline {section}{\numberline {8.1}Implementation and Evaluation of \unhbox \voidb@x \hbox {WebPol}}{76}{section.8.1}
+\contentsline {subsection}{\numberline {8.1.1}Implementation of \unhbox \voidb@x \hbox {WebPol}}{76}{subsection.8.1.1}
+\contentsline {subsection}{\numberline {8.1.2}Evaluation of \unhbox \voidb@x \hbox {WebPol}}{76}{subsection.8.1.2}
+\contentsline {subsubsection}{\numberline {8.1.2.1}Performance Overheads on Synthetic Examples}{76}{subsubsection.8.1.2.1}
+\contentsline {subsubsection}{\numberline {8.1.2.2}Policies on Real-world Websites.}{78}{subsubsection.8.1.2.2}
+\contentsline {section}{\numberline {8.2}Implementation and Evaluation of LIR}{79}{section.8.2}
+\contentsline {chapter}{\numberline {9}Related Work}{81}{chapter.9}
+\contentsline {part}{VI\hspace {1em}Conclusion and Outlook}{85}{part.6}
+\contentsline {chapter}{\numberline {10}Conclusion}{87}{chapter.10}
+\contentsline {chapter}{\numberline {11}Future Directions}{89}{chapter.11}
+\contentsline {section}{\numberline {11.1}Evaluating Information Flow Policies on Real-World Websites}{89}{section.11.1}
+\contentsline {section}{\numberline {11.2}Exploring Alternative Granularities for Enforcing Information Flow Control}{89}{section.11.2}
+\contentsline {section}{\numberline {11.3}Handling Timing Leaks on the Web}{90}{section.11.3}
+\contentsline {part}{Appendix}{91}{part*.44}
+\contentsline {section}{\numberline {A}Proofs for Improved and Generalized Permissive Upgrade}{93}{section.Alph0.1}
+\contentsline {subsection}{\numberline {A.1}Proofs for Improved Permissive Upgrade Strategy}{93}{subsection.Alph0.1.1}
+\contentsline {subsection}{\numberline {A.2}Examples for Equivalence Definition}{95}{subsection.Alph0.1.2}
+\contentsline {subsection}{\numberline {A.3}Proofs and Results for Generalized Permissive Upgrade for Arbitrary Lattices}{95}{subsection.Alph0.1.3}
+\contentsline {section}{\numberline {B}Proofs of Precision for Dynamic IFC with Unstructured Control Flow and Exceptions}{104}{section.Alph0.2}
+\contentsline {section}{\numberline {C}Proofs for IFC with Unstructured Control Flow and Exceptions}{106}{section.Alph0.3}
+\contentsline {section}{\numberline {D}Proofs for Limited Information Release}{111}{section.Alph0.4}
+\contentsline {part}{List of Figures}{121}{appendix*.46}
+\contentsline {part}{List of Tables}{123}{appendix*.47}
+\contentsline {part}{Bibliography}{132}{appendix*.48}

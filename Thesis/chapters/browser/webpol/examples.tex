@@ -133,7 +133,7 @@ shown.
 \begin{lstlisting}[float, caption=Analytics script that counts clicks,label=egan]
 clickCount = 0;
 var p = document.getElementbyId("sect_name");  
-p.addEventListener("click",function clkHdlr(e){ clickCount += 1; });
+p.addEventListener("click",function (e){ clickCount += 1; });
 \end{lstlisting}
 
 To allow a script to only count the number of occurrences of a class
@@ -152,7 +152,7 @@ page section named \texttt{sect\_name}.
   happened or not,label=eganal2]
 var alreadyClicked = false;
 var p = document.getElementById("sect_name");
-p.addEventListener("click",function(event){
+p.addEventListener("click",function (event){
   if (alreadyClicked = true) 
      event.setContext("HOST");
   else {
@@ -188,7 +188,7 @@ events in them.
 
 \begin{lstlisting}[float, caption=Example policy to prevent overlay-based
   stealing of keystrokes,label=overlay,language=C]
-document.body.addEventListener("keypress", function(event){
+document.body.addEventListener("keypress", function (event){
     var o = window.getComputedStyle(event.target).getPropertyValue("opacity");
     if (o < 0.5) 
          event.setLabel("HOST");

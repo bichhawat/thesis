@@ -279,9 +279,16 @@ be $\bot$. The checks are performed as per the semantics at every
 comparison operation assuming an implicit declassification at 
 each comparison operation.
 
+\begin{figure}
+  \centering
+    \includegraphics[width=0.8\linewidth]{chapters/browser/LIR.pdf}
+  \caption{Overheads of LIR on SunSpider Benchmark Tests}
+  \label{fig:dom}
+\end{figure}
+
 The performance overhead added as part of the LIR instrumentation in
 the IFC-enabled browser is evaluated and compared against the
-uninstrumented browser and WebIFC. 
+uninstrumented browser and WebIFC (Basic IFC). 
 The performance evaluation was done for the standard
 SunSpider 1.0.2 JavaScript benchmark suite on the uninstrumented
 browser, on the IFC-instrumented browser and on the LIR instrumented

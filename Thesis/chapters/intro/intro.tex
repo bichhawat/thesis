@@ -27,9 +27,9 @@ all users.
 
 Consider the Web, for instance. Web applications rely extensively on
 third-party JavaScript to provide useful libraries, page analytics,
-advertisements and many other features~\cite{nick12CCS}. JavaScript
-works on a mashup model, wherein the hosting page and included scripts
-share the page’s state (called the DOM). Consequently, by design, all
+advertisements and many other features~\cite{nick12CCS}. In such a
+\emph{mashup} model, wherein the hosting page and the included scripts  
+share the page’s state (called the DOM), by design, all
 included third-party scripts run with the same access privileges as
 the hosting page. While some third-party scripts are developed by
 large, well-known, trustworthy vendors, many other scripts are
@@ -46,7 +46,8 @@ widespread problem~\cite{jang10CCS}.
 %
 The traditional browser security
 model is based on restricting scripts’ access to data, not on tracking
-how scripts use data. Existing web security standards
+how scripts use data. Existing web security standards like the
+same-origin policy~\cite{sop} 
 and web browsers address this problem unsatisfactorily, favoring
 functionality over privacy. The same-origin policy implemented
 in all major browsers restricts a web-page and third-party scripts
@@ -72,8 +73,7 @@ performing the computation. More broadly, no mechanism based only
 on access control can solve the problem of information leakage.  
 
 The academic community has proposed solutions based on
-\emph{information flow control} (IFC), also known as mandatory access
-control. It ensures the security of
+\emph{information flow control} (IFC). It ensures the security of
 confidential information even in the presence of untrusted and buggy
 code. The idea is to track the flow of information through the program
 and prevent any undesired flows based on a security policy. 
@@ -89,10 +89,10 @@ precision to the analysis~\cite{Nentwich07, Gurvan06, Gurvan07,
   russo10CSF, vogt07NDSS, post14, csf15Hedin} 
 for handling information leaks described above. 
 
-Dynamic analysis has the drawback of being less precise and
-introducing significant performance overheads at runtime, though it
-can be more permissive than static analysis methods in some
-cases~\cite{russo10CSF}. Although helpful in most 
+Dynamic analysis has the drawback of introducing significant
+performance overheads at runtime, though it can be more permissive
+than static analysis methods in certain
+cases~\cite{russo10CSF}. Although helpful in most  
 scenarios, static analyses are mostly ineffective when working with
 dynamic languages like JavaScript, which is an indispensable part of
 the modern Web. The dynamic nature of

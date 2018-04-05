@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  21 AUG 2017 14:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  7 SEP 2017 12:13
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -6,8 +6,8 @@ entering extended mode
 **\input thesis.tex
 (./thesis.tex (/usr/local/texlive/2017/texmf-dist/tex/latex/base/book.cls
 Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk11.clo
-File: bk11.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk10.clo
+File: bk10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
 \c@chapter=\count80
@@ -2372,18 +2372,18 @@ Package caption Info: End \AtBeginDocument code.
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
 * \textwidth=434.9004pt
-* \textheight=663.8003pt
+* \textheight=670.0pt
 * \oddsidemargin=18.06749pt
 * \evensidemargin=0.0pt
 * \topmargin=0.0pt
 * \headheight=12.0pt
-* \headsep=19.8738pt
-* \topskip=11.0pt
+* \headsep=18.06749pt
+* \topskip=10.0pt
 * \footskip=0.0pt
 * \marginparwidth=62.59596pt
 * \marginparsep=7.0pt
 * \columnsep=10.0pt
-* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
 * \hoffset=0.0pt
 * \voffset=0.0pt
 * \mag=1000
@@ -2447,11 +2447,11 @@ LaTeX Font Info:    Try loading font information for OMX+lmex on input line 12.
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 12.
+(Font)              <10> on input line 12.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 12.
+(Font)              <7> on input line 12.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 12.
+(Font)              <5> on input line 12.
 LaTeX Font Info:    Try loading font information for U+msa on input line 12.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -2480,11 +2480,11 @@ LaTeX Font Info:    Try loading font information for T1+lmss on input line 19.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10.95> not available
+LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <10> not available
 (Font)              Font shape `T1/lmss/bx/n' tried instead on input line 19.
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <24.88> not available
 (Font)              Font shape `T1/lmss/bx/n' tried instead on input line 19.
-LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <12> not available
+LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <14.4> not available
 (Font)              Font shape `T1/lmss/bx/n' tried instead on input line 19.
 
 <owl.png, id=212, 695.59875pt x 800.9925pt>
@@ -2496,306 +2496,112 @@ Package pdftex.def Info: owl.png used on input line 19.
 
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./owl.p
-ng>]
-Overfull \hbox (19.03444pt too wide) in paragraph at lines 26--26
-[]  
- []
+ng>] [2]
+(./chapters/preamble/abstract.tex) [3
 
-[2] (./chapters/preamble/abstract.tex) [3
+
+] [4
 
 ]
-(./chapters/preamble/short_summary_de.tex
-Overfull \hbox (32.75478pt too wide) in paragraph at lines 3--22
-\T1/qpl/m/n/10.95 ent-ge-gen zu wirken. Grund-sät-zlich basieren diese An-sätze
- auf der An-wen-dung von vordefinierten
+(./chapters/preamble/short_summary_de.tex)
+Overfull \hbox (6.18251pt too wide) in paragraph at lines 23--39
+\T1/qpl/m/n/10 mäÿi-gen Zu-gang zu sen-si-blen Daten benöti-gen um ihre Funk-ti
+on zu er-füllen. Um dies zu er-möglichen
  []
 
-) [4
+[5] [6
 
-] (./chapters/preamble/acknowledgment.tex) [5
-
-] [6
-
+] (./chapters/preamble/acknowledgment.tex) [7] [8
 
 ]
 LaTeX Font Info:    Font shape `T1/lmss/b/n' in size <17.28> not available
-(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 46.
+(Font)              Font shape `T1/lmss/bx/n' tried instead on input line 47.
  (./thesis.toc
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+ [9
 
-[7]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[8])
+]
+[10])
 \tf@toc=\write7
 \openout7 = `thesis.toc'.
 
+ [11] [12
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[9] [10
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[1
+] [1
 
 
 ] [2] (./chapters/intro/intro.tex
 Chapter 1.
 
-Overfull \hbox (5.13817pt too wide) in paragraph at lines 28--73
-[]\T1/qpl/m/n/10.95 Consider the Web, for in-stance. Web ap-pli-ca-tions rely e
-x-ten-sively on third-party JavaScript
- []
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[3
+ [3
 
 
 ]
 LaTeX Font Info:    Try loading font information for T1+lmtt on input line 100.
 
- (/usr/local/texlive/2017/texmf-dist/tex/latex/lm/t1lmtt.fd
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[4]
+ [4]
 LaTeX Font Info:    Try loading font information for TS1+qpl on input line 149.
 
- (/usr/local/texlive/2017/texmf-dist/tex/latex/tex-gyre/ts1qpl.fd
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tex-gyre/ts1qpl.fd
 File: ts1qpl.fd 2009/09/25 v1.2 font definition file for TS1/qpl
-)
+))
+(./chapters/intro/background.tex [5] [6
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[5]) (./chapters/intro/background.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[6]
+]
 Chapter 2.
-
-Overfull \hbox (4.63737pt too wide) in paragraph at lines 28--38
-[]\T1/qpl/m/n/10.95 An \T1/qpl/m/it/10.95 ex-plicit flow \T1/qpl/m/n/10.95 oc-c
-urs as a re-sult of di-rect as-sign-ment, e.g., the state-ment \T1/lmtt/m/n/10.
-95 public = secret
- []
-
 
 Package Listings Warning: Text dropped after begin of listing on input line 40.
 
 
 
-Underfull \vbox (badness 2197) has occurred while \output is active []
+Underfull \vbox (badness 7925) has occurred while \output is active []
 
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[7
-
-]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
+ [7]
 [8]
 
 Package Listings Warning: Text dropped after begin of listing on input line 112
 .
 
-
-Overfull \hbox (6.32881pt too wide) in paragraph at lines 120--144
-\T1/qpl/m/n/10.95 be re-leased to pro-grams for pro-vid-ing proper func-tion-al
--ity or to im-prove the user-experience.
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
 [9]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[10]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 206.
+(Font)              <8> on input line 206.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 206.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
+(Font)              <6> on input line 206.
+ [10] [11]) [12] [13
 
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[11]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[12])
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[13] [14
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[15
-
-] [16] (./chapters/gpu/ipu.tex
+] [14] (./chapters/gpu/ipu.tex
 Chapter 3.
 
 Package Listings Warning: Text dropped after begin of listing on input line 4.
 
-(./chapters/gpu/background.tex
-Underfull \vbox (badness 10000) has occurred while \output is active []
+(./chapters/gpu/background.tex [15
 
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[17
-
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[18]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[19]
-Overfull \hbox (10.6651pt too wide) in paragraph at lines 189--202
-\T1/qpl/m/n/10.95 For es-tab-lish-ing and prov-ing the se-cu-rity prop-erty of 
-termination-insensitive non-interference
+] [16]
+Overfull \hbox (4.01906pt too wide) in paragraph at lines 189--202
+\T1/qpl/m/n/10 For es-tab-lish-ing and prov-ing the se-cu-rity prop-erty of ter
+mination-insensitive non-interference (TINI),
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[20]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[21]
-Overfull \hbox (7.98499pt too wide) in paragraph at lines 368--372
-[]\T1/qpl/m/n/10.95 The non-in-ter-fer-ence re-sult ob-tained for NSU ear-lier 
-can be ex-tended to permissive-upgrade
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[22]) (./chapters/gpu/improved.tex
+[17] [18]) (./chapters/gpu/improved.tex [19]
 
 Package Listings Warning: Text dropped after begin of listing on input line 24.
 
 
+[20])) (./chapters/gpu/gpu.tex [21] [22
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[23])) (./chapters/gpu/gpu.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[24]
+]
 Chapter 4.
 pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
  has been already used, duplicate ignored
@@ -2803,402 +2609,117 @@ pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
                    \relax 
 l.5   Analysis''~\cite{plas14}}
                                 (./chapters/gpu/impgen.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[25
-
-]) (./chapters/gpu/approach.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[26]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[27]
+ [23])
+(./chapters/gpu/approach.tex [24]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 100.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 100.
+(Font)              <9> on input line 100.
  (./chapters/gpu/lattice.tikz)
-Overfull \hbox (4.4642pt too wide) in paragraph at lines 97--119
+Overfull \hbox (4.14691pt too wide) in paragraph at lines 97--119
 []$[]$   $[]$ 
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[28]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[29]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[30]
-Overfull \hbox (5.89015pt too wide) in paragraph at lines 354--356
-[]\T1/qpl/m/n/10.95 Using these lem-mas, the stan-dard con-fine-ment lemma and 
-non-interference can be proven. 
- []
-
-(./chapters/gpu/powerset.tikz)
-Overfull \hbox (4.4642pt too wide) in paragraph at lines 403--420
+[25] [26] [27] (./chapters/gpu/powerset.tikz)
+Overfull \hbox (4.14691pt too wide) in paragraph at lines 403--420
 []$[]$   $[]$ 
  []
 
+[28])) [29] [30
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+] [31
 
-[31]))
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[32]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[33
-
-
-] [34] (./chapters/ucf/exceptions.tex
+] [32] (./chapters/ucf/exceptions.tex
 Chapter 5.
 pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
  has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.6   Bytecode''~\cite{post14}}
-                               
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[35
+                                [33
 
 
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
+] [34] [35] (./chapters/ucf/formal.tex
 [36]
+Underfull \vbox (badness 1675) has occurred while \output is active []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+ [37]
+[38])) [39] [40
 
-[37]
+] [41
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[38] (./chapters/ucf/formal.tex
-Underfull \vbox (badness 1661) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[39]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[40]))
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[41]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[42]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[43
-
-
-] [44] (./chapters/lir/lir.tex
+] [42] (./chapters/lir/lir.tex
 Chapter 6.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[45
+ [43
 
 
 ]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [44]
+(./chapters/lir/overview.tex) (./chapters/lir/lir-policy.tex [45] [46] [47])
+(./chapters/lir/language.tex [48]
+Overfull \hbox (12.69653pt too wide) in paragraph at lines 86--89
+[]\T1/qpl/m/n/10 The join op-er-a-tion on the la-bels re-turns the join of the 
+secrecy-levels and the union of the dependency-
+ []
+
+[49] [50] [51]
+Underfull \vbox (badness 1178) has occurred while \output is active []
+
+ [52]
+Overfull \hbox (33.22261pt too wide) in paragraph at lines 391--404
+\T1/qpl/m/n/10 pro-gram in List-ing []6.8[]. As-sume that, \T1/lmtt/m/n/10 med\
+T1/qpl/m/n/10 , \T1/lmtt/m/n/10 x\T1/qpl/m/n/10 , \T1/lmtt/m/n/10 sec\T1/qpl/m/
+n/10 , \T1/lmtt/m/n/10 y\T1/qpl/m/n/10 , and \T1/lmtt/m/n/10 pub \T1/qpl/m/n/10
+ are la-beled $\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 M; \OMS/lmsy/m/n/10 fg\OT1/lmr
+/m/n/10 )$\T1/qpl/m/n/10 , $\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 M; \OMS/lmsy/m/n/
+10 fg\OT1/lmr/m/n/10 )$\T1/qpl/m/n/10 , $\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 M; \
+OMS/lmsy/m/n/10 f[]g\OT1/lmr/m/n/10 )\OML/lmm/m/it/10 ; \OT1/lmr/m/n/10 (\OML/l
+mm/m/it/10 L; \OMS/lmsy/m/n/10 f[]g\OT1/lmr/m/n/10 )$\T1/qpl/m/n/10 ,
+ []
 
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+Overfull \hbox (5.29001pt too wide) in paragraph at lines 391--404
+\T1/qpl/m/n/10 and $\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 L; \OMS/lmsy/m/n/10 f[]g\
+OT1/lmr/m/n/10 )$\T1/qpl/m/n/10 , re-spec-tively, with their re-spec-tive value
+-labels be-ing $\U/msb/m/n/10 L\OT1/lmr/m/n/10 ([]) = \OML/lmm/m/it/10 H; \U/ms
+b/m/n/10 L\OT1/lmr/m/n/10 ([]) = \OML/lmm/m/it/10 M; \U/msb/m/n/10 L\OT1/lmr/m/
+n/10 ([]) =
+ []
 
-[46] (./chapters/lir/overview.tex
+[53] [54] [55] [56]) (./chapters/lir/dynamicqif.tex [57]
+Overfull \hbox (15.7996pt too wide) in paragraph at lines 173--181
+[][]\T1/qpl/b/n/10 Theorem 9 \T1/qpl/m/n/10 (Lim-ited in-for-ma-tion re-lease f
+or a sin-gle se-cret)\T1/qpl/b/n/10 . []\T1/qpl/m/it/10 If $\OMS/lmsy/m/n/10 h\
+OML/lmm/m/it/10 ^^[; ^^S; \OT1/lmr/m/it/10 c\OMS/lmsy/m/n/10 i[]h\OML/lmm/m/it/
+10 ^^[[]; ^^S[]; ^^\\OMS/lmsy/m/n/10 i$\T1/qpl/m/it/10 , and $\OMS/lmsy/m/n/10 
+9[] 2 \OML/lmm/m/it/10 ^^[:[]\OT1/lmr/m/n/10 ^^@(\OML/lmm/m/it/10 ^^[\OT1/lmr/m
+/n/10 ([])) \OMS/lmsy/m/n/10 6v
+ []
+
+) (./chapters/lir/decoding.tex [58] [59] [60]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[47]) (./chapters/lir/lir-policy.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[48]
-Overfull \hbox (4.92021pt too wide) in paragraph at lines 64--76
-[]\T1/qpl/b/n/10.95 Declassification of Boolean-valued ex-pres-sions. \T1/qpl/m
-/n/10.95 As has been ob-served pre-vi-ously [[],
+ [61]
+Overfull \hbox (0.8659pt too wide) in paragraph at lines 398--404
+[][]\T1/qpl/b/n/10 Corollary 3 \T1/qpl/m/n/10 (Non-in-ter-fer-ence)\T1/qpl/b/n/
+10 . []\T1/qpl/m/it/10 If $\OMS/lmsy/m/n/10 h\OML/lmm/m/it/10 ^^[[]; ^^S[]; \OT
+1/lmr/m/it/10 c\OMS/lmsy/m/n/10 i[]h\OML/lmm/m/it/10 ^^[[]; ^^S[]; ^^\[]\OMS/lm
+sy/m/n/10 i$\T1/qpl/m/it/10 , $\OMS/lmsy/m/n/10 h\OML/lmm/m/it/10 ^^[[]; ^^S[];
+ \OT1/lmr/m/it/10 c\OMS/lmsy/m/n/10 i[]h\OML/lmm/m/it/10 ^^[[]; ^^S[]; ^^\[]\OM
+S/lmsy/m/n/10 i$\T1/qpl/m/it/10 , $\OML/lmm/m/it/10 ^^[[] \OMS/lmsy/m/n/10 ^^X[
+] \OML/lmm/m/it/10 ^^[[]$\T1/qpl/m/it/10 , and $\OML/lmm/m/it/10 ^^S[][] \OT1/l
+mr/m/n/10 =
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[49]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[50]) (./chapters/lir/language.tex
-Underfull \vbox (badness 1655) has occurred while \output is active []
+)) [62] [63
 
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[51]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[52]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[53]
-Underfull \vbox (badness 1297) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[54]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[55]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[56]
-Underfull \vbox (badness 1297) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[57]
-Overfull \hbox (5.47488pt too wide) in paragraph at lines 424--437
-\T1/qpl/m/n/10.95 ure []6.1[] that re-leases some in-for-ma-tion about ini-tial
- se-cret val-ues at de-clas-si-fi-ca-tion of Boolean
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[58]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[59]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[60]) (./chapters/lir/dynamicqif.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[61]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[62]) (./chapters/lir/decoding.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[63]
-Overfull \hbox (7.76205pt too wide) in paragraph at lines 38--47
-[]\T1/qpl/m/n/10.95 Decoding se-man-tics op-er-ates on adversary-projected data
- struc-tures, i.e., an $\OML/lmm/m/it/10.95 `$\T1/qpl/m/n/10.95 -projected
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[64]
-Overfull \hbox (35.7547pt too wide) in paragraph at lines 294--301
-\T1/qpl/m/n/10.95 trace and pro-jec-tions of the mem-ory and bud-get store, giv
-en by $\OMS/lmsy/m/n/10.95 h\OML/lmm/m/it/10.95 ^^[[]; ^^S[]; \OT1/lmr/m/it/10.
-95 e\OML/lmm/m/it/10.95 ; ^^\[]\OMS/lmsy/m/n/10.95 i$ \T1/qpl/m/n/10.95 and $\O
-MS/lmsy/m/n/10.95 h\OML/lmm/m/it/10.95 ^^[[]; ^^S[]; \OT1/lmr/m/it/10.95 c\OML/
-lmm/m/it/10.95 ; ^^\[]\OMS/lmsy/m/n/10.95 i$\T1/qpl/m/n/10.95 ,
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[65]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[66]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[67]))
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[68]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[69
-
-
-] [70] (./chapters/browser/policies.tex
+] [64] (./chapters/browser/policies.tex
 Chapter 7.
 pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
  has been already used, duplicate ignored
@@ -3206,136 +2727,52 @@ pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
                    \relax 
 l.5   Policies for Web Browsers''~\cite{webpol}}
                                                 
-(./chapters/browser/webpol/overview.tex
-Underfull \vbox (badness 10000) has occurred while \output is active []
+(./chapters/browser/webpol/overview.tex [65
 
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[71
-
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[72]) (./chapters/browser/webpol/model.tex
+])
+(./chapters/browser/webpol/model.tex
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
-)
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[73] <chapters/browser/webpol/Model.pdf, id=1389, 1298.8525pt x 805.0075pt>
+) [66]
+<chapters/browser/webpol/Model.pdf, id=1367, 1298.8525pt x 805.0075pt>
 File: chapters/browser/webpol/Model.pdf Graphic file (type pdf)
 
 <use chapters/browser/webpol/Model.pdf>
 Package pdftex.def Info: chapters/browser/webpol/Model.pdf used on input line 7
 2.
 (pdftex.def)             Requested size: 227.62204pt x 141.07495pt.
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[74 <./chapters/browser/webpol/Model.pdf>]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[75]) (./chapters/browser/webpol/examples.tex
+ [67] [68 <./chapters/browser/webpol/Model.pdf>]) (./chapters/browser/webpol/ex
+amples.tex
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
 )
 (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
-)
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[76]
-Overfull \hbox (5.44101pt too wide) in paragraph at lines 46--55
-[]\T1/qpl/m/n/10.95 Conceptually, this ex-am-ple is sim-ple be-cause it does no
-t re-ally lever-age the fine-granularity
+) [69]
+Overfull \hbox (9.40909pt too wide) in paragraph at lines 41--45
+\T1/qpl/m/n/10 This pol-icy sets the la-bel of the pass-word field to the host'
+s own do-main us-ing the func-tion \T1/lmtt/m/n/10 setLabel()\T1/qpl/m/n/10 .
  []
 
 
-Overfull \hbox (2.08662pt too wide) in paragraph at lines 65--66
-[][][][][][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (44.0865pt too wide) in paragraph at lines 66--67
+Overfull \hbox (1.24678pt too wide) in paragraph at lines 66--67
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
+[70] [71]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-Overfull \hbox (5.23703pt too wide) in paragraph at lines 68--69
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ [72]
+Overfull \hbox (0.63521pt too wide) in paragraph at lines 217--228
+\T1/qpl/m/n/10 The se-cu-rity com-mu-nity has ex-ten-sively stud-ied sev-eral a
+s-pects of pol-icy la-bel-ing, col-lo-qui-ally called
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[77]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[78]
-Underfull \vbox (badness 4454) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[79]
-Overfull \hbox (23.08708pt too wide) in paragraph at lines 192--193
-[][][][][][][][][][][][][][][][][][][][][][][][][][] 
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[80])) (./chapters/browser/eval.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[81] [82
+)) (./chapters/browser/eval.tex [73] [74
 
 ]
 Chapter 8.
@@ -3344,172 +2781,66 @@ pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
 <to be read again> 
                    \relax 
 l.5 ... Policies for Web Browsers''~\cite{webpol}}
-                                                  
-Underfull \vbox (badness 2573) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[83]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[84]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[85]
-Underfull \vbox (badness 1043) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[86]
+                                                   [75] [76]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [77]
+Underfull \vbox (badness 1675) has occurred while \output is active []
 
+ [78]
+<chapters/browser/LIR.pdf, id=1571, 724.7075pt x 424.58624pt>
+File: chapters/browser/LIR.pdf Graphic file (type pdf)
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[87]) (./chapters/browser/related.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[88]
+<use chapters/browser/LIR.pdf>
+Package pdftex.def Info: chapters/browser/LIR.pdf used on input line 284.
+(pdftex.def)             Requested size: 347.92165pt x 203.83795pt.
+) (./chapters/browser/related.tex [79 <./chapters/browser/LIR.pdf>] [80]
 Chapter 9.
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+Overfull \hbox (9.1323pt too wide) in paragraph at lines 8--22
+\T1/qpl/m/n/10 pletely fu-tile. Guarn-ieri \T1/qpl/m/it/10 et al. \T1/qpl/m/n/1
+0 [[]] present a static ab-stract in-ter-pre-ta-tion for track-ing taints in Ja
+vaScript.
+ []
 
-[89
+
+Underfull \vbox (badness 2941) has occurred while \output is active []
+
+ [81
 
 ]
-Overfull \hbox (2.23648pt too wide) in paragraph at lines 52--60
-\T1/qpl/m/n/10.95 bKit but do not han-dle all im-plicit flows. A black-box ap-p
-roach to en-forc-ing non-interference
+Overfull \hbox (2.75934pt too wide) in paragraph at lines 93--101
+[]\T1/qpl/m/n/10 Mash-IF [[]] uses static anal-y-sis to en-force IFC poli-cies.
+ Mash-IF's model is dif-fer-ent from []'s
  []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [82])
+[83] [84
 
+] [85
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[90]
-Overfull \hbox (1.44896pt too wide) in paragraph at lines 151--156
-[]\T1/qpl/m/n/10.95 Conscript [[]] al-lows the spec-i-fi-ca-tion of fine-graine
-d ac-cess poli-cies on in-di-vid-ual scripts,
- []
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[91])
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[92]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[93
-
-
-] [94] (./chapters/conclusion/conclusion.tex
+] [86] (./chapters/conclusion/conclusion.tex
 Chapter 10.
 
-Overfull \hbox (1.6099pt too wide) in paragraph at lines 20--31
-[]\T1/qpl/b/n/10.95 Developing mech-a-nisms that en-hance the pre-ci-sion and p
-er-mis-sive-ness of the anal-
+Overfull \hbox (6.6652pt too wide) in paragraph at lines 32--42
+[]\T1/qpl/m/n/10 To fur-ther im-prove the per-mis-sive-ness of dy-namic in-for-
+ma-tion flow anal-y-sis, this the-sis presents
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[95
+[87
 
 
-]) (./chapters/conclusion/future.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[96]
+]) (./chapters/conclusion/future.tex [88]
 Chapter 11.
+[89
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[97
-
-])
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[98]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[99
+]) [90] [91
 
 
-] [100] (./chapters/appendix/appendix1.tex
+] [92] (./chapters/appendix/appendix1.tex
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
 (hyperref)                than one, level fixed on input line 9.
@@ -3526,59 +2857,40 @@ as been already used, duplicate ignored
                    \relax 
 l.69   I
         f $~\pc = H$ and $\langle \sigma, c \rangle \Downarrow_\pc \sigma'
-[101
+[93
 
 ]pdfTeX warning (ext4): destination with the same identifier (name{myLemma.3}) 
 has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.102   I
-         f $~\pc = H$ and $\langle \sigma, c \rangle
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[102]pdfTeX warning (ext4): destination with the same identifier (name{myThm.1}
-) has been already used, duplicate ignored
+         f $~\pc = H$ and $\langle \sigma, c \ranglepdfTeX warning (ext4): dest
+ination with the same identifier (name{myThm.1}) has been already used, duplica
+te ignored
 <to be read again> 
                    \relax 
 l.136   W
          ith the assignment rule \refrule{bs:cmd:ap} and the modified syntax of
+[94]
+Overfull \hbox (1.21657pt too wide) in paragraph at lines 201--205
+[]\T1/qpl/m/n/10 Table []A.1[] shows ex-am-ple pro-grams for the tran-si-tion f
+rom low-equivalent val-ues to low-equivalent
+ []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[103]pdfTeX warning (ext4): destination with the same identifier (name{myLemma.
-4}) has been already used, duplicate ignored
+pdfTeX warning (ext4): destination with the same identifier (name{myLemma.4}) h
+as been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.502 ...Lemma}{\emph{Expression Evaluation Lemma}
-                                                  }\\pdfTeX warning (ext4): des
-tination with the same identifier (name{myLemma.5}) has been already used, dupl
-icate ignored
+                                                  }\\ [95] [96]pdfTeX warning (
+ext4): destination with the same identifier (name{myLemma.5}) has been already 
+used, duplicate ignored
 <to be read again> 
                    \relax 
 l.708 ...yLemma}{\emph{$\star$-preservation Lemma}
-                                                  }\\
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[104]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[105]pdfTeX warning (ext4): destination with the same identifier (name{mycor.1}
-) has been already used, duplicate ignored
+                                                  }\\pdfTeX warning (ext4): des
+tination with the same identifier (name{mycor.1}) has been already used, duplic
+ate ignored
 <to be read again> 
                    \relax 
 l.768 I
@@ -3588,15 +2900,9 @@ plicate ignored
 <to be read again> 
                    \relax 
 l.777 \begin{myLemma}{\emph{$\pc$ Lemma}
-                                        }\\
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[106]pdfTeX warning (ext4): destination with the same identifier (name{mycor.2}
-) has been already used, duplicate ignored
+                                        }\\ [97]pdfTeX warning (ext4): destinat
+ion with the same identifier (name{mycor.2}) has been already used, duplicate i
+gnored
 <to be read again> 
                    \relax 
 l.831 I
@@ -3606,62 +2912,15 @@ plicate ignored
 <to be read again> 
                    \relax 
 l.840 \begin{myLemma}{\emph{Conf{i}nement Lemma}
-                                                }
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[107]pdfTeX warning (ext4): destination with the same identifier (name{myThm.2}
-) has been already used, duplicate ignored
+                                                } [98]pdfTeX warning (ext4): de
+stination with the same identifier (name{myThm.2}) has been already used, dupli
+cate ignored
 <to be read again> 
                    \relax 
 l.1004 ...ermination-insensitive non-interference}
-                                                  }\\
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[108]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[109]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[110]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[111]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[112]) (./chapters/appendix/appendix2.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[113]pdfTeX warning (ext4): destination with the same identifier (name{myThm.3}
-) has been already used, duplicate ignored
+                                                  }\\ [99] [100] [101] [102])
+(./chapters/appendix/appendix2.tex [103]pdfTeX warning (ext4): destination with
+ the same identifier (name{myThm.3}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.6 C
@@ -3672,23 +2931,20 @@ X warning (ext4): destination with the same identifier (name{myThm.4}) has been
                    \relax 
 l.49 T
       he actual IPD of a node having $\SEN$ as its IPD is the node on
+Overfull \hbox (22.40727pt too wide) in paragraph at lines 53--72
+[]\T1/qpl/m/n/10 Assume two func-tions $\OML/lmm/m/it/10 F$ \T1/qpl/m/n/10 and 
+$\OML/lmm/m/it/10 G$ \T1/qpl/m/n/10 given by the CFGs $\OMS/lmsy/m/n/10 G \OT1/
+lmr/m/n/10 = (\OMS/lmsy/m/n/10 N\OML/lmm/m/it/10 ; \OMS/lmsy/m/n/10 E\OML/lmm/m
+/it/10 ; n[]; n[]; \OMS/lmsy/m/n/10 L\OT1/lmr/m/n/10 )$ \T1/qpl/m/n/10 and $\OM
+S/lmsy/m/n/10 G[] \OT1/lmr/m/n/10 = (\OMS/lmsy/m/n/10 N[]\OML/lmm/m/it/10 ; \OM
+S/lmsy/m/n/10 E[]\OML/lmm/m/it/10 ; n[]; n[]; \OMS/lmsy/m/n/10 L[]\OT1/lmr/m/n/
+10 )$\T1/qpl/m/n/10 ,
+ []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
+[104
 
-[114
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[115]pdfTeX warning (ext4): destination with the same identifier (name{myLemma.
-8}) has been already used, duplicate ignored
+] [105]pdfTeX warning (ext4): destination with the same identifier (name{myLemm
+a.8}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.95 I
@@ -3704,37 +2960,10 @@ en already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.157 I
-       f $~\langle \sigma, \iota, \rho \rangle~ \rightarrow
+       f $~\langle \sigma, \iota, \rho \rangle~ \rightarrow [106
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[116
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[117]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[118]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[119]pdfTeX warning (ext4): destination with the same identifier (name{mydef.1}
+] [107]
+[108]pdfTeX warning (ext4): destination with the same identifier (name{mydef.1}
 ) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
@@ -3751,343 +2980,138 @@ X warning (ext4): destination with the same identifier (name{myThm.5}) has been
 <to be read again> 
                    \relax 
 l.466 S
-       uppose $\mathcal{P}$ and  $\mathcal{P}'$ are two program
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[120]) (./chapters/appendix/appendix3.tex
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[121]
+       uppose $\mathcal{P}$ and  $\mathcal{P}'$ are two program [109])
+(./chapters/appendix/appendix3.tex [110]
 Underfull \hbox (badness 10000) in paragraph at lines 10--17
 
  []
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[122]
-Overfull \hbox (3.32727pt too wide) in paragraph at lines 120--133
-\T1/qpl/m/n/10.95 As $\OMS/lmsy/m/n/10.95 ^^X[]$ \T1/qpl/m/n/10.95 is an equiv-
-a-lence re-la-tion, from IH1 and IH2, $\OML/lmm/m/it/10.95 ^^[ \OMS/lmsy/m/n/10
-.95 ^^X[] \OML/lmm/m/it/10.95 ^^[[]$\T1/qpl/m/n/10.95 , $\OML/lmm/m/it/10.95 ^^
-S \OMS/lmsy/m/n/10.95 ^^X[] \OML/lmm/m/it/10.95 ^^S[]$\T1/qpl/m/n/10.95 . From 
-Lemma []14[],
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[123]pdfTeX warning (ext4): destination with the same identifier (name{myThm.6}
-) has been already used, duplicate ignored
+[111] [112]pdfTeX warning (ext4): destination with the same identifier (name{my
+Thm.6}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.215 I
-       f $\langle \sigma, \iota, \comm \rangle \lirsem \langle
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[124]pdfTeX warning (ext4): destination with the same identifier (name{myThm.7}
-) has been already used, duplicate ignored
+       f $\langle \sigma, \iota, \comm \rangle \lirsem \langle [113]pdfTeX warn
+ing (ext4): destination with the same identifier (name{myThm.7}) has been alrea
+dy used, duplicate ignored
 <to be read again> 
                    \relax 
 l.321 I
-       f $\langle \sigma, \iota, \comm \rangle \lirsem \langle
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[125]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[126]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[127]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[128]
-Overfull \hbox (1.0449pt too wide) in paragraph at lines 1431--1441
-\OML/lmm/m/it/10.95 ^^\ \OT1/lmr/m/n/10.95 = \OML/lmm/m/it/10.95 ^^\[] \OT1/lmr
-/m/n/10.95 :: \OML/lmm/m/it/10.95 ^^\[]$\T1/qpl/m/n/10.95 . From []\T1/qpl/m/sc
-/10.95 s-dcopr[] \T1/qpl/m/n/10.95 and IH1, $\OMS/lmsy/m/n/10.95 h\OML/lmm/m/it
-/10.95 ^^[[]; ^^S[]; \OT1/lmr/m/it/10.95 e[]\OML/lmm/m/it/10.95 ; ^^\[][] \OT1/
-lmr/m/n/10.95 :: \OML/lmm/m/it/10.95 ^^\[][]\OMS/lmsy/m/n/10.95 i[][][]\OML/lmm
-/m/it/10.95 ; ^^S[]; ^^\[][]$
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[129]
-Overfull \hbox (30.38972pt too wide) in paragraph at lines 1442--1453
-\OML/lmm/m/it/10.95 ^^\[] \OT1/lmr/m/n/10.95 :: \OML/lmm/m/it/10.95 n\OMS/lmsy/
-m/n/10.95 i[][][]\OML/lmm/m/it/10.95 ; ^^S[]; ^^\[] \OT1/lmr/m/n/10.95 :: \OML/
-lmm/m/it/10.95 n$ \T1/qpl/m/n/10.95 be-cause $\OML/lmm/m/it/10.95 ^^\[] \OT1/lm
-r/m/n/10.95 = \OML/lmm/m/it/10.95 ^^O$\T1/qpl/m/n/10.95 . From []\T1/qpl/m/sc/1
-0.95 s-dcopr[] \T1/qpl/m/n/10.95 and IH2, $\OMS/lmsy/m/n/10.95 h\OML/lmm/m/it/1
-0.95 ^^[[]; ^^S[][]; \OT1/lmr/m/it/10.95 e[]\OML/lmm/m/it/10.95 ; ^^\[] \OT1/lm
-r/m/n/10.95 ::
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[130]pdfTeX warning (ext4): destination with the same identifier (name{myThm.8}
-) has been already used, duplicate ignored
+       f $\langle \sigma, \iota, \comm \rangle \lirsem \langle [114] [115]
+[116] [117]pdfTeX warning (ext4): destination with the same identifier (name{my
+Thm.8}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.1657 I
-        f $\langle \sigma, \iota, \comm \rangle
-Overfull \hbox (0.58676pt too wide) in paragraph at lines 1679--1690
-[][]\T1/qpl/m/sc/10.95 assn[]\T1/qpl/m/n/10.95 : As $\OML/lmm/m/it/10.95 ^^[ \O
-MS/lmsy/m/n/10.95 '[] \OML/lmm/m/it/10.95 ^^[[]$\T1/qpl/m/n/10.95 , $\OML/lmm/m
-/it/10.95 ^^[\OT1/lmr/m/n/10.95 ([]) \OMS/lmsy/m/n/10.95 '[] \OML/lmm/m/it/10.9
-5 ^^[[]\OT1/lmr/m/n/10.95 ([])$\T1/qpl/m/n/10.95 . Thus, ei-ther $\OT1/lmr/m/n/
-10.95 (^^@[](\OML/lmm/m/it/10.95 ^^[\OT1/lmr/m/n/10.95 ([])) = ^^@[](\OML/lmm/m
-/it/10.95 ^^[[]\OT1/lmr/m/n/10.95 ([])))$ \T1/qpl/m/n/10.95 (or) $\OT1/lmr/m/n/
-10.95 ^^@[](\OML/lmm/m/it/10.95 ^^[\OT1/lmr/m/n/10.95 ([])) \OMS/lmsy/m/n/10.95
- 6v
+        f $\langle \sigma, \iota, \comm \rangle [118] [119]
+Overfull \hbox (0.8659pt too wide) in paragraph at lines 1857--1863
+[][]\T1/qpl/b/n/10 Corollary 6 \T1/qpl/m/n/10 (Non-in-ter-fer-ence)\T1/qpl/b/n/
+10 . []\T1/qpl/m/it/10 If $\OMS/lmsy/m/n/10 h\OML/lmm/m/it/10 ^^[[]; ^^S[]; \OT
+1/lmr/m/it/10 c\OMS/lmsy/m/n/10 i[]h\OML/lmm/m/it/10 ^^[[]; ^^S[]; ^^\[]\OMS/lm
+sy/m/n/10 i$\T1/qpl/m/it/10 , $\OMS/lmsy/m/n/10 h\OML/lmm/m/it/10 ^^[[]; ^^S[];
+ \OT1/lmr/m/it/10 c\OMS/lmsy/m/n/10 i[]h\OML/lmm/m/it/10 ^^[[]; ^^S[]; ^^\[]\OM
+S/lmsy/m/n/10 i$\T1/qpl/m/it/10 , $\OML/lmm/m/it/10 ^^[[] \OMS/lmsy/m/n/10 ^^X[
+] \OML/lmm/m/it/10 ^^[[]$\T1/qpl/m/it/10 , and $\OML/lmm/m/it/10 ^^S[][] \OT1/l
+mr/m/n/10 =
  []
 
-
-Overfull \hbox (3.05244pt too wide) in paragraph at lines 1719--1735
-\T1/qpl/m/n/10.95 IH1: If $\OMS/lmsy/m/n/10.95 h\OML/lmm/m/it/10.95 ^^[; ^^S[];
- \OT1/lmr/m/it/10.95 c[]\OMS/lmsy/m/n/10.95 i[]h\OML/lmm/m/it/10.95 ^^[[]; ^^S[
-]; ^^\[]\OMS/lmsy/m/n/10.95 i$\T1/qpl/m/n/10.95 , then $\OMS/lmsy/m/n/10.95 h\O
-ML/lmm/m/it/10.95 ^^[[]; ^^S[][]; \OT1/lmr/m/it/10.95 c[]\OML/lmm/m/it/10.95 ; 
-^^\[][]\OMS/lmsy/m/n/10.95 i[]h\OML/lmm/m/it/10.95 ^^[[]; ^^S[]; ^^\[]\OMS/lmsy
-/m/n/10.95 i$ \T1/qpl/m/n/10.95 such that $\OML/lmm/m/it/10.95 ^^[[] \OMS/lmsy/
-m/n/10.95 '[]
- []
-
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[131]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[132])
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[133] [134
-
-] (./thesis.lof)
+) [120] (./thesis.lof)
 \tf@lof=\write8
 \openout8 = `thesis.lof'.
 
+ [121
 
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[135
-
-] [136
+] [122
 
 ] (./thesis.lot)
 \tf@lot=\write9
 \openout9 = `thesis.lot'.
 
+ [123
 
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[137
-
-] [138
+] [124
 
 ] (./thesis.bbl
-Underfull \hbox (badness 4846) in paragraph at lines 30--35
-[]\T1/qpl/m/n/10.95 World's Biggest Data Breaches.  []$\T1/lmtt/m/n/10.95 http 
-: / / www . informationisbeautiful . net /
+Underfull \hbox (badness 10000) in paragraph at lines 30--35
+[]\T1/qpl/m/n/10 World's Biggest Data Breaches.  []$\T1/lmtt/m/n/10 http : / / 
+www . informationisbeautiful . net /
  []
 
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[139
-
-
-]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[140]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[141]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[142]
-Underfull \hbox (badness 3291) in paragraph at lines 297--300
-[]\T1/qpl/m/n/10.95 O. Foun-da-tion.  In-for-ma-tion leak-age.  []$\T1/lmtt/m/n
-/10.95 https : / / www . owasp . org / index . php /
+Underfull \hbox (badness 1062) in paragraph at lines 30--35
+\T1/lmtt/m/n/10 visualizations / worlds-[]biggest-[]data-[]breaches-[]hacks/$[]
+\T1/qpl/m/n/10 , 2017.  [On-line; ac-cessed 25-
  []
 
+[125
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
 
-[143]
+] [126]
+Underfull \hbox (badness 2012) in paragraph at lines 175--180
+[]\T1/qpl/m/n/10 A. Bir-gis-son, D. Hedin, and A. Sabelfeld.  Boost-ing the per
+-mis-sive-ness of dy-namic
+ []
 
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[144]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[145]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[146]
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[147])
-
-Package Fancyhdr Warning: \headheight is too small (12.0pt): 
- Make it at least 13.59999pt.
- We now make it that large for the rest of the document.
- This may cause the page layout to be inconsistent, however.
-
-[148]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 130.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 130.
+[127] [128] [129] [130] [131]) [132]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 131.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 131.
  (./thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 130.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 130.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 131.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 131.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: C35AD0D146C7BBE27FF2C107287C32E4;3992.
+(rerunfilecheck)             Checksum: AF5A1D9EB7CFA2EEF5EC37B937103B6D;4007.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 39564 strings out of 492995
- 725058 string characters out of 6132704
- 891102 words of memory out of 5000000
- 41368 multiletter control sequences out of 15000+600000
- 166372 words of font info for 112 fonts, out of 8000000 for 9000
+ 39547 strings out of 492995
+ 724887 string characters out of 6132704
+ 892787 words of memory out of 5000000
+ 41363 multiletter control sequences out of 15000+600000
+ 157441 words of font info for 103 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
  57i,25n,78p,10409b,1450s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/lo
-cal/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/20
-17/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2017/texmf-dist/
-fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/
+cal/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texliv
+e/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2017/texmf-d
+ist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/
 dvips/lm/lm-mathex.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/tex-
 gyre/q-ec-sc.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/tex-gyre/q
 -ts1.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc}
 </usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/loca
 l/texlive/2017/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/
-2017/texmf-dist/fonts/type1/public/lm/lmmi6.pfb></usr/local/texlive/2017/texmf-
-dist/fonts/type1/public/lm/lmmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/
-type1/public/lm/lmmi8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publi
-c/lm/lmmi9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr10.
-pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/lo
-cal/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/
-2017/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2017/texmf-d
-ist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2017/texmf-dist/fonts/
-type1/public/lm/lmri8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publi
-c/lm/lmss12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmssb
-x10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></
-usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></usr/local/t
-exlive/2017/texmf-dist/fonts/type1/public/lm/lmsy7.pfb></usr/local/texlive/2017
-/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texlive/2017/texmf-dist
-/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/typ
-e1/public/lm/lmtt8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/l
-m/lmtt9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtti10.p
-fb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/msam
-10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/symbols/
-msbm10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qplb
-.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qplr.pfb><
-/usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qplri.pfb>
-Output written on thesis.pdf (158 pages, 1058993 bytes).
+2017/texmf-dist/fonts/type1/public/lm/lmmi5.pfb></usr/local/texlive/2017/texmf-
+dist/fonts/type1/public/lm/lmmi6.pfb></usr/local/texlive/2017/texmf-dist/fonts/
+type1/public/lm/lmmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/publi
+c/lm/lmmi8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmmi9.
+pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/l
+ocal/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr5.pfb></usr/local/texlive
+/2017/texmf-dist/fonts/type1/public/lm/lmr6.pfb></usr/local/texlive/2017/texmf-
+dist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2017/texmf-dist/fonts/t
+ype1/public/lm/lmr9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/
+lm/lmri10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmri7.p
+fb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmss12.pfb></usr/l
+ocal/texlive/2017/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/tex
+live/2017/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/texlive/2017/
+texmf-dist/fonts/type1/public/lm/lmsy5.pfb></usr/local/texlive/2017/texmf-dist/
+fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1
+/public/lm/lmsy7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/
+lmsy9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtt8.pfb></usr/local
+/texlive/2017/texmf-dist/fonts/type1/public/lm/lmtt9.pfb></usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/lm/lmtti10.pfb></usr/local/texlive/2017/texmf-
+dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2017/te
+xmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/201
+7/texmf-dist/fonts/type1/public/tex-gyre/qplb.pfb></usr/local/texlive/2017/texm
+f-dist/fonts/type1/public/tex-gyre/qplr.pfb></usr/local/texlive/2017/texmf-dist
+/fonts/type1/public/tex-gyre/qplri.pfb>
+Output written on thesis.pdf (144 pages, 1114086 bytes).
 PDF statistics:
- 2952 PDF objects out of 2984 (max. 8388607)
- 2726 compressed objects within 28 object streams
- 918 named destinations out of 1000 (max. 500000)
- 431 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 2910 PDF objects out of 2984 (max. 8388607)
+ 2692 compressed objects within 27 object streams
+ 905 named destinations out of 1000 (max. 500000)
+ 436 words of extra memory for PDF output out of 10000 (max. 10000000)
 

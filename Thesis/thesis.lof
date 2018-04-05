@@ -2,27 +2,28 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Syntax of the Language\relax }}{18}{figure.caption.5}
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Semantics\relax }}{19}{figure.caption.6}
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Assignment rule for NSU\relax }}{20}{figure.caption.7}
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Syntax of labels including the partially-leaked label $P$\relax }}{22}{figure.caption.8}
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Syntax of the Language\relax }}{16}{figure.caption.5}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Semantics\relax }}{16}{figure.caption.6}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Assignment rule for NSU\relax }}{17}{figure.caption.7}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Syntax of labels including the partially-leaked label $P$\relax }}{19}{figure.caption.8}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Labels and label operations\relax }}{27}{figure.caption.10}
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Caption}}{27}{figure.caption.11}
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Lattice explaining rule \textsc {\ref {bs:cmd:ags}}\relax }}{28}{figure.caption.12}
-\contentsline {figure}{\numberline {4.4}{\ignorespaces A powerset/product lattice\relax }}{32}{figure.caption.15}
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Labels and label operations\relax }}{24}{figure.caption.10}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Caption}}{25}{figure.caption.11}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Lattice explaining rule \textsc {\ref {bs:cmd:ags}}\relax }}{26}{figure.caption.12}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces A powerset/product lattice\relax }}{29}{figure.caption.15}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces Language Syntax\relax }}{40}{figure.caption.17}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces Semantics\relax }}{42}{figure.caption.18}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Language Syntax\relax }}{37}{figure.caption.17}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Semantics\relax }}{38}{figure.caption.18}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces Syntax of the language\relax }}{51}{figure.caption.22}
-\contentsline {figure}{\numberline {6.2}{\ignorespaces LIR - Semantics of expressions\relax }}{59}{figure.caption.28}
-\contentsline {figure}{\numberline {6.3}{\ignorespaces LIR - Semantics of commands\relax }}{60}{figure.caption.29}
-\contentsline {figure}{\numberline {6.4}{\ignorespaces Decoding semantics of expressions\relax }}{65}{figure.caption.30}
-\contentsline {figure}{\numberline {6.5}{\ignorespaces Decoding semantics of commands\relax }}{66}{figure.caption.31}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Syntax of the language\relax }}{48}{figure.caption.22}
+\contentsline {figure}{\numberline {6.2}{\ignorespaces LIR - Semantics of expressions\relax }}{55}{figure.caption.28}
+\contentsline {figure}{\numberline {6.3}{\ignorespaces LIR - Semantics of commands\relax }}{56}{figure.caption.29}
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Decoding semantics of expressions\relax }}{60}{figure.caption.30}
+\contentsline {figure}{\numberline {6.5}{\ignorespaces Decoding semantics of commands\relax }}{61}{figure.caption.31}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces Work-flow of the {\unhbox \voidb@x \hbox {WebPol}} policy model\relax }}{74}{figure.caption.32}
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Work-flow of the {\unhbox \voidb@x \hbox {WebPol}} policy model\relax }}{68}{figure.caption.32}
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Overheads of LIR on SunSpider Benchmark Tests\relax }}{79}{figure.caption.43}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
