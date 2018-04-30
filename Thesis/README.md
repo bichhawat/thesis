@@ -1,2 +1,2 @@
-# thesis-template-saar
-PhD thesis template using Universität des Saarlandes owl
+# Abhishek's Thesis
+PhD thesis using Universität des Saarlandes owl
