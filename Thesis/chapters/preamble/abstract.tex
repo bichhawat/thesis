@@ -11,13 +11,14 @@ flow control has been studied extensively as an approach to mitigate
 such information leaks. The technique works by enforcing the security
 property of non-interference using a specified set of security
 policies. A vast majority of existing work in this area
-is based on static analyses. However, some of these applications,
+is based on static analyses. However, some of the applications,
 especially on the Web, are developed using dynamic languages like
 JavaScript that make the static analyses techniques stale and
 ineffective. As a result, there has been a growing interest in recent
 years to develop dynamic information flow analysis techniques. In
-spite of that, dynamic information flow analysis has not been at the
-helm of information flow security in settings like the Web; the prime
+spite of the advances in the field, dynamic information flow analysis
+has not been at the helm of information flow security
+in dynamic settings like the Web; the prime
 reason being that the analysis techniques and the security property
 related to them (non-interference) either over-approximate or are too
 restrictive in most cases. Concretely, the analysis techniques
@@ -39,7 +40,7 @@ languages. Although non-interference is a desired property for
 enforcing information flow control, there are program instances that
 require legitimate release of some parts of the secret data to provide
 the required functionality. Towards this end, this thesis develops a sound 
-approach to quantify information leaks dynamically while allowing 
+approach to bound information leaks dynamically while allowing 
 information release in accordance to a pre-specified budget. The thesis
 concludes by applying these techniques to an information flow
 control-enabled Web browser and explores a policy specification 
